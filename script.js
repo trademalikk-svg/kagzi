@@ -1,3 +1,22 @@
+// Early workspace navigation: runs before tool initialisation so a later tool error cannot disable navigation.
+document.addEventListener('click',function(event){
+ const link=event.target.closest('a.tool-card, .side-nav a[href="#scanner"], .side-nav a[href="#pdf"], .side-nav a[href="#photo"]');
+ if(!link)return;
+ const key=(link.dataset.search||'')+' '+(link.getAttribute('href')||'');
+ let target=null;
+ if(key.includes('scanner')||key.includes('ocr'))target=document.getElementById('scanner');
+ else if(key.includes('photo'))target=document.getElementById('photoStudio');
+ else if(key.includes('pdf'))target=document.getElementById('pdfWorkbench');
+ if(!target)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ document.querySelectorAll('.pdf-workbench').forEach(panel=>{panel.hidden=true;panel.style.display='none';});
+ target.hidden=false;
+ target.style.display='block';
+ target.scrollIntoView({behavior:'smooth',block:'start'});
+ const sidebar=document.getElementById('sidebar');
+ if(sidebar)sidebar.classList.remove('open');
+},true);
 const $=s=>document.querySelector(s);const toast=$('#toast');let toastTimer;function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}$('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));document.addEventListener('click',e=>{if(window.innerWidth<=760&&!e.target.closest('#sidebar')&&!e.target.closest('#menuBtn'))$('#sidebar').classList.remove('open')});const picker=$('#filePicker');let sessionDocuments=[];function chooseFile(){picker.click()}$('#addDocBtn').addEventListener('click',chooseFile);$('#emptyAddBtn').addEventListener('click',chooseFile);
 function formatBytes(bytes){if(bytes<1024)return bytes+' B';if(bytes<1048576)return (bytes/1024).toFixed(1)+' KB';return (bytes/1048576).toFixed(1)+' MB';}
 function renderDocuments(){const list=$('#documentList'),query=$('#documentFilter').value.trim().toLowerCase();list.innerHTML='';const filtered=sessionDocuments.filter(item=>item.file.name.toLowerCase().includes(query));$('#documentCountLabel').textContent=sessionDocuments.length+' file'+(sessionDocuments.length===1?'':'s')+' in this session';$('#docCount').textContent=String(sessionDocuments.length);$('#documentEmpty').hidden=sessionDocuments.length>0;if(sessionDocuments.length&&filtered.length===0){const msg=document.createElement('p');msg.className='document-empty';msg.textContent='No file names match this filter.';list.append(msg);}filtered.forEach(item=>{const row=document.createElement('div');row.className='document-row';const icon=document.createElement('div');icon.className='document-file-icon';icon.textContent=item.file.type==='application/pdf'?'PDF':item.file.type.startsWith('image/')?'IMG':'DOC';const meta=document.createElement('div');meta.className='document-meta';const name=document.createElement('b');name.textContent=item.file.name;const details=document.createElement('small');details.textContent=formatBytes(item.file.size)+' · '+(item.file.type||'Unknown file type');meta.append(name,details);const actions=document.createElement('div');actions.className='document-actions';if(item.file.type==='application/pdf'||item.file.type.startsWith('image/')){const view=document.createElement('button');view.textContent='Preview';view.addEventListener('click',()=>{const url=URL.createObjectURL(item.file);const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener';link.click();setTimeout(()=>URL.revokeObjectURL(url),60000);});actions.append(view);}const remove=document.createElement('button');remove.className='remove-file';remove.textContent='Remove';remove.addEventListener('click',()=>{sessionDocuments=sessionDocuments.filter(doc=>doc.id!==item.id);renderDocuments();notify('Removed from this session.');});actions.append(remove);row.append(icon,meta,actions);list.append(row);});}
