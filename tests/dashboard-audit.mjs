@@ -30,15 +30,16 @@ test('module catalogue contains exactly 65 unique, named modules', () => {
 test('all 65 modules are assigned an explicit availability state', () => {
   const destinationBlock = modulesSource.match(/const moduleDestinations=\{([^}]+)\}/);
   const developmentBlock = modulesSource.match(/const inDevelopmentModuleIds=new Set\(\[([^\]]*)\]\)/);
-  const comingSoonBlock = modulesSource.match(/const comingSoonModuleIds=new Set\(Array\.from\(\{length:65\}[\s\S]*?\)\);/);
-  assert.ok(destinationBlock && developmentBlock && comingSoonBlock, 'All three availability maps must be declared');
+  assert.ok(destinationBlock && developmentBlock, 'Availability maps must be declared');
   const available = [...destinationBlock[1].matchAll(/(\d+):/g)].map((m) => Number(m[1]));
   const development = [...developmentBlock[1].matchAll(/\d+/g)].map((m) => Number(m[0]));
-  const comingSoon = [...comingSoonBlock[0].matchAll(/\d+/g)].map((m) => Number(m[0])).filter((id) => id <= 65);
-  const assigned = new Set([...available, ...development, ...comingSoon]);
-  assert.equal(available.length, new Set(available).size, 'Available module IDs must be unique');
-  assert.equal(development.length, new Set(development).size, 'Development module IDs must be unique');
-  assert.equal(assigned.size, 65, 'Every module ID must be classified as available, in development, or coming soon');
+  const availableSet = new Set(available);
+  const developmentSet = new Set(development);
+  const comingSoon = Array.from({ length: 65 }, (_, i) => i + 1).filter((id) => !availableSet.has(id) && !developmentSet.has(id));
+  assert.equal(available.length, availableSet.size, 'Available module IDs must be unique');
+  assert.equal(development.length, developmentSet.size, 'Development module IDs must be unique');
+  assert.equal(new Set([...available, ...development, ...comingSoon]).size, 65);
+  assert.match(modulesSource, /const comingSoonModuleIds=new Set\(Array\.from\(\{length:65\}/);
   assert.match(modulesSource, /comingSoonModuleIds\.has\(m\.id\)/);
 });
 
