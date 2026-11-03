@@ -123,7 +123,14 @@ if(editPdfInput&&editPdfBtn){
    const {width,height}=page.getSize();
    if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>width||y>height)throw new Error('Text position must be inside the page boundaries.');
    if(!Number.isInteger(size)||size<6||size>72)throw new Error('Font size must be between 6 and 72.');
-   page.drawText(text,{x,y,size,maxWidth:Math.max(1,width-x),lineHeight:size*1.25,color:PDFLib.rgb(0.08,0.12,0.22)});
+   let font=await pdf.embedFont(PDFLib.StandardFonts.Helvetica);
+   const fontFile=$('#editPdfFont').files[0];
+   if(fontFile){
+    if(!window.fontkit)throw new Error('Custom font support did not load. Refresh and try again.');
+    pdf.registerFontkit(window.fontkit);
+    font=await pdf.embedFont(await fontFile.arrayBuffer(),{subset:true});
+   }
+   page.drawText(text,{x,y,size,font,maxWidth:Math.max(1,width-x),lineHeight:size*1.25,color:PDFLib.rgb(0.08,0.12,0.22)});
    const safeName=(file.name.replace(/\.pdf$/i,'')||'document').replace(/[^a-z0-9_-]/gi,'-');
    downloadPdf(await pdf.save(),safeName+'-edited.pdf');notify('Text added. Edited PDF downloaded.');
   }catch(err){notify(err.message||'Could not edit this PDF.');}
