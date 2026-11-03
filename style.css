@@ -10,3 +10,7 @@
 #photoStudio .pdf-action-card input[type="checkbox"]{accent-color:var(--blue)}
 #photoStudio .pdf-action-card label.eyebrow{margin-top:4px}
 #photoStudio .pdf-action-card img{width:100%;height:auto;object-fit:contain}
+
+/* Native anchor fallback: workspace tools can open even if JavaScript fails to load. */
+.pdf-workbench{display:none}
+.pdf-workbench:target{display:block}
