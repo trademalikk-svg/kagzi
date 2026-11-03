@@ -15,7 +15,7 @@ test('dashboard fragment links resolve to real sections', () => {
 });
 
 test('module catalogue contains exactly 65 unique, named modules', () => {
-  const match = modulesSource.match(/const modules=(\[[\s\S]*?\]);\s*\nconst list=/);
+  const match = modulesSource.match(/const modules=(\\[[\\s\\S]*?\\]);[\\s\\S]*?const list=/);
   assert.ok(match, 'Module catalogue declaration must be discoverable');
   const modules = JSON.parse(match[1]);
   assert.equal(modules.length, 65);
