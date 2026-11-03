@@ -1,4 +1,9 @@
 export async function onRequestPost({ request, env }) {
+  const declaredLength = Number(request.headers.get("content-length") || "0");
+  if (declaredLength > 50000) return Response.json({ error: "Request is too large." }, { status: 413 });
+  if (!request.headers.get("content-type")?.includes("application/json")) {
+    return Response.json({ error: "Content-Type must be application/json." }, { status: 415 });
+  }
   if (!env.OPENAI_API_KEY) {
     return Response.json({ error: "AI support is not configured yet.", code: "AI_NOT_CONFIGURED" }, { status: 503 });
   }
