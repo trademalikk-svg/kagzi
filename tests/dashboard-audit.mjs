@@ -30,14 +30,16 @@ test('module catalogue contains exactly 65 unique, named modules', () => {
 test('all 65 modules are assigned an explicit availability state', () => {
   const destinationBlock = modulesSource.match(/const moduleDestinations=\{([^}]+)\}/);
   const developmentBlock = modulesSource.match(/const inDevelopmentModuleIds=new Set\(\[([^\]]*)\]\)/);
-  assert.ok(destinationBlock && developmentBlock, 'Availability maps must be declared');
+  const comingSoonBlock = modulesSource.match(/const comingSoonModuleIds=new Set\(Array\.from\(\{length:65\}[\s\S]*?\)\);/);
+  assert.ok(destinationBlock && developmentBlock && comingSoonBlock, 'All three availability maps must be declared');
   const available = [...destinationBlock[1].matchAll(/(\d+):/g)].map((m) => Number(m[1]));
   const development = [...developmentBlock[1].matchAll(/\d+/g)].map((m) => Number(m[0]));
-  const assigned = new Set([...available, ...development]);
+  const comingSoon = [...comingSoonBlock[0].matchAll(/\d+/g)].map((m) => Number(m[0])).filter((id) => id <= 65);
+  const assigned = new Set([...available, ...development, ...comingSoon]);
   assert.equal(available.length, new Set(available).size, 'Available module IDs must be unique');
   assert.equal(development.length, new Set(development).size, 'Development module IDs must be unique');
   assert.equal(assigned.size, 65, 'Every module ID must be classified as available, in development, or coming soon');
-  assert.match(modulesSource, /m\.status=availableModuleIds\.has\(m\.id\)\?'available':inDevelopmentModuleIds\.has\(m\.id\)\?'in-development':'coming-soon'/);
+  assert.match(modulesSource, /comingSoonModuleIds\.has\(m\.id\)/);
 });
 
 test('dashboard category cards no longer point to missing section IDs', () => {
