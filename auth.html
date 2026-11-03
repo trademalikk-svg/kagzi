@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Log in or create your KAGZI account."><title>Login / Sign Up — KAGZI</title><link rel="stylesheet" href="style.css"><style>
+.auth-page{min-height:100vh;display:grid;place-items:center;padding:28px;background:linear-gradient(135deg,#f5f7fc,#edf2ff)}
+.auth-card{width:min(100%,460px);background:#fff;border:1px solid #e6ebf5;border-radius:18px;padding:30px;box-shadow:0 18px 55px #23365a12}
+.auth-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#17233c;font:800 18px Manrope,sans-serif;margin-bottom:25px}
+.auth-tabs{display:flex;gap:8px;margin:20px 0}
+.auth-tabs button{flex:1;padding:11px;border:1px solid #e3e9f4;background:#f7f9fd;border-radius:8px;color:#52617a;font-weight:700}
+.auth-tabs button.active{background:#edf2ff;border-color:#315fe9;color:#315fe9}
+.auth-field{display:grid;gap:7px;margin:13px 0;color:#52617a;font-size:12px;font-weight:600}
+.auth-field input{width:100%;padding:13px;border:1px solid #dfe5ef;border-radius:8px;font:14px "DM Sans"}
+.auth-submit{width:100%;padding:13px;border:0;border-radius:8px;background:#315fe9;color:#fff;font-weight:700;margin-top:12px}
+.auth-message{padding:12px;border-radius:8px;background:#f5f7fc;color:#53627a;font-size:12px;line-height:1.6;margin-top:15px;overflow-wrap:anywhere}
+.auth-back{display:block;text-align:center;color:#315fe9;margin-top:20px;text-decoration:none;font-size:12px}
+.auth-help{color:#7b879b;font-size:11px;line-height:1.6}
+</style></head>
+<body><main class="auth-page"><section class="auth-card">
+<a class="auth-brand" href="index.html"><span class="brand-mark">K</span>KAGZI</a>
+<div class="eyebrow">YOUR DOCUMENT WORKSPACE</div><h1 id="authTitle">Welcome back</h1><p class="welcome-copy" id="authIntro">Log in to your KAGZI account.</p>
+<div class="auth-tabs"><button type="button" id="loginTab" class="active">Log in</button><button type="button" id="signupTab">Sign up</button></div>
+<form id="authForm">
+<label class="auth-field">Email address<input id="authEmail" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+<label class="auth-field">Password<input id="authPassword" type="password" autocomplete="current-password" required minlength="8" maxlength="128" placeholder="At least 8 characters"></label>
+<button class="auth-submit" id="authSubmit" type="submit">Log in</button>
+</form>
+<div class="auth-message" id="authMessage" role="status">Supabase connection must be configured before accounts can be created or used.</div>
+<p class="auth-help">Use your own email and a unique password. Never share your password or OTP with anyone. Account creation may require email confirmation.</p>
+<a class="auth-back" href="index.html">← Back to KAGZI workspace</a>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js"></script></body></html>
