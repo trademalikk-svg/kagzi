@@ -104,3 +104,29 @@ downloadPhotoBtn.addEventListener('click',async()=>{
  }catch(err){notify(err.message||'Could not process this image.');}
  finally{downloadPhotoBtn.disabled=!photoInput.files.length;downloadPhotoBtn.textContent='Process & download';}
 });
+
+
+// PDF editor: adds a new text overlay to one selected page; original content remains intact.
+const editPdfInput=$('#editPdfInput'),editPdfBtn=$('#editPdfBtn');
+if(editPdfInput&&editPdfBtn){
+ editPdfInput.addEventListener('change',()=>{$('#editPdfName').textContent=editPdfInput.files[0]?.name||'No PDF selected';editPdfBtn.disabled=!editPdfInput.files.length;});
+ editPdfBtn.addEventListener('click',async()=>{
+  try{
+   if(!window.PDFLib)throw new Error('PDF library did not load. Refresh and try again.');
+   const file=editPdfInput.files[0];if(!file)throw new Error('Choose a PDF first.');
+   const text=$('#editPdfText').value.trim();if(!text)throw new Error('Enter the text you want to add.');
+   editPdfBtn.disabled=true;editPdfBtn.textContent='Editing…';
+   const pdf=await PDFLib.PDFDocument.load(await file.arrayBuffer());
+   const pageNumber=Number($('#editPdfPage').value),page=pdf.getPage(pageNumber-1);
+   if(!Number.isInteger(pageNumber)||pageNumber<1||pageNumber>pdf.getPageCount())throw new Error('Enter a page number between 1 and '+pdf.getPageCount()+'.');
+   const x=Number($('#editPdfX').value),y=Number($('#editPdfY').value),size=Number($('#editPdfSize').value);
+   const {width,height}=page.getSize();
+   if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>width||y>height)throw new Error('Text position must be inside the page boundaries.');
+   if(!Number.isInteger(size)||size<6||size>72)throw new Error('Font size must be between 6 and 72.');
+   page.drawText(text,{x,y,size,maxWidth:Math.max(1,width-x),lineHeight:size*1.25,color:PDFLib.rgb(0.08,0.12,0.22)});
+   const safeName=(file.name.replace(/\.pdf$/i,'')||'document').replace(/[^a-z0-9_-]/gi,'-');
+   downloadPdf(await pdf.save(),safeName+'-edited.pdf');notify('Text added. Edited PDF downloaded.');
+  }catch(err){notify(err.message||'Could not edit this PDF.');}
+  finally{editPdfBtn.disabled=!editPdfInput.files.length;editPdfBtn.textContent='Add text & download PDF';}
+ });
+}
