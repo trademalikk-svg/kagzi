@@ -31,7 +31,7 @@
         });
         const data=await response.json().catch(()=>({}));
         if(!response.ok){
-          if(data.code==='AI_NOT_CONFIGURED')throw new Error('AI support is not connected yet. The site owner must add the server-side AI key in Cloudflare Pages settings. For now, email hello@kagzi.in.');
+          if(data.code==='AI_NOT_CONFIGURED')throw new Error('KAGZI AI is not configured yet. The site owner needs to add the Workers AI binding named AI in Cloudflare Pages Settings → Bindings, then redeploy. For help, email hello@kagzi.in.');
           throw new Error(data.error||'The assistant is temporarily unavailable. Please try again later.');
         }
         const reply=String(data.reply||'I could not prepare a reply. Please try again.');
