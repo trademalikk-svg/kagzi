@@ -1,0 +1,16 @@
+name: KAGZI studio checks
+on:
+  push:
+    branches: [feature/kagzi-photo-pdf-studio]
+  pull_request:
+    branches: [main]
+jobs:
+  studio-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --check script.js
+      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs
