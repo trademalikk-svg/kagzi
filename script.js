@@ -88,6 +88,43 @@ downloadPhotoBtn.addEventListener('click',async()=>{
 });
 
 
+
+// Extended Photo Studio workflows. All transformations use local browser APIs.
+const photoBgBlobState={cutout:null};
+const photoStatusEl=$('#photoStatus');
+function setPhotoStatus(message){if(photoStatusEl)photoStatusEl.textContent=message;}
+function setPhotoSource(blob){if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';downloadPhotoBtn.disabled=false;$('#removePhotoBackground').disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
+$('#passportPreset').addEventListener('change',e=>{const value=e.target.value;if(!value||value==='custom')return;const [w,h]=value.split('x').map(Number);photoWidth.value=w;photoHeight.value=h;photoKeepRatio.checked=false;setPhotoStatus('Preset applied: '+w+' × '+h+' px at 300 DPI. Verify the authority requirements.');});
+$('#removePhotoBackground').addEventListener('click',async()=>{
+ const button=$('#removePhotoBackground');try{if(!photoInput.files[0])throw new Error('Choose an image first.');button.disabled=true;button.textContent='Loading AI model…';setPhotoStatus('Loading AI background removal model. This may take time on mobile.');
+ const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+ const cutout=await module.removeBackground(photoInput.files[0],{progress:(key,current,total)=>{if(total)setPhotoStatus('AI model: '+Math.round(current/total*100)+'%');}});
+ photoBgBlobState.cutout=cutout;setPhotoSource(cutout);$('#applyPhotoBackground').disabled=false;setPhotoStatus('Background removed. Choose a colour and apply it, or download the transparent PNG.');notify('AI background removed.');
+ }catch(err){setPhotoStatus('AI background removal could not run: '+(err.message||'check network/browser support'));notify('AI background removal unavailable. Try again with a stable connection.');}
+ finally{button.disabled=!photoInput.files.length;button.textContent='✧ Remove background with AI';}
+});
+$('#applyPhotoBackground').addEventListener('click',async()=>{try{if(!photoBgBlobState.cutout)throw new Error('Run AI background removal first.');const image=new Image(),url=URL.createObjectURL(photoBgBlobState.cutout);image.src=url;await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext('2d');ctx.fillStyle=$('#photoBgColor').value;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));URL.revokeObjectURL(url);if(!blob)throw new Error('Could not create background image.');setPhotoSource(blob);setPhotoStatus('New background colour applied.');}catch(err){notify(err.message);}});
+function photoCanvas(){if(!photoObjectUrl)throw new Error('Choose an image first.');}
+async function buildPhotoBlob(mime,quality){
+ photoCanvas();const image=new Image();image.src=photoObjectUrl;await image.decode();
+ const sx=Math.max(0,Number($('#photoCropX').value)||0),sy=Math.max(0,Number($('#photoCropY').value)||0);
+ const sw=Number($('#photoCropW').value)||photoOriginalWidth,sh=Number($('#photoCropH').value)||photoOriginalHeight;
+ if(sw<1||sh<1||sx+sw>photoOriginalWidth||sy+sh>photoOriginalHeight)throw new Error('Crop area must stay inside the original image.');
+ const angle=Number($('#photoRotate').value)||0,rad=angle*Math.PI/180;
+ const rotated=angle===90||angle===270,baseW=rotated?sh:sw,baseH=rotated?sw:sh;
+ const width=Math.min(12000,Number(photoWidth.value)||baseW),height=Math.min(12000,Number(photoHeight.value)||baseH);
+ if(width<1||height<1)throw new Error('Enter valid output dimensions.');
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');
+ if(mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);}
+ ctx.save();ctx.translate(width/2,height/2);ctx.rotate(rad);const drawW=(angle===90||angle===270)?height:width,drawH=(angle===90||angle===270)?width:height;
+ ctx.drawImage(image,sx,sy,sw,sh,-drawW/2,-drawH/2,drawW,drawH);ctx.restore();
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,quality));canvas.width=canvas.height=1;if(!blob)throw new Error('Image export failed.');return blob;
+}
+function downloadPhotoBlob(blob,suffix){const mime=blob.type||'image/png',ext=mime.includes('jpeg')?'jpg':mime.includes('webp')?'webp':'png';const base=(photoInput.files[0]?.name||'kagzi-photo').replace(/\.[^.]+$/,'').replace(/[^a-z0-9_-]/gi,'-');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=base+suffix+'.'+ext;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
+$('#compressPhotoBtn').addEventListener('click',async()=>{const button=$('#compressPhotoBtn');try{const target=Number($('#photoTargetKB').value);if(!Number.isFinite(target)||target<5||target>10000)throw new Error('Target must be between 5 and 10,000 KB.');button.disabled=true;button.textContent='Compressing…';let best=null;for(let q=0.9;q>=0.25;q-=0.08){const blob=await buildPhotoBlob('image/jpeg',q);best=blob;if(blob.size<=target*1024)break;}downloadPhotoBlob(best,'-compressed');const actual=(best.size/1024).toFixed(1);setPhotoStatus('Actual output: '+actual+' KB (target '+target+' KB).');notify('Compressed image: '+actual+' KB'+(best.size>target*1024?' — target could not be reached without more quality loss.':'.'));}catch(err){notify(err.message||'Compression failed.');}finally{button.disabled=!photoInput.files.length;button.textContent='Compress & download';}});
+const previewInput=$('#pdfPreviewInput');
+if(previewInput){previewInput.addEventListener('change',async()=>{const file=previewInput.files[0],canvas=$('#pdfPreviewCanvas'),status=$('#pdfPreviewStatus');$('#pdfPreviewName').textContent=file?file.name:'No PDF selected';if(!file){status.textContent='Choose a PDF to preview.';canvas.width=canvas.height=0;return;}try{if(!window.pdfjsLib)throw new Error('PDF preview library did not load.');status.textContent='Rendering first page…';pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';const doc=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const page=await doc.getPage(1);const viewport=page.getViewport({scale:Math.min(1.2,520/page.getViewport({scale:1}).width)});canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;status.textContent='Showing page 1 of '+doc.numPages+'.';page.cleanup();await doc.destroy();}catch(err){status.textContent=err.message||'Could not preview this PDF.';canvas.width=canvas.height=0;}});}
+
 // PDF editor: adds a new text overlay to one selected page; original content remains intact.
 const editPdfInput=$('#editPdfInput'),editPdfBtn=$('#editPdfBtn');
 if(editPdfInput&&editPdfBtn){
