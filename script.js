@@ -70,14 +70,8 @@ downloadPhotoBtn.addEventListener('click',async()=>{
   const width=Number(photoWidth.value),height=Number(photoHeight.value);
   if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>12000||height>12000)throw new Error('Enter valid dimensions from 1 to 12,000 pixels.');
   downloadPhotoBtn.disabled=true;downloadPhotoBtn.textContent='Processing…';
-  const image=new Image();image.src=photoObjectUrl;await image.decode();
-  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
-  const context=canvas.getContext('2d');if(!context)throw new Error('Canvas is not supported in this browser.');
-  if($('#photoFormat').value==='image/jpeg'){context.fillStyle='#ffffff';context.fillRect(0,0,width,height);}
-  context.drawImage(image,0,0,width,height);
   const mime=$('#photoFormat').value,quality=Number($('#photoQuality').value)/100;
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,quality));
-  canvas.width=canvas.height=1;
+  const blob=await buildPhotoBlob(mime,quality);
   if(!blob)throw new Error('Could not export this image. Try another format.');
   const extension=mime==='image/jpeg'?'jpg':mime==='image/png'?'png':'webp';
   const base=(photoInput.files[0].name.replace(/\.[^.]+$/,'')||'kagzi-image').replace(/[^a-z0-9_-]/gi,'-');
@@ -91,6 +85,8 @@ downloadPhotoBtn.addEventListener('click',async()=>{
 
 // Extended Photo Studio workflows. All transformations use local browser APIs.
 const photoBgBlobState={cutout:null};
+photoInput.addEventListener('change',()=>{setTimeout(()=>{const has=!!photoInput.files.length;$('#removePhotoBackground').disabled=!has;$('#compressPhotoBtn').disabled=!has;$('#applyPhotoBackground').disabled=!photoBgBlobState.cutout;if(photoOriginalWidth){$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoPreviewEmpty').hidden=true;}},0);});
+
 const photoStatusEl=$('#photoStatus');
 function setPhotoStatus(message){if(photoStatusEl)photoStatusEl.textContent=message;}
 function setPhotoSource(blob){if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';downloadPhotoBtn.disabled=false;$('#removePhotoBackground').disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
