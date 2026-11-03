@@ -14,3 +14,11 @@
 /* Native anchor fallback: workspace tools can open even if JavaScript fails to load. */
 .pdf-workbench{display:none}
 .pdf-workbench:target{display:block}
+
+/* PDF editor and authentication entry points */
+.auth-link,.auth-primary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:8px;padding:9px 13px;font:600 11px "DM Sans";white-space:nowrap}
+.auth-link{color:#315fe9;border:1px solid #dce5ff;background:#fff}
+.auth-primary{color:#fff;background:#315fe9;border:1px solid #315fe9}
+.pdf-edit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pdf-editor-card textarea{resize:vertical;min-height:74px}
+@media(max-width:760px){.top-actions{gap:6px}.auth-link,.auth-primary{padding:8px 9px;font-size:10px}.pdf-edit-grid{grid-template-columns:1fr}.pdf-editor-card{grid-column:1/-1}}
