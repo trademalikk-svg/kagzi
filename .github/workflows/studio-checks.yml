@@ -14,5 +14,7 @@ jobs:
           node-version: 20
       - run: node --check script.js
       - run: node --check education-data.mjs
-      - run: node --test tests/education-library-audit.mjs
-      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs
+      - run: node --test tests/education-library-audit.mjs tests/education-reader-audit.mjs
+      - run: node --test tests/dashboard-audit.mjs
+      - run: node --test tests/studio-ui-audit.mjs
+      - run: node --test tests/gov-directory-audit.mjs
