@@ -1,9 +1,9 @@
 name: KAGZI studio checks
 on:
   push:
-    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents]
+    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, feature/kagzi-government-documents-100]
   pull_request:
-    branches: [fix/kagzi-dashboard-repair, feature/kagzi-photo-pdf-studio, main]
+    branches: [fix/kagzi-dashboard-repair, feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, main]
 jobs:
   studio-audit:
     runs-on: ubuntu-latest
