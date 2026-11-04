@@ -28,7 +28,7 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 <div class="muted">SECURE ADMIN ACCESS</div><h1>Admin Login</h1>
 <p class="muted">इस upload centre का उपयोग केवल उन accounts के लिए होगा जिन्हें KAGZI Library Admin के रूप में अनुमति दी गई है।</p>
 <label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
-<label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
+<label for="password">Password</label><div style="display:flex;gap:8px;align-items:center"><input id="password" type="password" autocomplete="current-password" placeholder="Password" style="flex:1;min-width:0"><button id="togglePassword" class="secondary" type="button" aria-label="Show password" aria-pressed="false" style="margin-top:0;white-space:nowrap">Show</button></div>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button id="loginBtn" type="button">Login</button><button id="signupBtn" class="secondary" type="button">Create account</button></div><div id="loginStatus" class="status" role="status"></div>
 </section>
 <section class="card hidden" id="uploadPanel">
@@ -60,6 +60,15 @@ import { supabase } from './kagzi-supabase.js';
 const loginPanel=document.getElementById('loginPanel');
 const uploadPanel=document.getElementById('uploadPanel');
 const loginStatus=document.getElementById('loginStatus');
+const passwordInput=document.getElementById('password');
+const togglePassword=document.getElementById('togglePassword');
+togglePassword.addEventListener('click',()=>{
+ const showing=passwordInput.type==='text';
+ passwordInput.type=showing?'password':'text';
+ togglePassword.textContent=showing?'Show':'Hide';
+ togglePassword.setAttribute('aria-label',showing?'Show password':'Hide password');
+ togglePassword.setAttribute('aria-pressed',String(!showing));
+});
 const uploadStatus=document.getElementById('uploadStatus');
 let currentUser=null;
 async function refreshAccess(){
