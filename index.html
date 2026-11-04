@@ -144,6 +144,18 @@ img,video,canvas,iframe{max-width:100%}
 .vip-document-panel .vip-service-grid a{min-height:78px}
 @media(max-width:1050px){.vip-dual-panels{grid-template-columns:1fr}}
 </style>
+
+<style id="kagzi-featured-document-library">
+.featured-library{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:18px 0 22px;padding:20px 24px;border:1px solid rgba(151,111,255,.48);border-radius:18px;background:linear-gradient(110deg,rgba(91,55,160,.24),rgba(28,20,51,.94));box-shadow:0 12px 34px rgba(0,0,0,.18)}
+.featured-library-main{display:flex;align-items:center;gap:16px;min-width:0}
+.featured-library-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:15px;background:rgba(151,111,255,.2);font-size:28px}
+.featured-library-copy strong{display:block;font-size:clamp(19px,2.2vw,25px);font-weight:900;letter-spacing:.025em;color:#fff}
+.featured-library-copy span{display:block;margin-top:5px;color:#c9c0df;font-size:13px}
+.featured-library-link{flex:0 0 auto;padding:12px 18px;border-radius:11px;background:#a78bfa;color:#170d2c!important;font-weight:900;text-decoration:none}
+.featured-library-link:hover{filter:brightness(1.08)}
+@media(max-width:560px){.featured-library{align-items:flex-start;padding:15px;gap:12px}.featured-library-main{gap:11px}.featured-library-icon{width:44px;height:44px;flex-basis:44px;font-size:23px}.featured-library-copy strong{font-size:17px}.featured-library-copy span{font-size:11px}.featured-library-link{padding:10px 12px;font-size:12px;align-self:center}}
+</style>
+
 </head>
 <body>
 <div class="app-shell">
@@ -179,6 +191,13 @@ img,video,canvas,iframe{max-width:100%}
 <div class="vip-auth"><a class="auth-link" href="auth.html?mode=login">Login</a><a class="auth-primary" href="auth.html?mode=signup">Sign Up</a></div>
 <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 </header>
+<section class="featured-library" aria-label="Featured Document Library">
+  <div class="featured-library-main">
+    <span class="featured-library-icon" aria-hidden="true">▤</span>
+    <div class="featured-library-copy"><strong>DOCUMENT LIBRARY</strong><span>Upload, read and organise your PDF documents</span></div>
+  </div>
+  <a class="featured-library-link" href="document-library.html">OPEN LIBRARY ↗</a>
+</section>
 <section class="vip-hero-grid" aria-label="KAGZI AI introduction">
 <article class="vip-hero vip-hero-main"><div class="vip-hero-art"><span class="doc-sheet">🇮🇳</span><span class="doc-folder">✦</span><span class="doc-cloud">✓</span></div><div class="vip-hero-copy"><div class="vip-kicker">ONE PLATFORM · MANY POSSIBILITIES</div><h1>KAGZI AI</h1><h2>Jan Seva &amp; Education</h2><h3>सरकारी सेवाएँ, शिक्षा और डिजिटल सुविधाएँ</h3><p>जनसेवा, पढ़ाई और जरूरी दस्तावेज़ — अब एक ही मंच पर।</p><a class="vip-cta" href="#main-services">आज ही शुरुआत करें <span>→</span></a></div></article>
 <article class="vip-hero vip-hero-education"><div class="vip-hero-copy"><div class="vip-kicker">सेवा भी · शिक्षा भी</div><h2>आपका डिजिटल<br>सहयोगी मंच</h2><p>सरकारी योजनाओं की जानकारी पाएँ, पढ़ाई की सामग्री खोजें और उपयोगी दस्तावेज़ों तक पहुँचें।</p><a class="vip-cta" href="#main-services">सेवाएँ देखें <span>→</span></a></div><div class="vip-hero-art edu-art"><span class="edu-cap">✺</span><span class="edu-books">📚</span></div></article>
