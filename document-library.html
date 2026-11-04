@@ -31,7 +31,7 @@
 </div>
 <dialog id="reader"><div class="reader-head"><span id="readerTitle">PDF Reader</span><button class="btn" id="closeReader">Close</button></div><div class="reader-body"><iframe id="frame" title="PDF preview"></iframe></div></dialog>
 <script>
-const SUPABASE_URL="https://gamsxgjaskejyiqazrpo.supabase.co";const SUPABASE_KEY="sb_publishable_7CV7DUqwnzbFwUV2sQilLw_7W2FyydY";
+const cfg=window.KAGZI_CONFIG||{};const SUPABASE_URL=cfg.SUPABASE_URL;const SUPABASE_KEY=cfg.SUPABASE_ANON_KEY;
 const sample=[
  {name:"सरकारी दस्तावेज़ और आवेदन गाइड",cat:"Government",desc:"सरकारी सेवाओं और आवेदन प्रक्रिया की जानकारी।",type:"GUIDE"},
  {name:"छात्रवृत्ति दस्तावेज़ चेकलिस्ट",cat:"Education",desc:"छात्रवृत्ति आवेदन से पहले उपयोगी चेकलिस्ट।",type:"CHECKLIST"},
@@ -52,4 +52,4 @@ async function loadMyFiles(){const list=document.getElementById("myFiles");const
 function statusMsg(t){document.getElementById("fileStatus").textContent=t}
 document.getElementById("uploadCloud").onclick=async()=>{const f=file.files[0];if(!f){statusMsg("पहले PDF file चुनें।");return}if(!currentUser||!supabaseClient){statusMsg("Upload करने के लिए पहले KAGZI में login करें।");return}if(f.type!=="application/pdf"&&!f.name.toLowerCase().endsWith(".pdf")){statusMsg("केवल PDF file चुनें।");return}if(f.size>50*1024*1024){statusMsg("File 50 MB से बड़ी है।");return}const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-180);const path=currentUser.id+"/"+crypto.randomUUID()+"-"+safe;const btn=document.getElementById("uploadCloud");btn.disabled=true;statusMsg("Uploading securely…");try{const {error:upErr}=await supabaseClient.storage.from("kagzi-private").upload(path,f,{contentType:"application/pdf",upsert:false});if(upErr)throw upErr;const {error:dbErr}=await supabaseClient.from("kagzi_documents").insert({owner_id:currentUser.id,file_name:f.name,mime_type:"application/pdf",size_bytes:f.size,storage_path:path,source:"cloud"});if(dbErr){await supabaseClient.storage.from("kagzi-private").remove([path]);throw dbErr}statusMsg("Upload complete. Your PDF is now in your private library.");await loadMyFiles()}catch(e){statusMsg("Upload failed: "+e.message)}finally{btn.disabled=false}};
 render();
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script></body></html>
+</script><script src="auth-guard.js"></script></body></html>
