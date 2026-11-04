@@ -29,7 +29,7 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 <p class="muted">इस upload centre का उपयोग केवल उन accounts के लिए होगा जिन्हें KAGZI Library Admin के रूप में अनुमति दी गई है।</p>
 <label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
 <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
-<button id="loginBtn" type="button">Login</button><div id="loginStatus" class="status" role="status"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button id="loginBtn" type="button">Login</button><button id="signupBtn" class="secondary" type="button">Create account</button></div><div id="loginStatus" class="status" role="status"></div>
 </section>
 <section class="card hidden" id="uploadPanel">
 <div class="muted">KAGZI HOSTED CONTENT</div><h1>Upload a book or notes PDF</h1>
@@ -75,6 +75,14 @@ document.getElementById('loginBtn').addEventListener('click',async()=>{
  const {error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
  if(error){loginStatus.textContent='Login नहीं हुआ: '+error.message;return;}
  await refreshAccess();
+});
+document.getElementById('signupBtn').addEventListener('click',async()=>{
+ loginStatus.textContent='Creating account…';
+ const {data,error}=await supabase.auth.signUp({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
+ if(error){loginStatus.textContent='Account नहीं बना: '+error.message;return;}
+ loginStatus.textContent=data.session
+  ? 'Account बन गया। Library Admin approval के बाद ही upload access मिलेगा।'
+  : 'Account request बन गई। Email confirmation पूरा करें। फिर Library Admin approval की जरूरत होगी।';
 });
 document.getElementById('uploadForm').addEventListener('submit',async event=>{
  event.preventDefault();uploadStatus.textContent='';
