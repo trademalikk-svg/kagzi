@@ -31,6 +31,81 @@
   ]
 }
 </script>
+
+<style id="kagzi-vip-layout">
+:root{--vip-navy:#06142e;--vip-navy2:#0b2047;--vip-gold:#e8b94f;--vip-gold2:#ffda82}
+body{background:#f4f6fc;color:#0b1835}
+.sidebar{display:none!important}
+.main-content{margin:0 auto!important;max-width:1700px!important;padding:0 22px 28px!important}
+.vip-topbar{height:86px;background:linear-gradient(100deg,#06142e,#0a1b3c);border:0;border-bottom:1px solid #b98b31;padding:0 24px;gap:18px;color:#fff}
+.vip-brand{display:flex;align-items:center;gap:12px;min-width:245px;color:#fff;text-decoration:none}
+.vip-brand-mark{font:900 48px Manrope;color:var(--vip-gold);line-height:1;text-shadow:0 3px 15px #e9b84b55}
+.vip-brand b{display:block;font:800 25px Manrope;letter-spacing:1px}
+.vip-brand small{display:block;color:#d5dbea;font-size:10px;margin-top:1px}
+.vip-nav{display:flex;align-items:center;justify-content:center;gap:5px;flex:1}
+.vip-nav a{color:#e9edf7;text-decoration:none;font-size:11px;font-weight:700;padding:12px 11px;border-radius:9px;white-space:nowrap}
+.vip-nav a.active{background:linear-gradient(135deg,#ffe09a,#e9b94f);color:#111b30}
+.vip-search{display:flex;align-items:center;gap:8px;min-width:205px;max-width:275px;border:1px solid #526587;background:#122342;border-radius:30px;padding:7px 10px;color:#dce5f7}
+.vip-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#fff;font:11px "DM Sans"}
+.vip-search input::placeholder{color:#b9c5d9}
+.vip-search button{display:none}
+.vip-auth{display:flex;gap:7px}
+.vip-auth .auth-link{background:transparent;border-color:#7787a4;color:#fff}
+.vip-auth .auth-primary{background:linear-gradient(135deg,#ffe09a,#e9b94f);border-color:#e9b94f;color:#111b30}
+.vip-hero-grid{display:grid;grid-template-columns:1fr 1fr;min-height:310px;background:#071735}
+.vip-hero{position:relative;display:flex;align-items:center;justify-content:center;gap:20px;overflow:hidden;padding:30px 26px;color:#fff;isolation:isolate}
+.vip-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 20% 80%,#174b9d 0,transparent 48%),linear-gradient(120deg,#071735,#0c2c61)}
+.vip-hero-education:before{background:radial-gradient(ellipse at 90% 10%,#62421d 0,transparent 48%),linear-gradient(120deg,#07152e,#151b2b)}
+.vip-hero-main:after{content:"";position:absolute;right:-1px;top:-20%;height:140%;width:3px;background:linear-gradient(transparent,#f5c65f,transparent);transform:rotate(26deg);box-shadow:0 0 15px #f5c65f}
+.vip-hero-copy{position:relative;z-index:1;text-align:center}
+.vip-kicker{font-size:9px;letter-spacing:2px;color:#e8c46f;font-weight:800}
+.vip-hero-copy h1{font:900 clamp(42px,5vw,66px)/1 Manrope;color:#f5cb69;margin:8px 0}
+.vip-hero-copy h2{font:800 clamp(20px,2.2vw,30px)/1.15 Manrope;color:#fff;margin:6px 0 12px;letter-spacing:-.5px}
+.vip-hero-education .vip-hero-copy h2{font-size:clamp(35px,4vw,54px);color:#f5cb69}
+.vip-hero-copy h3{font:800 19px Manrope;color:#ffda82;margin:7px 0 13px}
+.vip-hero-copy p{font-size:13px;line-height:1.65;color:#edf2fb;margin:0 0 16px}
+.vip-cta{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,#ffe5a5,#eab94c);color:#111b30;text-decoration:none;border-radius:30px;padding:11px 25px;font-weight:800;font-size:13px;box-shadow:0 5px 18px #e8b94f33}
+.vip-cta span{font-size:18px}
+.vip-cta-muted{background:linear-gradient(135deg,#ffe5a5,#eab94c)}
+.vip-coming{display:block;color:#c4d0e2;font-size:8px;letter-spacing:1.2px;margin-top:11px}
+.vip-hero-art{width:145px;height:175px;flex-shrink:0;position:relative;display:grid;place-items:center}
+.doc-sheet{font-size:100px;color:#eaf2ff;text-shadow:10px 10px 0 #8fa9d9}
+.doc-folder{position:absolute;bottom:0;left:0;font-size:75px;color:#efc15f;text-shadow:0 8px 16px #0008}
+.doc-cloud{position:absolute;right:0;bottom:8px;background:#eaf2ff;color:#17427f;border-radius:50%;width:46px;height:46px;display:grid;place-items:center;font-size:29px;font-weight:900}
+.edu-cap{position:absolute;top:0;font-size:75px;color:#e9bd5c;text-shadow:0 8px 18px #0009}
+.edu-books{position:absolute;bottom:0;font:900 45px/1.05 Manrope;color:#e9edf7;text-shadow:0 7px 10px #0008;transform:perspective(100px) rotateX(7deg)}
+.vip-dual-panels{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin:17px 0}
+.vip-panel{background:#fff;border:1px solid #e4d5b8;border-radius:16px;padding:15px;box-shadow:0 5px 16px #172c5010}
+.vip-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.vip-panel-head h2{font:800 19px Manrope;margin:0;color:#0b1835}
+.vip-panel-head h2 span{color:#b4872e;margin-right:8px}
+.vip-panel-head>a{color:#815a18;background:#fff7e8;border-radius:20px;padding:7px 11px;text-decoration:none;font-size:10px;font-weight:800}
+.vip-soon{font-size:8px;letter-spacing:1px;color:#9b6f20;background:#fff4d9;padding:7px 9px;border-radius:20px;font-weight:800}
+.vip-service-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.vip-service-grid a,.vip-education-grid>div{min-height:88px;border:1px solid #e4e8f1;border-radius:12px;background:linear-gradient(145deg,#fff,#f7f8fc);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;text-decoration:none;color:#0b1e45;font-size:11px;font-weight:800;padding:8px}
+.vip-service-grid a span,.vip-education-grid>div span{font-size:27px;color:#163d7c}
+.vip-education-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.vip-education-grid>div{min-height:135px;background:linear-gradient(145deg,#fff,#fbf5e9)}
+.vip-education-grid>div span{font-size:32px;color:#183d79}
+.vip-education-grid>div b{font:800 12px Manrope}
+.vip-education-grid>div small{font-size:9px;color:#7d8798}
+.vip-bottom-row{display:grid;grid-template-columns:1.6fr .9fr;gap:14px;margin:0 0 18px}
+.vip-glance{background:linear-gradient(105deg,#06142e,#102c5b);color:#fff;border:1px solid #c89c40;border-radius:15px;padding:18px;display:flex;align-items:center;justify-content:space-around;gap:12px;box-shadow:0 7px 17px #0b21401c}
+.vip-glance>div{display:flex;flex-direction:column;gap:5px;text-align:center}
+.vip-glance>div:first-child{text-align:left}
+.vip-glance b{font:800 18px Manrope}
+.vip-glance strong{font:900 20px Manrope;color:#f3c65f}
+.vip-glance small{font-size:10px;color:#d9e2f2}
+.vip-join{background:linear-gradient(120deg,#ffe8b0,#e7b84b);border-radius:15px;padding:17px 20px;color:#14213a}
+.vip-join b{font:900 18px Manrope}
+.vip-join p{font-size:11px;margin:6px 0 12px}
+.vip-join a{display:inline-block;background:#081a39;color:#fff;text-decoration:none;padding:8px 15px;border-radius:20px;font-size:10px;font-weight:800}
+.welcome-row,.search-panel,.stats-grid,.section-heading{display:none!important}
+footer{background:#06142e;color:#d6deed;margin:0 -22px;padding:22px 28px 8px}
+footer a{color:#f1ca71}
+@media(max-width:1050px){.vip-nav{gap:0}.vip-nav a{padding:10px 7px;font-size:10px}.vip-brand{min-width:190px}.vip-hero{gap:8px;padding:25px 14px}.vip-hero-art{width:105px}.vip-dual-panels{grid-template-columns:1fr}.vip-bottom-row{grid-template-columns:1fr}}
+@media(max-width:760px){.main-content{padding:0 10px 18px!important}.vip-topbar{height:auto;min-height:68px;padding:10px 12px;flex-wrap:wrap;gap:8px}.vip-brand{min-width:0;flex:1}.vip-brand-mark{font-size:39px}.vip-brand b{font-size:20px}.vip-brand small{font-size:8px}.vip-nav{order:3;width:100%;overflow-x:auto;justify-content:flex-start}.vip-nav a{font-size:10px;padding:9px 10px}.vip-search{order:2;max-width:none;min-width:0;width:100%;height:36px}.vip-auth{gap:5px}.vip-auth .auth-link,.vip-auth .auth-primary{font-size:9px;padding:7px 8px}.vip-hero-grid{grid-template-columns:1fr}.vip-hero{min-height:245px;padding:22px 12px}.vip-hero-main:after{display:none}.vip-hero-copy h1{font-size:44px}.vip-hero-copy h2{font-size:21px}.vip-hero-education .vip-hero-copy h2{font-size:37px}.vip-hero-copy p{font-size:11px}.vip-hero-art{width:105px;height:145px}.doc-sheet{font-size:75px}.doc-folder{font-size:57px}.doc-cloud{width:34px;height:34px;font-size:21px}.edu-cap{font-size:55px}.edu-books{font-size:34px}.vip-panel{padding:11px}.vip-panel-head h2{font-size:16px}.vip-service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vip-service-grid a{min-height:78px}.vip-education-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vip-education-grid>div{min-height:100px}.vip-education-grid>div:last-child{grid-column:1/-1}.vip-glance{padding:13px 8px;gap:7px}.vip-glance b{font-size:14px}.vip-glance strong{font-size:15px}.vip-glance small{font-size:8px}.vip-join{padding:14px}.vip-join b{font-size:16px}footer{margin:0 -10px;padding:18px 12px 8px;flex-wrap:wrap;gap:12px}footer span:first-child{width:100%}}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -57,9 +132,28 @@
 <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">✦</span><b>Your workspace,</b><b>all in one place.</b><p>Organise your documents with KAGZI.</p></div><a class="nav-link" href="modules.html?category=storage"><span>⚙</span> Settings</a><div class="profile-row"><div class="avatar">G</div><div><b>Guest workspace</b><small>Local preview</small></div><span class="more">···</span></div></div>
 </aside>
 <main class="main-content" id="home">
-<header class="topbar"><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button><div class="crumb">Workspace <span>/</span> <b>Overview</b></div><div class="top-actions"><button class="icon-btn" aria-label="Notifications">♧</button><button class="upgrade-btn" id="upgradeBtn">✦ Explore Premium</button><a class="auth-link" href="auth.html?mode=login">Log in</a><a class="auth-primary" href="auth.html?mode=signup">Sign up</a></div></header>
+<header class="topbar vip-topbar">
+<a class="vip-brand" href="#home"><span class="vip-brand-mark">K</span><span><b>KAGZI</b><small>Digital Services for Everyone</small></span></a>
+<nav class="vip-nav" aria-label="Main navigation"><a class="active" href="#home">⌂ Home</a><a href="modules.html">Tools⌄</a><a href="gov-documents.html">Documents⌄</a><a href="#education-preview">Education⌄</a><a href="modules.html?category=ai">AI Tools⌄</a><a href="about.html">More⌄</a></nav>
+<div class="vip-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search tools and documents..." aria-label="Search tools and documents"><button id="searchBtn" type="button">Search</button></div>
+<div class="vip-auth"><button class="upgrade-btn" id="upgradeBtn" type="button">✦ Premium</button><a class="auth-link" href="auth.html?mode=login">Log in</a><a class="auth-primary" href="auth.html?mode=signup">Sign up</a></div>
+<button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+</header>
+<section class="vip-hero-grid">
+<article class="vip-hero vip-hero-main"><div class="vip-hero-art doc-art" aria-hidden="true"><span class="doc-sheet">▤</span><span class="doc-folder">▰</span><span class="doc-cloud">↑</span></div><div class="vip-hero-copy"><div class="vip-kicker">YOUR DIGITAL WORKSPACE</div><h1>KAGZI</h1><h2>Your Digital Document<br>&amp; Services Platform</h2><p>65+ Tools · Government Documents<br>Document Services · More...</p><a class="vip-cta" href="modules.html">Explore Now <span>→</span></a></div></article>
+<article class="vip-hero vip-hero-education" id="education-preview"><div class="vip-hero-art edu-art" aria-hidden="true"><span class="edu-cap">◆</span><span class="edu-books">▤<br>▤<br>▤</span></div><div class="vip-hero-copy"><div class="vip-kicker">A NEW LEARNING SPACE</div><h2>KAGZI<br>EDUCATION</h2><h3>Learn · Prepare · Succeed</h3><p>eBooks, Online Exams, Current Affairs &amp; More...</p><span class="vip-cta vip-cta-muted">Education Department <span>✦</span></span><small class="vip-coming">DESIGN PREVIEW · FEATURES NOT YET ACTIVE</small></div></article>
+</section>
+<section class="vip-dual-panels">
+<article class="vip-panel"><div class="vip-panel-head"><h2><span>▣</span> Our Services</h2><a href="modules.html">View All →</a></div><div class="vip-service-grid">
+<a href="#pdfWorkbench"><span>▧</span>PDF Tools</a><a href="modules.html?category=ai"><span>✧</span>OCR &amp; AI</a><a href="office.html"><span>▤</span>Office Tools</a><a href="gov-documents.html"><span>▦</span>Government<br>Documents</a><a href="document-library.html"><span>▤</span>Document Library</a><a href="modules.html"><span>✦</span>AI Assistant</a><a href="#photoStudio"><span>▧</span>Photo Tools</a><a href="modules.html?category=storage"><span>⚙</span>Other Tools</a>
+</div></article>
+<article class="vip-panel vip-education-panel"><div class="vip-panel-head"><h2><span>◧</span> Education Highlights</h2><span class="vip-soon">COMING SOON</span></div><div class="vip-education-grid">
+<div><span>▤</span><b>eBooks</b><small>Reading Library</small></div><div><span>☷</span><b>Online Exams</b><small>Mock Tests</small></div><div><span>▥</span><b>Current Affairs</b><small>Daily Updates</small></div><div><span>✧</span><b>AI Book Creator</b><small>Book Creation</small></div><div><span>◇</span><b>Premium Books</b><small>Special Editions</small></div>
+</div></article>
+</section>
+<section class="vip-bottom-row"><div class="vip-glance"><div><b>Kagzi at a Glance</b><small>Learn. Work. Grow.</small></div><div><strong>65+</strong><small>Workspace Tools</small></div><div><strong>Hindi + English</strong><small>Language Support</small></div></div><div class="vip-join"><b>One Platform. Two Spaces.</b><p>Digital services today, a dedicated learning space ahead.</p><a href="auth.html?mode=signup">Get Started →</a></div></section>
 <section class="welcome-row"><div><div class="eyebrow"><span class="live-dot"></span> YOUR DOCUMENT WORKSPACE</div><h1>Everything organised.<br><span>All in one place.</span></h1><p class="welcome-copy">Create, manage and work with your documents from one simple workspace.</p></div><div class="welcome-art" aria-hidden="true"><div class="art-glow"></div><div class="paper paper-back"></div><div class="paper paper-front"><div class="paper-line wide"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-stamp">K</div></div><div class="art-spark">✦</div></div></section>
-<section class="search-panel"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Search tools, documents and features..." aria-label="Search tools and features"><kbd>⌘ K</kbd><button id="searchBtn">Search</button></section>
+<section class="search-panel"><span class="search-icon">⌕</span><input id="legacySearchInput" type="search" placeholder="Search tools, documents and features..." aria-label="Search tools and features"><kbd>⌘ K</kbd><button id="legacySearchBtn">Search</button></section>
 <section class="stats-grid"><article class="stat-card"><div class="stat-icon blue">▤</div><div><small>MY DOCUMENTS</small><strong id="docCount">0</strong><span>Ready to organise</span></div></article><article class="stat-card"><div class="stat-icon violet">✧</div><div><small>MODULE CATALOGUE</small><strong>65</strong><span>Availability shown per tool</span></div></article><article class="stat-card"><div class="stat-icon gold">◷</div><div><small>RECENT ACTIVITY</small><strong>—</strong><span>Your activity will appear here</span></div></article></section>
 <section class="section-heading" id="tools"><div><div class="eyebrow">GET THINGS DONE</div><h2>Quick access</h2><p>Choose a workspace to get started.</p></div><a href="modules.html" class="text-link">View all tools <span>→</span></a></section>
 <div class="tools-grid" id="toolGrid">
