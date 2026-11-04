@@ -77,6 +77,7 @@ function render() {
           <span class="tag">${escapeHTML(book.languageLabel)}</span>
           <span>${book.contentPath ? 'KAGZI Reader' : 'Coming soon'}</span>
         </div>
+        ${book.category === 'previous-papers' ? '<p class="source-note"><strong>'+escapeHTML(book.examLabel)+'</strong> · '+escapeHTML(book.paperYear)+' · '+escapeHTML(book.resourceLabel)+'</p>' : ''}
         <p class="source-note">Edition: ${escapeHTML(book.sourceName)}</p>
         <button class="details-button" type="button" data-details-id="${escapeHTML(book.id)}">Book details</button>
       </div>`;
