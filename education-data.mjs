@@ -27,48 +27,7 @@ export const books = [
     rightsStatus: 'public-domain',
     rightsNote: 'Project Gutenberg identifies this edition as public domain in the USA; local copyright status can vary.'
   },
-  {
-    id: 'ncert-hi',
-    title: 'NCERT Official Textbook Catalogue',
-    author: 'NCERT',
-    language: 'hi',
-    languageLabel: 'हिंदी',
-    category: 'knowledge',
-    subject: 'स्कूली पाठ्यपुस्तकें · सभी विषय',
-    description: 'कक्षा 1–12 की आधिकारिक हिंदी पाठ्यपुस्तकें। किताबें NCERT की अपनी वेबसाइट पर ही खोलें।',
-    sourceName: 'NCERT',
-    contentPath: null,
-    rightsStatus: 'link-only',
-    rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
-  },
-  {
-    id: 'ncert-en',
-    title: 'NCERT Official Textbook Catalogue',
-    author: 'NCERT',
-    language: 'en',
-    languageLabel: 'English',
-    category: 'knowledge',
-    subject: 'School textbooks · All subjects',
-    description: 'Official NCERT textbooks for classes 1–12 in English. Open books on the NCERT website.',
-    sourceName: 'NCERT',
-    contentPath: null,
-    rightsStatus: 'link-only',
-    rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
-  },
-  {
-    id: 'ncert-ur',
-    title: 'NCERT Official Textbook Catalogue',
-    author: 'NCERT',
-    language: 'ur',
-    languageLabel: 'اردو',
-    category: 'knowledge',
-    subject: 'درسی کتابیں · تمام مضامین',
-    description: 'NCERT کی سرکاری اردو نصابی کتابیں۔ کتابیں صرف NCERT کی ویب سائٹ پر کھولیں۔',
-    sourceName: 'NCERT',
-    contentPath: null,
-    rightsStatus: 'link-only',
-    rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
-  }
+
 ];
 
 export function isPublishable(book) {
