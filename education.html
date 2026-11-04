@@ -37,7 +37,7 @@ footer{margin-top:30px;background:#172033;color:#fff;padding:28px 0}.foot{displa
 <article class="feature" id="notes"><div class="feature-top"><span class="kicker">Study material</span><span class="coming">CONTENT PIPELINE</span></div><h3>✍️ Handwritten Notes</h3><p>साफ़ और पढ़ने योग्य scanned notes, subject-wise और exam-wise folders में। Upload से पहले quality और sharing permission की जाँच होगी।</p><ul><li>UPPCS / UPSC / SSC / अन्य परीक्षाएँ</li><li>History, Polity, Geography, Science</li><li>PDF preview और authorized download</li><li>Teacher / contributor attribution</li></ul></article></div></section>
 <section id="creator"><div class="wrap"><article class="feature"><div class="feature-top"><span class="kicker">Create something new</span><span class="coming">PLANNED FEATURE</span></div><h3>✨ AI Book Creator</h3><p>अपना विषय चुनें, chapters की रूपरेखा बनाएँ, draft तैयार करें और review के बाद eBook export करें। AI-generated सामग्री को publish करने से पहले fact-check और editing की प्रक्रिया रखी जाएगी।</p></article></div></section>
 </main>
-<dialog id="bookDetails" aria-labelledby="bookDetailsTitle"><div class="reader-panel"><div class="kicker" id="bookDetailsLanguage">BOOK DETAILS</div><h2 id="bookDetailsTitle"></h2><p id="bookDetailsAuthor"></p><p id="bookDetailsDescription"></p><p id="bookDetailsSubject"></p><p id="bookDetailsRights"></p><div class="reader-actions"><a id="bookDetailsSource" href="#" target="_blank" rel="noopener noreferrer">Open source page ↗</a><button id="closeBookDetails" type="button">Close</button></div></div></dialog><footer><div class="wrap foot"><div><strong>KAGZI Learning Hub</strong><p>Knowledge को आसान, उपयोगी और सबके लिए सुलभ बनाने की कोशिश।</p></div><a href="index.html">← Back to KAGZI Home</a></div></footer>
+<dialog id="bookDetails" aria-labelledby="bookDetailsTitle"><div class="reader-panel"><div class="kicker" id="bookDetailsLanguage">BOOK DETAILS</div><h2 id="bookDetailsTitle"></h2><p id="bookDetailsAuthor"></p><p id="bookDetailsDescription"></p><p id="bookDetailsSubject"></p><p id="bookDetailsRights"></p><div class="reader-actions"><a id="bookDetailsSource" href="#" target="_blank" rel="noopener noreferrer">Read on KAGZI ↗</a><button id="closeBookDetails" type="button">Close</button></div></div></dialog><footer><div class="wrap foot"><div><strong>KAGZI Learning Hub</strong><p>Knowledge को आसान, उपयोगी और सबके लिए सुलभ बनाने की कोशिश।</p></div><a href="index.html">← Back to KAGZI Home</a></div></footer>
 <script type="module">
 import { books, filterBooks } from './education-data.mjs';
 
@@ -74,9 +74,9 @@ function render() {
         <p>${escapeHTML(book.author)} · ${escapeHTML(book.description)}</p>
         <div class="meta">
           <span class="tag">${escapeHTML(book.languageLabel)}</span>
-          <span>${book.rightsStatus === 'link-only' ? 'Official source' : 'Public domain'}</span>
+          <span>${book.book.contentPath ? 'KAGZI Reader' : 'Coming soon'}</span>
         </div>
-        <p class="source-note">Source: ${escapeHTML(book.sourceName)}</p>
+        <p class="source-note">Edition: ${escapeHTML(book.sourceName)}</p>
         <button class="details-button" type="button" data-details-id="${escapeHTML(book.id)}">Book details</button>
       </div>`;
     shelf.insertBefore(card, emptyState);
@@ -98,8 +98,8 @@ shelf.addEventListener('click', event => {
   document.getElementById('bookDetailsSubject').textContent = 'Subject: ' + book.subject;
   document.getElementById('bookDetailsRights').textContent = 'Access note: ' + book.rightsNote;
   const source = document.getElementById('bookDetailsSource');
-  source.href = book.sourceUrl;
-  source.textContent = 'Open ' + book.sourceName + ' ↗';
+  source.href = 'reader.html?book=' + encodeURIComponent(book.id);
+  source.textContent = 'Read on KAGZI ↗';
   detailsDialog.showModal();
 });
 document.getElementById('closeBookDetails').addEventListener('click', () => detailsDialog.close());
