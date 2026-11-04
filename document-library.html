@@ -30,7 +30,7 @@
 <section class="panel" id="uploadPanel"><h2>My Library · Add a document</h2><p class="muted">अपने KAGZI account से PDF अपलोड करें और अपनी निजी cloud library में सुरक्षित रखें।</p><div class="uploadrow"><input id="file" type="file" accept="application/pdf,.pdf"><button class="btn" id="openFile">Preview PDF</button><button class="btn" id="uploadCloud">Upload to My Library</button></div><div class="status" id="fileStatus">Checking KAGZI account…</div><div class="notice"><b>Private cloud storage:</b> PDF files are stored in your account folder. Only the signed-in owner can access them. Maximum file size: 50 MB.</div><div class="panel"><h2>My uploaded documents</h2><div id="myFiles" class="status">Sign in to view your library.</div></div></section>
 </div>
 <dialog id="reader"><div class="reader-head"><span id="readerTitle">PDF Reader</span><button class="btn" id="closeReader">Close</button></div><div class="reader-body"><iframe id="frame" title="PDF preview"></iframe></div></dialog>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
 const cfg=window.KAGZI_CONFIG||{};const SUPABASE_URL=cfg.SUPABASE_URL;const SUPABASE_KEY=cfg.SUPABASE_ANON_KEY;
 const sample=[
  {name:"सरकारी दस्तावेज़ और आवेदन गाइड",cat:"Government",desc:"सरकारी सेवाओं और आवेदन प्रक्रिया की जानकारी।",type:"GUIDE"},
