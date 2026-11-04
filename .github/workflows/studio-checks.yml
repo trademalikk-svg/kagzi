@@ -1,9 +1,9 @@
 name: KAGZI studio checks
 on:
   push:
-    branches: [feature/kagzi-photo-pdf-studio]
+    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents]
   pull_request:
-    branches: [fix/kagzi-dashboard-repair, main]
+    branches: [fix/kagzi-dashboard-repair, feature/kagzi-photo-pdf-studio, main]
 jobs:
   studio-audit:
     runs-on: ubuntu-latest
@@ -13,4 +13,4 @@ jobs:
         with:
           node-version: 20
       - run: node --check script.js
-      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs
+      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs
