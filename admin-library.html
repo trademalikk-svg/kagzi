@@ -49,6 +49,7 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 <option value="ssc">SSC</option><option value="railway">Railway</option><option value="upsc">UPSC</option><option value="neet">NEET</option><option value="jee">JEE</option><option value="up-police">UP Police</option><option value="agniveer">Agniveer</option><option value="uppsc">UPPSC</option><option value="upsi">UPSI</option><option value="upsssc">UPSSSC</option>
 </select>
 <div class="grid"><div><label for="paperYear">Paper Year</label><select id="paperYear" required></select></div><div><label for="resourceType">PDF Type</label><select id="resourceType"><option value="question-paper">Question Paper</option><option value="solution">Solution</option><option value="answer-key">Answer Key</option></select></div></div>
+<div class="grid"><div><label for="paperKind">Paper Category</label><select id="paperKind"><option value="daily-practice">Daily Practice Paper</option><option value="latest-exam">Latest Actual Exam Paper</option></select></div><div><label for="paperDate">Paper / Update Date</label><input id="paperDate" type="date" required></div></div>
 </div>
 <label for="description">Short Description</label><textarea id="description" maxlength="2000"></textarea>
 <label for="rights">Content Rights</label><select id="rights"><option value="public-domain">Public domain</option><option value="licensed">Licensed</option><option value="permission-granted">Written permission granted</option></select>
@@ -81,6 +82,8 @@ const categoryInput=document.getElementById('category');
 const previousPaperFields=document.getElementById('previousPaperFields');
 const paperYearInput=document.getElementById('paperYear');
 for(let year=new Date().getFullYear();year>=new Date().getFullYear()-9;year--){const option=document.createElement('option');option.value=String(year);option.textContent=String(year);paperYearInput.append(option);}
+const paperDateInput=document.getElementById('paperDate');
+const today=new Date();paperDateInput.value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
 categoryInput.addEventListener('change',()=>previousPaperFields.classList.toggle('hidden',categoryInput.value!=='previous-papers'));
 
 async function refreshAccess(){
@@ -124,6 +127,8 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
    exam_slug:categoryInput.value==='previous-papers'?document.getElementById('examSlug').value:null,
    paper_year:categoryInput.value==='previous-papers'?Number(paperYearInput.value):null,
    resource_type:categoryInput.value==='previous-papers'?document.getElementById('resourceType').value:null,
+   paper_kind:categoryInput.value==='previous-papers'?document.getElementById('paperKind').value:null,
+   paper_date:categoryInput.value==='previous-papers'?paperDateInput.value:null,
    description:document.getElementById('description').value.trim(),
    storage_path:path,file_size_bytes:file.size,
    rights_status:document.getElementById('rights').value,
