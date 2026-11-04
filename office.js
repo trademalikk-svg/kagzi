@@ -8,7 +8,24 @@ document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click
 $('wordClear').addEventListener('click',()=>{$('wordContent').innerHTML='';status('wordStatus','Editor cleared.');});
 $('wordPdf').addEventListener('click',()=>window.print());
 $('wordExport').addEventListener('click',async()=>{try{if(!window.docx)throw Error('DOCX library could not load.');const {Document,Packer,Paragraph,TextRun,HeadingLevel}=window.docx;const title=$('wordTitle').value||'Untitled document';const text=$('wordContent').innerText;const doc=new Document({sections:[{children:[new Paragraph({text:title,heading:HeadingLevel.TITLE}),...text.split('\n').map(line=>new Paragraph({children:[new TextRun(line)]}))]}]});download(await Packer.toBlob(doc),(title.replace(/[^a-z0-9-_]/gi,'_')||'document')+'.docx');status('wordStatus','DOCX export तैयार है।');}catch(e){status('wordStatus',e.message);}});
-$('wordImport').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(!window.mammoth)throw Error('DOCX reader library could not load.');const r=await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});$('wordContent').innerHTML=r.value;$('wordTitle').value=f.name.replace(/\.docx$/i,'');status('wordStatus','DOCX import हुआ। Formatting जाँच लें।');}catch(err){status('wordStatus','Import failed: '+err.message);}e.target.value='';});
+function safeDocxHtml(html){
+ const allowed=new Set(['P','DIV','BR','STRONG','B','EM','I','U','UL','OL','LI','H1','H2','H3','H4','H5','H6','BLOCKQUOTE','TABLE','THEAD','TBODY','TR','TH','TD']);
+ const source=new DOMParser().parseFromString(String(html||''),'text/html');
+ const clean=document.createDocumentFragment();
+ function copy(node,parent){
+  if(node.nodeType===Node.TEXT_NODE){parent.append(document.createTextNode(node.nodeValue||''));return;}
+  if(node.nodeType!==Node.ELEMENT_NODE)return;
+  const tag=node.tagName;
+  if(!allowed.has(tag)){for(const child of node.childNodes)copy(child,parent);return;}
+  const el=document.createElement(tag.toLowerCase());
+  if(tag==='TD'||tag==='TH'){for(const attr of ['colspan','rowspan']){const n=Number(node.getAttribute(attr));if(Number.isInteger(n)&&n>=1&&n<=20)el.setAttribute(attr,String(n));}}
+  for(const child of node.childNodes)copy(child,el);
+  parent.append(el);
+ }
+ for(const child of source.body.childNodes)copy(child,clean);
+ return clean;
+}
+$('wordImport').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(!/\\.docx$/i.test(f.name))throw Error('केवल .docx फाइल import करें।');if(f.size>15*1024*1024)throw Error('DOCX फाइल 15 MB से छोटी होनी चाहिए।');if(!window.mammoth)throw Error('DOCX reader library could not load.');const r=await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});$('wordContent').replaceChildren(safeDocxHtml(r.value));$('wordTitle').value=f.name.replace(/\\.docx$/i,'');status('wordStatus','DOCX import हुआ। असुरक्षित HTML हटाया गया; formatting जाँच लें।');}catch(err){status('wordStatus','Import failed: '+err.message);}e.target.value='';});
 function renderSheet(rows){const body=$('excelGrid').querySelector('tbody');body.replaceChildren();rows.forEach((row,r)=>{const tr=document.createElement('tr');row.forEach((value,c)=>{const td=document.createElement('td'),input=document.createElement('input');input.value=value??'';input.setAttribute('aria-label','Row '+(r+1)+' column '+(c+1));td.append(input);tr.append(td);});body.append(tr);});}
 function sheetRows(){return [...$('excelGrid').querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('input')].map(i=>i.value));}
 renderSheet([['Column A','Column B','Column C'],['','',''],['','',''],['','',''],['','','']]);
