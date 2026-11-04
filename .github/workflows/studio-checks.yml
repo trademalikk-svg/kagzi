@@ -3,7 +3,7 @@ on:
   push:
     branches: [feature/kagzi-photo-pdf-studio]
   pull_request:
-    branches: [main]
+    branches: [fix/kagzi-dashboard-repair, main]
 jobs:
   studio-audit:
     runs-on: ubuntu-latest
