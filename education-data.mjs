@@ -9,7 +9,7 @@ export const books = [
     subject: 'हिंदी साहित्य',
     description: 'प्रेमचंद का प्रसिद्ध हिंदी उपन्यास। विकिस्रोत पर उपलब्ध सार्वजनिक-डोमेन संस्करण।',
     sourceName: 'Wikisource',
-    sourceUrl: 'https://wikisource.org/wiki/File:Godan_-_Premchand_-_Hindi_Novel.pdf',
+    contentPath: null,
     rightsStatus: 'public-domain',
     rightsNote: 'Wikisource file page marks this edition public domain.'
   },
@@ -23,7 +23,7 @@ export const books = [
     subject: 'English literature · History of the novel',
     description: 'A classic English novel, available to read online through Project Gutenberg.',
     sourceName: 'Project Gutenberg',
-    sourceUrl: 'https://www.gutenberg.org/ebooks/1342',
+    contentPath: null,
     rightsStatus: 'public-domain',
     rightsNote: 'Project Gutenberg identifies this edition as public domain in the USA; local copyright status can vary.'
   },
@@ -37,7 +37,7 @@ export const books = [
     subject: 'स्कूली पाठ्यपुस्तकें · सभी विषय',
     description: 'कक्षा 1–12 की आधिकारिक हिंदी पाठ्यपुस्तकें। किताबें NCERT की अपनी वेबसाइट पर ही खोलें।',
     sourceName: 'NCERT',
-    sourceUrl: 'https://ncert.nic.in/textbook.php?ln=hi',
+    contentPath: null,
     rightsStatus: 'link-only',
     rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
   },
@@ -51,7 +51,7 @@ export const books = [
     subject: 'School textbooks · All subjects',
     description: 'Official NCERT textbooks for classes 1–12 in English. Open books on the NCERT website.',
     sourceName: 'NCERT',
-    sourceUrl: 'https://ncert.nic.in/textbook.php?ln=en',
+    contentPath: null,
     rightsStatus: 'link-only',
     rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
   },
@@ -65,7 +65,7 @@ export const books = [
     subject: 'درسی کتابیں · تمام مضامین',
     description: 'NCERT کی سرکاری اردو نصابی کتابیں۔ کتابیں صرف NCERT کی ویب سائٹ پر کھولیں۔',
     sourceName: 'NCERT',
-    sourceUrl: 'https://ncert.nic.in/textbook.php?ln=ur',
+    contentPath: null,
     rightsStatus: 'link-only',
     rightsNote: 'NCERT prohibits third-party hosting or redistribution; this is an official-source link only.'
   }
@@ -79,8 +79,8 @@ export function isPublishable(book) {
     typeof book.subject === 'string' && book.subject.trim() &&
     typeof book.description === 'string' && book.description.trim() &&
     typeof book.sourceName === 'string' && book.sourceName.trim() &&
-    typeof book.sourceUrl === 'string' && /^https:\/\//i.test(book.sourceUrl) &&
-    ['public-domain', 'link-only', 'licensed'].includes(book.rightsStatus)
+    (book.contentPath === null || (typeof book.contentPath === 'string' && /^\/library\/books\/[a-z0-9-]+\.pdf$/i.test(book.contentPath))) &&
+    ['public-domain', 'licensed'].includes(book.rightsStatus)
   );
 }
 
