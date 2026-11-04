@@ -21,7 +21,7 @@
 <meta name="twitter:title" content="KAGZI Document Library — Find, Read & Organise PDFs">
 <meta name="twitter:description" content="KAGZI Document Library में PDF documents खोजें, पढ़ें और व्यवस्थित करें। अपनी फाइलों को browser में manage करने के विकल्प देखें।">
 </head>
-<body><div class="shell">
+<body data-kagzi-protected="true"><div class="shell">
 <header class="top"><a class="brand" href="index.html"><span class="mark">K</span><span>KAGZI<small>DOCUMENT WORKSPACE</small></span></a><a href="index.html">← Back to workspace</a></header>
 <section class="hero"><div><div class="eyebrow">KAGZI DOCUMENT LIBRARY</div><h1>Discover. Read. Organise.</h1><p>एक ही जगह पर उपयोगी दस्तावेज़ खोजें, PDF पढ़ें और अपनी निजी लाइब्रेरी व्यवस्थित करें। KAGZI के मौजूदा workspace से अलग नया document-library section.</p><button class="btn" id="uploadJump">＋ Add a document</button></div><div class="hero-art" aria-hidden="true">▤</div></section>
 <div class="search"><input id="q" type="search" placeholder="Search documents, topics or categories…" aria-label="Search documents"><button class="btn" id="clear">Clear</button></div>
@@ -52,4 +52,4 @@ async function loadMyFiles(){const list=document.getElementById("myFiles");const
 function statusMsg(t){document.getElementById("fileStatus").textContent=t}
 document.getElementById("uploadCloud").onclick=async()=>{const f=file.files[0];if(!f){statusMsg("पहले PDF file चुनें।");return}if(!currentUser||!supabaseClient){statusMsg("Upload करने के लिए पहले KAGZI में login करें।");return}if(f.type!=="application/pdf"&&!f.name.toLowerCase().endsWith(".pdf")){statusMsg("केवल PDF file चुनें।");return}if(f.size>50*1024*1024){statusMsg("File 50 MB से बड़ी है।");return}const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-180);const path=currentUser.id+"/"+crypto.randomUUID()+"-"+safe;const btn=document.getElementById("uploadCloud");btn.disabled=true;statusMsg("Uploading securely…");try{const {error:upErr}=await supabaseClient.storage.from("kagzi-private").upload(path,f,{contentType:"application/pdf",upsert:false});if(upErr)throw upErr;const {error:dbErr}=await supabaseClient.from("kagzi_documents").insert({owner_id:currentUser.id,file_name:f.name,mime_type:"application/pdf",size_bytes:f.size,storage_path:path,source:"cloud"});if(dbErr){await supabaseClient.storage.from("kagzi-private").remove([path]);throw dbErr}statusMsg("Upload complete. Your PDF is now in your private library.");await loadMyFiles()}catch(e){statusMsg("Upload failed: "+e.message)}finally{btn.disabled=false}};
 render();
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></body></html>
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script></body></html>
