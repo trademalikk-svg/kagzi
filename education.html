@@ -6,7 +6,7 @@
 <title>KAGZI Learning Hub | eBooks, Current Affairs & Notes</title>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="index.html"><span class="logo">K</span><span>KAGZI<small>LEARNING HUB</small></span></a><nav class="links"><a href="#library">eBooks</a><a href="#current">Current Affairs</a><a href="#notes">Handwritten Notes</a><a href="#creator">Book Creator</a></nav><a class="nav-cta" href="#library">Explore Library ↗</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="index.html"><span class="logo">K</span><span>KAGZI<small>LEARNING HUB</small></span></a><nav class="links"><a href="#library">eBooks</a><a href="#current">Current Affairs</a><a href="#notes">Handwritten Notes</a><a href="#creator">Book Creator</a></nav><div style="display:flex;gap:9px;align-items:center"><a href="admin-library.html" style="font-size:11px;font-weight:800;color:#315efb">Admin Upload</a><a class="nav-cta" href="#library">Explore Library ↗</a></div></div></header>
 <main>
 <div class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">✦ READ · LEARN · GROW</span><h1>हर दिन कुछ नया सीखें।<br><span>अपनी Knowledge बढ़ाएँ।</span></h1><p>चुनी हुई बेहतरीन किताबें, भरोसेमंद Current Affairs और उपयोगी Handwritten Notes — एक ही learning space में। हिंदी और English दोनों में।</p><form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="किताब, विषय या परीक्षा खोजें..." aria-label="Search books and study material"><button type="submit">Search</button></form></div><div class="hero-art"><div class="art-label">YOUR DAILY LEARNING SPACE</div><div class="book-stack"><div class="book">ज्ञान की<br>दुनिया</div><div class="book">LEARN<br>MORE</div><div class="book">नई<br>शुरुआत</div></div></div></div></div>
 <section><div class="wrap"><div class="section-head"><div><div class="kicker">Explore categories</div><h2>आप क्या पढ़ना चाहते हैं?</h2></div><p>एक जगह, कई learning resources</p></div><div class="tiles">
@@ -24,7 +24,9 @@
 </main>
 <dialog id="bookDetails" aria-labelledby="bookDetailsTitle"><div class="reader-panel"><div class="kicker" id="bookDetailsLanguage">BOOK DETAILS</div><h2 id="bookDetailsTitle"></h2><p id="bookDetailsAuthor"></p><p id="bookDetailsDescription"></p><p id="bookDetailsSubject"></p><p id="bookDetailsRights"></p><div class="reader-actions"><a id="bookDetailsSource" href="#" >Read on KAGZI ↗</a><button id="closeBookDetails" type="button">Close</button></div></div></dialog><footer><div class="wrap foot"><div><strong>KAGZI Learning Hub</strong><p>Knowledge को आसान, उपयोगी और सबके लिए सुलभ बनाने की कोशिश।</p></div><a href="index.html">← Back to KAGZI Home</a></div></footer>
 <script type="module">
-import { books, filterBooks } from './education-data.mjs';
+import { filterBooks } from './education-data.mjs';
+import { supabase } from './kagzi-supabase.js';
+let books = [];
 
 const shelf = document.getElementById('bookShelf');
 const searchInput = document.getElementById('searchInput');
@@ -113,6 +115,29 @@ document.getElementById('searchForm').addEventListener('submit', event => {
   document.getElementById('library').scrollIntoView({ behavior: 'smooth' });
 });
 searchInput.addEventListener('input', render);
-render();
+async function loadPublishedLibrary() {
+  emptyState.textContent = 'KAGZI Library से प्रकाशित सामग्री लोड हो रही है…';
+  const { data, error } = await supabase
+    .from('kagzi_library_files')
+    .select('id,title,author,language,category,description,storage_path,rights_status,rights_reference')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+  if (error) {
+    emptyState.textContent = 'अभी Library लोड नहीं हो सकी। कृपया थोड़ी देर बाद फिर प्रयास करें।';
+    emptyState.style.display = 'block';
+    return;
+  }
+  books = (data || []).map(row => ({
+    id: row.id, title: row.title, author: row.author,
+    language: row.language,
+    languageLabel: ({hi:'हिंदी',en:'English',ur:'اردو'})[row.language],
+    category: row.category, subject: row.category.replaceAll('-', ' '),
+    description: row.description || '', sourceName: 'KAGZI Library',
+    contentPath: row.storage_path, rightsStatus: row.rights_status,
+    rightsNote: row.rights_reference
+  }));
+  render();
+}
+loadPublishedLibrary();
 </script>
 </body></html>
