@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAGZI Library Admin | Upload Centre</title>
+<style>
+:root{--ink:#172033;--muted:#68738a;--blue:#315efb;--line:#e7eaf1}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fc;color:var(--ink);font-family:Arial,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+a{color:var(--blue);font-weight:700;text-decoration:none}.wrap{width:min(760px,calc(100% - 28px));margin:28px auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 14px 40px #1720330a}
+h1{font-size:26px;margin:8px 0}.muted{color:var(--muted);font-size:13px;line-height:1.65}
+label{display:block;font-size:12px;font-weight:700;margin:14px 0 6px}
+input,select,textarea{width:100%;border:1px solid #dce2ee;border-radius:10px;padding:12px;font:inherit;font-size:14px;background:white}
+textarea{min-height:85px;resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{border:0;background:var(--blue);color:white;border-radius:10px;padding:13px 17px;font-weight:800;cursor:pointer;margin-top:16px}
+button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55;cursor:not-allowed}
+.notice{padding:12px;border-radius:10px;background:#eef3ff;color:#26428d;font-size:12px;line-height:1.6;margin:14px 0}
+.status{font-size:13px;margin-top:14px;white-space:pre-wrap}.hidden{display:none!important}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:500;line-height:1.5}.check input{width:auto;margin-top:3px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}header{padding:13px}}
+</style>
+</head>
+<body>
+<header><strong>KAGZI · LIBRARY ADMIN</strong><a href="education.html">← Learning Hub</a></header>
+<main class="wrap">
+<section class="card" id="loginPanel">
+<div class="muted">SECURE ADMIN ACCESS</div><h1>Admin Login</h1>
+<p class="muted">इस upload centre का उपयोग केवल उन accounts के लिए होगा जिन्हें KAGZI Library Admin के रूप में अनुमति दी गई है।</p>
+<label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
+<label for="password">Password</label><div style="display:flex;gap:8px;align-items:center"><input id="password" type="password" autocomplete="current-password" placeholder="Password" style="flex:1;min-width:0"><button id="togglePassword" class="secondary" type="button" aria-label="Show password" aria-pressed="false" style="margin-top:0;white-space:nowrap">Show</button></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button id="loginBtn" type="button">Login</button><button id="signupBtn" class="secondary" type="button">Create account</button></div><div id="loginStatus" class="status" role="status"></div>
+</section>
+<section class="card hidden" id="uploadPanel">
+<div class="muted">KAGZI HOSTED CONTENT</div><h1>Upload a book or notes PDF</h1>
+<p class="muted">PDF 25 MB तक। Upload पहले private storage में होगा। Publish करने से पहले content और rights की जाँच जरूरी है।</p>
+<div class="notice">केवल वही सामग्री upload करें जिसे आप प्रकाशित करने के लिए अधिकृत हैं — जैसे स्वयं की notes, public-domain edition या लिखित अनुमति वाली किताब। किसी दूसरे की copyrighted PDF बिना अनुमति upload न करें।</div>
+<form id="uploadForm">
+<label for="title">Book / Notes Title</label><input id="title" maxlength="200" required>
+<div class="grid">
+<div><label for="author">Author / Creator</label><input id="author" maxlength="200" required></div>
+<div><label for="language">Language</label><select id="language"><option value="hi">हिंदी</option><option value="en">English</option><option value="ur">اردو</option></select></div>
+</div>
+<label for="category">Category</label><select id="category">
+<option value="literature">Literature</option><option value="knowledge">Knowledge</option><option value="exam">Exam Preparation</option><option value="business">Business</option><option value="current-affairs">Current Affairs</option><option value="handwritten-notes">Handwritten Notes</option><option value="previous-papers">Previous Year Papers</option>
+</select>
+<div id="previousPaperFields" class="hidden">
+<label for="examSlug">Exam Folder</label><select id="examSlug">
+<option value="ssc">SSC</option><option value="railway">Railway</option><option value="upsc">UPSC</option><option value="neet">NEET</option><option value="jee">JEE</option><option value="up-police">UP Police</option><option value="agniveer">Agniveer</option><option value="uppsc">UPPSC</option><option value="upsi">UPSI</option><option value="upsssc">UPSSSC</option>
+</select>
+<div class="grid"><div><label for="paperYear">Paper Year</label><select id="paperYear" required></select></div><div><label for="resourceType">PDF Type</label><select id="resourceType"><option value="question-paper">Question Paper</option><option value="solution">Solution</option><option value="answer-key">Answer Key</option></select></div></div>
+<div class="grid"><div><label for="paperKind">Paper Category</label><select id="paperKind"><option value="daily-practice">Daily Practice Paper</option><option value="latest-exam">Latest Actual Exam Paper</option></select></div><div><label for="paperDate">Paper / Update Date</label><input id="paperDate" type="date" required></div></div>
+</div>
+<label for="description">Short Description</label><textarea id="description" maxlength="2000"></textarea>
+<label for="rights">Content Rights</label><select id="rights"><option value="public-domain">Public domain</option><option value="licensed">Licensed</option><option value="permission-granted">Written permission granted</option></select>
+<label for="rightsReference">Rights proof / source details</label><textarea id="rightsReference" minlength="3" maxlength="1000" required placeholder="Example: public-domain edition details, license name, or permission record"></textarea>
+<label for="pdf">Choose PDF</label><input id="pdf" type="file" accept="application/pdf,.pdf" required>
+<label class="check"><input id="publish" type="checkbox"> <span>Rights and content have been checked. Publish this item in the public KAGZI Library after upload.</span></label>
+<button id="uploadBtn" type="submit">Upload to KAGZI</button>
+</form>
+<div id="uploadStatus" class="status" role="status"></div>
+<button id="logoutBtn" class="secondary" type="button">Logout</button>
+</section>
+</main>
+<script type="module">
+import { supabase } from './kagzi-supabase.js';
+const loginPanel=document.getElementById('loginPanel');
+const uploadPanel=document.getElementById('uploadPanel');
+const loginStatus=document.getElementById('loginStatus');
+const passwordInput=document.getElementById('password');
+const togglePassword=document.getElementById('togglePassword');
+togglePassword.addEventListener('click',()=>{
+ const showing=passwordInput.type==='text';
+ passwordInput.type=showing?'password':'text';
+ togglePassword.textContent=showing?'Show':'Hide';
+ togglePassword.setAttribute('aria-label',showing?'Show password':'Hide password');
+ togglePassword.setAttribute('aria-pressed',String(!showing));
+});
+const uploadStatus=document.getElementById('uploadStatus');
+let currentUser=null;
+const categoryInput=document.getElementById('category');
+const previousPaperFields=document.getElementById('previousPaperFields');
+const paperYearInput=document.getElementById('paperYear');
+for(let year=new Date().getFullYear();year>=new Date().getFullYear()-9;year--){const option=document.createElement('option');option.value=String(year);option.textContent=String(year);paperYearInput.append(option);}
+const paperDateInput=document.getElementById('paperDate');
+const today=new Date();paperDateInput.value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+categoryInput.addEventListener('change',()=>previousPaperFields.classList.toggle('hidden',categoryInput.value!=='previous-papers'));
+
+async function refreshAccess(){
+ const {data:{user}}=await supabase.auth.getUser();
+ currentUser=user;
+ if(!user){loginPanel.classList.remove('hidden');uploadPanel.classList.add('hidden');return;}
+ const {data:admin,error}=await supabase.from('kagzi_library_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ if(error||!admin){loginStatus.textContent='इस account को Library Admin अनुमति नहीं मिली है।';await supabase.auth.signOut();loginPanel.classList.remove('hidden');uploadPanel.classList.add('hidden');return;}
+ loginPanel.classList.add('hidden');uploadPanel.classList.remove('hidden');
+}
+document.getElementById('loginBtn').addEventListener('click',async()=>{
+ loginStatus.textContent='Checking…';
+ const {error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
+ if(error){loginStatus.textContent='Login नहीं हुआ: '+error.message;return;}
+ await refreshAccess();
+});
+document.getElementById('signupBtn').addEventListener('click',async()=>{
+ loginStatus.textContent='Creating account…';
+ const {data,error}=await supabase.auth.signUp({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});
+ if(error){loginStatus.textContent='Account नहीं बना: '+error.message;return;}
+ loginStatus.textContent=data.session
+  ? 'Account बन गया। Library Admin approval के बाद ही upload access मिलेगा।'
+  : 'Account request बन गई। Email confirmation पूरा करें। फिर Library Admin approval की जरूरत होगी।';
+});
+document.getElementById('uploadForm').addEventListener('submit',async event=>{
+ event.preventDefault();uploadStatus.textContent='';
+ const file=document.getElementById('pdf').files[0];
+ if(!file){uploadStatus.textContent='पहले PDF चुनें।';return;}
+ if(file.type!=='application/pdf'||!file.name.toLowerCase().endsWith('.pdf')){uploadStatus.textContent='केवल PDF फाइल स्वीकार है।';return;}
+ if(file.size>25*1024*1024){uploadStatus.textContent='PDF 25 MB से बड़ी है।';return;}
+ const button=document.getElementById('uploadBtn');button.disabled=true;button.textContent='Uploading…';
+ const id=crypto.randomUUID();const path='books/'+id+'.pdf';
+ try{
+  const {error:uploadError}=await supabase.storage.from('kagzi-library').upload(path,file,{contentType:'application/pdf',upsert:false});
+  if(uploadError)throw uploadError;
+  const {error:rowError}=await supabase.from('kagzi_library_files').insert({
+   title:document.getElementById('title').value.trim(),
+   author:document.getElementById('author').value.trim(),
+   language:document.getElementById('language').value,
+   category:document.getElementById('category').value,
+   exam_slug:categoryInput.value==='previous-papers'?document.getElementById('examSlug').value:null,
+   paper_year:categoryInput.value==='previous-papers'?Number(paperYearInput.value):null,
+   resource_type:categoryInput.value==='previous-papers'?document.getElementById('resourceType').value:null,
+   paper_kind:categoryInput.value==='previous-papers'?document.getElementById('paperKind').value:null,
+   paper_date:categoryInput.value==='previous-papers'?paperDateInput.value:null,
+   description:document.getElementById('description').value.trim(),
+   storage_path:path,file_size_bytes:file.size,
+   rights_status:document.getElementById('rights').value,
+   rights_reference:document.getElementById('rightsReference').value.trim(),
+   is_published:document.getElementById('publish').checked,
+   created_by:currentUser.id
+  });
+  if(rowError){await supabase.storage.from('kagzi-library').remove([path]);throw rowError;}
+  uploadStatus.textContent='Upload सफल। '+(document.getElementById('publish').checked?'किताब KAGZI Library में प्रकाशित हो गई।':'फाइल private रखी गई है; publish नहीं हुई।');
+  event.target.reset();
+ }catch(error){uploadStatus.textContent='Upload पूरा नहीं हुआ: '+error.message;}
+ finally{button.disabled=false;button.textContent='Upload to KAGZI';}
+});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await supabase.auth.signOut();await refreshAccess();});
+await refreshAccess();
+</script>
+</body></html>

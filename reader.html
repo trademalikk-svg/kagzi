@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Read books inside the KAGZI Learning Hub.">
+<title>KAGZI Reader | Learning Hub</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#68738a;--blue:#315efb;--line:#e7eaf1}
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:var(--ink);font-family:Arial,sans-serif}
+header{background:white;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+a{color:var(--blue);font-weight:700;text-decoration:none}.wrap{width:min(1000px,calc(100% - 28px));margin:28px auto}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 14px 38px #19284a0b}
+.kicker{font-size:11px;letter-spacing:1.4px;color:var(--blue);font-weight:800}
+h1{font-size:clamp(24px,4vw,36px);margin:10px 0}p{color:var(--muted);line-height:1.7}
+.viewer{display:none;width:100%;height:min(78vh,900px);border:1px solid var(--line);border-radius:12px;background:#fff}
+.notice{background:#fff6df;border:1px solid #f3dfaa;border-radius:12px;padding:16px;margin-top:18px;color:#70531b;line-height:1.6}
+</style>
+</head>
+<body>
+<header><strong>KAGZI · LEARNING HUB</strong><a href="education.html">← Back to Library</a></header>
+<main class="wrap"><section class="panel">
+<div class="kicker">KAGZI IN-WEBSITE READER</div>
+<h1 id="title">Loading book…</h1>
+<p id="byline"></p>
+<div id="notice" class="notice" role="status">इस किताब की KAGZI-hosted PDF अभी उपलब्ध नहीं है। अनुमति प्राप्त फाइल जोड़ने के बाद यह यहीं खुलेगी।</div>
+<iframe id="viewer" class="viewer" title="Book reader" loading="lazy"></iframe>
+</section></main>
+<script type="module">
+import { supabase } from './kagzi-supabase.js';
+const id = new URLSearchParams(location.search).get('book');
+const title = document.getElementById('title');
+const byline = document.getElementById('byline');
+const notice = document.getElementById('notice');
+const viewer = document.getElementById('viewer');
+async function openBook(){
+ if(!id){title.textContent='किताब नहीं मिली';byline.textContent='कृपया KAGZI Library से किताब चुनें।';return;}
+ const {data:book,error}=await supabase.from('kagzi_library_files')
+  .select('title,author,language,storage_path,is_published')
+  .eq('id',id).eq('is_published',true).maybeSingle();
+ if(error||!book){title.textContent='किताब उपलब्ध नहीं है';byline.textContent='यह किताब हटाई गई है या अभी प्रकाशित नहीं है।';return;}
+ title.textContent=book.title;
+ title.dir=book.language==='ur'?'rtl':'auto';
+ byline.textContent=book.author+' · '+({hi:'हिंदी',en:'English',ur:'اردو'})[book.language];
+ const {data,error:signError}=await supabase.storage.from('kagzi-library').createSignedUrl(book.storage_path,3600);
+ if(signError||!data?.signedUrl){notice.textContent='इस PDF को अभी खोला नहीं जा सका। कृपया बाद में प्रयास करें।';return;}
+ viewer.src=data.signedUrl;
+ viewer.style.display='block';
+ notice.style.display='none';
+}
+openBook();
+</script>
+</body></html>

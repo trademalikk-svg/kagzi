@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="KAGZI Learning Hub — curated eBooks, current affairs and handwritten study notes in Hindi and English.">
+<title>KAGZI Learning Hub | eBooks, Current Affairs & Notes</title>
+
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#65718a;--blue:#315efb;--violet:#7157e8;--line:#e7eaf2;--paper:#fff;--bg:#f5f7fc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Noto Sans Devanagari",Arial,sans-serif;line-height:1.65}a{color:inherit}button,input{font:inherit}.wrap{width:min(1160px,calc(100% - 36px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:#ffffffed;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;letter-spacing:.08em}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;color:#fff;background:linear-gradient(135deg,#315efb,#8058e9);font-size:23px}.links{display:flex;gap:22px}.links a,.nav-cta{font-size:13px;font-weight:750;text-decoration:none}.links a{color:#536078}.nav-cta{padding:11px 16px;border-radius:999px;background:#172033;color:white}
+.hero{overflow:hidden;background:radial-gradient(ellipse at 82% 28%,#5c50c52b,transparent 34%),linear-gradient(120deg,#10182d,#171c3d 58%,#28215a);color:white;padding:76px 0 82px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:50px}.eyebrow,.kicker{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#8c9fff}.hero h1{font-size:clamp(36px,5vw,58px);line-height:1.22;letter-spacing:-.04em;margin:18px 0}.hero h1 span{color:#a9a0ff}.hero p{max-width:640px;color:#d0d5e8;font-size:17px}.search{display:flex;gap:9px;max-width:560px;margin-top:26px;padding:7px;background:white;border-radius:14px}.search input{flex:1;min-width:0;border:0;outline:0;padding:10px 12px;color:var(--ink)}.search button,.details-button{border:0;border-radius:10px;padding:11px 18px;background:var(--blue);color:white;font-weight:800;cursor:pointer}
+.hero-art{min-height:270px;border:1px solid #ffffff2b;border-radius:28px;background:linear-gradient(145deg,#ffffff20,#ffffff08);display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 30px 80px #05081755}.art-label{font-size:11px;letter-spacing:.2em;color:#d7d9ff;font-weight:800}.book-stack{display:flex;align-items:end;gap:12px;margin-top:28px}.book{width:112px;height:145px;border-radius:7px 13px 13px 7px;padding:18px 12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:19px;line-height:1.3;box-shadow:8px 12px 22px #070b2366;background:linear-gradient(145deg,#ffca75,#b65b38);color:#40241b}.book:nth-child(2){height:175px;background:linear-gradient(145deg,#b5b2ff,#5551b7);color:#17183e}.book:nth-child(3){background:linear-gradient(145deg,#9de2c8,#318c80);color:#123b39}
+section{padding:62px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.section-head h2{font-size:clamp(25px,3vw,34px);margin:6px 0}.section-head p,.muted{color:var(--muted)}.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.tile,.feature,.item{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px #17203308}.tile{padding:22px;text-decoration:none;transition:transform .2s,box-shadow .2s}.tile:hover{transform:translateY(-4px);box-shadow:0 18px 36px #17203312}.tile-icon{font-size:28px}.tile h3{margin:12px 0 5px}.tile p,.feature p,.item p{color:var(--muted);font-size:14px;margin:0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.filter{border:1px solid var(--line);border-radius:999px;background:white;padding:9px 14px;color:#536078;font-size:12px;font-weight:800;cursor:pointer}.filter.active{background:#172033;color:white;border-color:#172033}.shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.empty{grid-column:1/-1;background:white;border:1px dashed #cbd2e1;border-radius:16px;padding:28px;text-align:center;color:var(--muted)}.item{overflow:hidden}.cover{min-height:150px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:white;background:linear-gradient(135deg,#293d7c,#7558c8)}.cover small{letter-spacing:.12em;font-size:10px}.cover strong{font-size:23px;line-height:1.3}.item-body{padding:18px}.item-body h3{margin:0 0 7px}.meta{display:flex;justify-content:space-between;gap:8px;margin:14px 0;color:var(--muted);font-size:11px}.tag,.coming{background:#eef1ff;color:#4659b6;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:900}.source-note{font-size:11px!important;margin-bottom:12px!important}.details-button{padding:9px 13px;font-size:12px}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.feature{padding:26px}.feature-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.feature h3{font-size:23px;margin:14px 0 8px}.feature ul{color:#536078;font-size:13px;padding-left:20px}.feature li{margin:5px 0}dialog{border:0;border-radius:20px;max-width:min(540px,calc(100% - 28px));padding:0;box-shadow:0 25px 90px #10182d55}dialog::backdrop{background:#10182d99}.reader-panel{padding:26px}.reader-panel h2{margin:8px 0}.reader-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px}.reader-actions a{color:var(--blue);font-weight:800}.reader-actions button{border:0;border-radius:9px;padding:10px 15px;background:#edf0f7;font-weight:800}footer{background:#11182c;color:white;padding:30px 0}.foot{display:flex;justify-content:space-between;align-items:center;gap:20px}.foot p{color:#b9c1d5;font-size:13px}.foot a{color:#c9ceff;font-size:13px}
+@media(max-width:850px){.links{display:none}.hero-grid{grid-template-columns:1fr;gap:32px}.hero-art{min-height:230px}.tiles{grid-template-columns:repeat(2,1fr)}.shelf{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.wrap{width:min(100% - 26px,1160px)}.nav{min-height:64px}.nav-cta{padding:9px 11px;font-size:11px}.hero{padding:52px 0}.hero p{font-size:15px}.hero-art{min-height:210px}.book{width:90px;height:125px}.book:nth-child(2){height:150px}.section-head{display:block}.tiles,.shelf,.feature-grid{grid-template-columns:1fr}.tile{padding:18px}.foot{display:block}.foot a{display:inline-block;margin-top:10px}.search button{padding:10px 12px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="index.html"><span class="logo">K</span><span>KAGZI<small>LEARNING HUB</small></span></a><nav class="links"><a href="#library">eBooks</a><a href="#current">Current Affairs</a><a href="#notes">Handwritten Notes</a><a href="#creator">Book Creator</a></nav><div style="display:flex;gap:9px;align-items:center"><a href="admin-library.html" style="font-size:11px;font-weight:800;color:#315efb">Admin Upload</a><a class="nav-cta" href="#library">Explore Library ↗</a></div></div></header>
+<main>
+<div class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">✦ READ · LEARN · GROW</span><h1>हर दिन कुछ नया सीखें।<br><span>अपनी Knowledge बढ़ाएँ।</span></h1><p>चुनी हुई बेहतरीन किताबें, भरोसेमंद Current Affairs और उपयोगी Handwritten Notes — एक ही learning space में। हिंदी और English दोनों में।</p><form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="किताब, विषय या परीक्षा खोजें..." aria-label="Search books and study material"><button type="submit">Search</button></form></div><div class="hero-art"><div class="art-label">YOUR DAILY LEARNING SPACE</div><div class="book-stack"><div class="book">ज्ञान की<br>दुनिया</div><div class="book">LEARN<br>MORE</div><div class="book">नई<br>शुरुआत</div></div></div></div></div>
+<section><div class="wrap"><div class="section-head"><div><div class="kicker">Explore categories</div><h2>आप क्या पढ़ना चाहते हैं?</h2></div><p>एक जगह, कई learning resources</p></div><div class="tiles">
+<a class="tile" href="#library"><div class="tile-icon">📚</div><h3>eBook Library</h3><p>चुनी हुई हिंदी और English किताबें, विषय और भाषा के अनुसार।</p></a>
+<a class="tile" href="#current"><div class="tile-icon">🗞️</div><h3>Current Affairs</h3><p>Daily, Weekly और Monthly exam-focused updates।</p></a>
+<a class="tile" href="#notes"><div class="tile-icon">✍️</div><h3>Handwritten Notes</h3><p>विषय और परीक्षा के अनुसार व्यवस्थित notes।</p></a>
+<a class="tile" href="#creator"><div class="tile-icon">✨</div><h3>AI Book Creator</h3><p>अपनी जानकारी से किताब का draft और structure बनाएँ।</p></a>
+</div></div></section>
+<section id="library"><div class="wrap"><div class="section-head"><div><div class="kicker">Curated reading</div><h2>eBook Library</h2></div><p>गुणवत्ता पहले, संख्या बाद में</p></div><div class="toolbar" id="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="literature">Hindi Literature</button><button class="filter" data-filter="knowledge">Knowledge</button><button class="filter" data-filter="exam">Exam Preparation</button><button class="filter" data-filter="business">Business</button><button class="filter" data-filter="current-affairs">Current Affairs</button><button class="filter" data-filter="handwritten-notes">Handwritten Notes</button><button class="filter" data-filter="previous-papers">Previous Year Papers</button></div><div class="toolbar" id="paperKindFilters" aria-label="Paper update type"><button class="filter active" data-paper-kind="all">All Paper Updates</button><button class="filter" data-paper-kind="daily-practice">Daily Practice</button><button class="filter" data-paper-kind="latest-exam">Latest Actual Exam Papers</button></div><div class="toolbar" id="examFilters" aria-label="Previous paper exam folders"><button class="filter active" data-exam="all">All Exams</button><button class="filter" data-exam="ssc">SSC</button><button class="filter" data-exam="railway">Railway</button><button class="filter" data-exam="upsc">UPSC</button><button class="filter" data-exam="neet">NEET</button><button class="filter" data-exam="jee">JEE</button><button class="filter" data-exam="up-police">UP Police</button><button class="filter" data-exam="agniveer">Agniveer</button><button class="filter" data-exam="uppsc">UPPSC</button><button class="filter" data-exam="upsi">UPSI</button><button class="filter" data-exam="upsssc">UPSSSC</button></div><div class="toolbar" id="languageFilters" aria-label="Filter by language"><button class="filter active" data-language="all">All languages</button><button class="filter" data-language="hi">हिंदी</button><button class="filter" data-language="en">English</button><button class="filter" data-language="ur">اردو</button></div><div class="shelf" id="bookShelf" aria-live="polite">
+<div class="empty" id="emptyState">अभी KAGZI Library में प्रकाशित सामग्री उपलब्ध नहीं है। Admin Upload से अधिकृत PDF जोड़ने के बाद यहाँ दिखेगी।</div>
+</div></div></section>
+
+
+<section id="exam-portals"><div class="wrap"><div class="section-head"><div><div class="kicker">Official exam websites</div><h2>सभी प्रमुख परीक्षाओं के आधिकारिक लिंक</h2></div><p>नोटिस, सिलेबस, परीक्षा अपडेट और उपलब्ध प्रश्नपत्र मूल पोर्टल पर देखें</p></div>
+<div class="feature-grid">
+<article class="feature"><div class="feature-top"><span class="kicker">Central Government</span><span class="coming">OFFICIAL</span></div><h3>SSC</h3><p>CGL, CHSL, MTS, GD, CPO, JE और अन्य SSC परीक्षाओं की अधिसूचना, सिलेबस, उत्तर-कुंजी और उपलब्ध प्रश्नपत्र।</p><a class="details-button" href="https://ssc.gov.in/" target="_blank" rel="noopener noreferrer">SSC Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Ministry of Railways</span><span class="coming">OFFICIAL</span></div><h3>Railway (RRB)</h3><p>रेलवे भर्ती बोर्ड के केंद्रीकृत नोटिस, परीक्षा अपडेट, सिलेबस और उपलब्ध प्रश्नपत्र।</p><a class="details-button" href="https://rrb.indianrailways.gov.in/" target="_blank" rel="noopener noreferrer">RRB Official Portal ↗</a><a class="details-button" style="margin-left:7px" href="https://www.rrbapply.gov.in/" target="_blank" rel="noopener noreferrer">Apply Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Union Public Service Commission</span><span class="coming">OFFICIAL</span></div><h3>UPSC</h3><p>Civil Services, NDA, CDS और अन्य परीक्षाओं की अधिसूचनाएँ, परीक्षा कैलेंडर और पिछले प्रश्नपत्र।</p><a class="details-button" href="https://upsc.gov.in/" target="_blank" rel="noopener noreferrer">UPSC Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">National Testing Agency</span><span class="coming">OFFICIAL</span></div><h3>NEET (UG)</h3><p>NEET-UG की सूचना, सूचना-पुस्तिका, परीक्षा और परिणाम से जुड़े अपडेट।</p><a class="details-button" href="https://neet.nta.nic.in/" target="_blank" rel="noopener noreferrer">NEET Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">National Testing Agency</span><span class="coming">OFFICIAL</span></div><h3>JEE Main</h3><p>JEE Main की अधिसूचना, सिलेबस, सूचना-पुस्तिका, परीक्षा और परिणाम संबंधी अपडेट।</p><a class="details-button" href="https://jeemain.nta.nic.in/" target="_blank" rel="noopener noreferrer">JEE Main Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Uttar Pradesh Government</span><span class="coming">OFFICIAL</span></div><h3>UP Police और UPSI</h3><p>आरक्षी, उपनिरीक्षक और UP Police भर्ती की अधिसूचना, पाठ्यक्रम और परिणाम।</p><a class="details-button" href="https://uppbpb.gov.in/" target="_blank" rel="noopener noreferrer">UPPRPB Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Uttar Pradesh Public Service Commission</span><span class="coming">OFFICIAL</span></div><h3>UPPSC</h3><p>PCS और अन्य राज्य स्तरीय भर्ती परीक्षाओं की अधिसूचना, परीक्षा कैलेंडर और परिणाम।</p><a class="details-button" href="https://uppsc.up.nic.in/" target="_blank" rel="noopener noreferrer">UPPSC Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Uttar Pradesh Subordinate Services</span><span class="coming">OFFICIAL</span></div><h3>UPSSSC</h3><p>PET और विभिन्न अधीनस्थ सेवा भर्ती परीक्षाओं की सूचना और उपलब्ध आधिकारिक अपडेट।</p><a class="details-button" href="https://upsssc.gov.in/" target="_blank" rel="noopener noreferrer">UPSSSC Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Indian Army</span><span class="coming">OFFICIAL</span></div><h3>Agniveer</h3><p>भारतीय सेना की अग्निवीर भर्ती, पात्रता और आधिकारिक भर्ती अधिसूचनाएँ।</p><a class="details-button" href="https://joinindianarmy.nic.in/" target="_blank" rel="noopener noreferrer">Join Indian Army ↗</a></article>
+</div>
+<p class="source-note muted" style="margin-top:18px">ये लिंक संबंधित संस्थाओं के आधिकारिक पोर्टल हैं। KAGZI केवल मूल स्रोत तक पहुँच देता है; भर्ती की पात्रता, तिथियाँ और नियम संबंधित आधिकारिक अधिसूचना से ही जाँचें।</p>
+</div></section>
+
+<section id="official-resources"><div class="wrap"><div class="section-head"><div><div class="kicker">Trusted learning links</div><h2>Free Official Study Resources</h2></div><p>मूल स्रोत पर पढ़ें और अभ्यास करें</p></div>
+<div class="feature-grid">
+<article class="feature"><div class="feature-top"><span class="kicker">IIT Kanpur · Ministry of Education</span><span class="coming">FREE</span></div><h3>📘 SATHEE – SSC & Railway</h3><p>SSC और Railway की तैयारी के लिए study material, syllabus, practice sets, mock tests और video lessons.</p><ul><li>SSC CGL, CHSL, MTS और अन्य परीक्षाएँ</li><li>Railway Group D और RRB तैयारी सामग्री</li><li>Hindi और English resources उपलब्ध</li></ul><a class="details-button" href="https://sathee.iitk.ac.in/" target="_blank" rel="noopener noreferrer">Open SATHEE Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">Government of India</span><span class="coming">OFFICIAL</span></div><h3>🗞️ PIB – Current Affairs</h3><p>सरकारी घोषणाएँ, मंत्रालयों के अपडेट, योजनाएँ, अर्थव्यवस्था, विज्ञान और राष्ट्रीय समाचार मूल सरकारी स्रोत से पढ़ें।</p><ul><li>Latest press releases</li><li>Government schemes and explainers</li><li>Source-based current affairs preparation</li></ul><a class="details-button" href="https://www.pib.gov.in/" target="_blank" rel="noopener noreferrer">Open PIB Official Portal ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">IGNOU</span><span class="coming">SOURCE LIBRARY</span></div><h3>📚 eGyanKosh – Learning Material</h3><p>IGNOU के self-learning materials और विभिन्न विषयों की शैक्षणिक सामग्री मूल repository पर देखें। प्रत्येक item के copyright और usage terms का पालन करें।</p><ul><li>Humanities and Social Sciences</li><li>Science, Commerce and other programmes</li><li>Hindi, English और अन्य भाषा सामग्री</li></ul><a class="details-button" href="https://egyankosh.ac.in/" target="_blank" rel="noopener noreferrer">Open eGyanKosh ↗</a></article>
+<article class="feature"><div class="feature-top"><span class="kicker">NCERT · Permission pending</span><span class="coming">LINK NOT ADDED</span></div><h3>📖 NCERT Textbooks</h3><p>NCERT की किताबें उपयोगी हैं, लेकिन उनकी नीति के अनुसार वेबसाइट पर लिंक देने के लिए लिखित अनुमति आवश्यक है। अनुमति मिलने के बाद ही KAGZI में आधिकारिक लिंक जोड़ा जाएगा।</p><ul><li>Classes I–XII</li><li>Hindi, English and Urdu</li><li>NCERT copyright terms apply</li></ul><span class="muted">NCERT link awaiting written permission</span></article>
+</div><p class="source-note muted" style="margin-top:18px">KAGZI इन बाहरी पोर्टलों की मूल PDF को अपने सर्वर पर कॉपी या पुनः प्रकाशित नहीं करता। सामग्री संबंधित संस्थान की वेबसाइट पर ही खुलती है; उपयोग की शर्तें उसी संस्थान की रहेंगी।</p>
+</div></section>
+<section id="current"><div class="wrap feature-grid"><article class="feature"><div class="feature-top"><span class="kicker">Updated learning</span><span class="coming">CONTENT PIPELINE</span></div><h3>🗞️ Current Affairs</h3><p>Current Affairs को तारीख और विषय के अनुसार व्यवस्थित किया जाएगा। हर update के साथ source और publication date दिखेगी, ताकि पुरानी या अपुष्ट जानकारी को नई खबर की तरह न दिखाया जाए।</p><ul><li>Daily News Brief</li><li>Weekly & Monthly PDF digest</li><li>National, International, Economy, Science</li><li>UP Current Affairs और exam quiz</li></ul></article>
+<article class="feature" id="notes"><div class="feature-top"><span class="kicker">Study material</span><span class="coming">CONTENT PIPELINE</span></div><h3>✍️ Handwritten Notes</h3><p>साफ़ और पढ़ने योग्य scanned notes, subject-wise और exam-wise folders में। Upload से पहले quality और sharing permission की जाँच होगी।</p><ul><li>UPPCS / UPSC / SSC / अन्य परीक्षाएँ</li><li>History, Polity, Geography, Science</li><li>PDF preview और authorized download</li><li>Teacher / contributor attribution</li></ul></article></div></section>
+<section id="creator"><div class="wrap"><article class="feature"><div class="feature-top"><span class="kicker">Create something new</span><span class="coming">PLANNED FEATURE</span></div><h3>✨ AI Book Creator</h3><p>अपना विषय चुनें, chapters की रूपरेखा बनाएँ, draft तैयार करें और review के बाद eBook export करें। AI-generated सामग्री को publish करने से पहले fact-check और editing की प्रक्रिया रखी जाएगी।</p></article></div></section>
+</main>
+<dialog id="bookDetails" aria-labelledby="bookDetailsTitle"><div class="reader-panel"><div class="kicker" id="bookDetailsLanguage">BOOK DETAILS</div><h2 id="bookDetailsTitle"></h2><p id="bookDetailsAuthor"></p><p id="bookDetailsDescription"></p><p id="bookDetailsSubject"></p><p id="bookDetailsRights"></p><div class="reader-actions"><a id="bookDetailsSource" href="#" >Read on KAGZI ↗</a><button id="closeBookDetails" type="button">Close</button></div></div></dialog><footer><div class="wrap foot"><div><strong>KAGZI Learning Hub</strong><p>Knowledge को आसान, उपयोगी और सबके लिए सुलभ बनाने की कोशिश।</p></div><a href="index.html">← Back to KAGZI Home</a></div></footer>
+<script type="module">
+import { filterBooks } from './education-data.mjs';
+import { supabase } from './kagzi-supabase.js';
+let books = [];
+
+const shelf = document.getElementById('bookShelf');
+const searchInput = document.getElementById('searchInput');
+const categoryButtons = [...document.querySelectorAll('#filters [data-filter]')];
+const languageButtons = [...document.querySelectorAll('#languageFilters [data-language]')];
+const examButtons = [...document.querySelectorAll('#examFilters [data-exam]')];
+const paperKindButtons = [...document.querySelectorAll('#paperKindFilters [data-paper-kind]')];
+const emptyState = document.getElementById('emptyState');
+let activeCategory = 'all';
+let activeLanguage = 'all';
+let activeExam = 'all';
+let activePaperKind = 'all';
+
+const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[char]));
+
+function render() {
+  let visibleBooks = filterBooks(books, {
+    query: searchInput.value,
+    language: activeLanguage,
+    category: activeCategory
+  });
+  if (activeExam !== 'all') visibleBooks = visibleBooks.filter(book => book.examSlug === activeExam);
+  if (activePaperKind !== 'all') visibleBooks = visibleBooks.filter(book => book.paperKind === activePaperKind);
+  shelf.querySelectorAll('.item').forEach(card => card.remove());
+  visibleBooks.forEach((book, index) => {
+    const card = document.createElement('article');
+    card.className = 'item';
+    const direction = book.language === 'ur' ? ' dir="rtl"' : '';
+    card.innerHTML = `
+      <div class="cover">
+        <small>${escapeHTML(book.subject).toLocaleUpperCase()}</small>
+        <strong${direction}>${escapeHTML(book.title)}</strong>
+      </div>
+      <div class="item-body">
+        <h3${direction}>${escapeHTML(book.title)}</h3>
+        <p>${escapeHTML(book.author)} · ${escapeHTML(book.description)}</p>
+        <div class="meta">
+          <span class="tag">${escapeHTML(book.languageLabel)}</span>
+          <span>${book.contentPath ? 'KAGZI Reader' : 'Coming soon'}</span>
+        </div>
+        ${book.category === 'previous-papers' ? '<p class="source-note"><strong>'+escapeHTML(book.examLabel)+'</strong> · '+escapeHTML(book.paperYear)+' · '+escapeHTML(book.resourceLabel)+'</p>' : ''}
+        ${book.category === 'previous-papers' ? '<p class="source-note">'+escapeHTML(book.paperKindLabel)+' · '+escapeHTML(book.paperDate || '')+'</p>' : ''}
+        <p class="source-note">Edition: ${escapeHTML(book.sourceName)}</p>
+        <button class="details-button" type="button" data-details-id="${escapeHTML(book.id)}">Book details</button>
+      </div>`;
+    shelf.insertBefore(card, emptyState);
+  });
+  emptyState.style.display = visibleBooks.length ? 'none' : 'block';
+}
+
+const detailsDialog = document.getElementById('bookDetails');
+shelf.addEventListener('click', event => {
+  const button = event.target.closest('[data-details-id]');
+  if (!button) return;
+  const book = books.find(item => item.id === button.dataset.detailsId);
+  if (!book) return;
+  document.getElementById('bookDetailsLanguage').textContent = book.languageLabel;
+  document.getElementById('bookDetailsTitle').textContent = book.title;
+  document.getElementById('bookDetailsTitle').dir = book.language === 'ur' ? 'rtl' : 'auto';
+  document.getElementById('bookDetailsAuthor').textContent = 'Author / Publisher: ' + book.author;
+  document.getElementById('bookDetailsDescription').textContent = book.description;
+  document.getElementById('bookDetailsSubject').textContent = 'Subject: ' + book.subject;
+  document.getElementById('bookDetailsRights').textContent = 'Access note: ' + book.rightsNote;
+  const source = document.getElementById('bookDetailsSource');
+  source.href = 'reader.html?book=' + encodeURIComponent(book.id);
+  source.textContent = 'Read on KAGZI ↗';
+  detailsDialog.showModal();
+});
+document.getElementById('closeBookDetails').addEventListener('click', () => detailsDialog.close());
+
+function setActive(buttons, selected) {
+  buttons.forEach(button => {
+    const isActive = button === selected;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+}
+
+categoryButtons.forEach(button => button.addEventListener('click', () => {
+  activeCategory = button.dataset.filter;
+  setActive(categoryButtons, button);
+  render();
+}));
+paperKindButtons.forEach(button => button.addEventListener('click', () => {
+  activePaperKind = button.dataset.paperKind;
+  setActive(paperKindButtons, button);
+  render();
+}));
+examButtons.forEach(button => button.addEventListener('click', () => {
+  activeExam = button.dataset.exam;
+  setActive(examButtons, button);
+  render();
+}));
+languageButtons.forEach(button => button.addEventListener('click', () => {
+  activeLanguage = button.dataset.language;
+  setActive(languageButtons, button);
+  render();
+}));
+document.getElementById('searchForm').addEventListener('submit', event => {
+  event.preventDefault();
+  render();
+  document.getElementById('library').scrollIntoView({ behavior: 'smooth' });
+});
+searchInput.addEventListener('input', render);
+async function loadPublishedLibrary() {
+  emptyState.textContent = 'KAGZI Library से प्रकाशित सामग्री लोड हो रही है…';
+  const { data, error } = await supabase
+    .from('kagzi_library_files')
+    .select('id,title,author,language,category,description,storage_path,rights_status,rights_reference,exam_slug,paper_year,resource_type,paper_kind,paper_date')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+  if (error) {
+    emptyState.textContent = 'अभी Library लोड नहीं हो सकी। कृपया थोड़ी देर बाद फिर प्रयास करें।';
+    emptyState.style.display = 'block';
+    return;
+  }
+  books = (data || []).map(row => ({
+    id: row.id, title: row.title, author: row.author,
+    language: row.language,
+    languageLabel: ({hi:'हिंदी',en:'English',ur:'اردو'})[row.language],
+    category: row.category, subject: row.category.replaceAll('-', ' '),
+    description: row.description || '', sourceName: 'KAGZI Library',
+    contentPath: row.storage_path, rightsStatus: row.rights_status,
+    rightsNote: row.rights_reference,
+    paperKind: row.paper_kind, paperDate: row.paper_date,
+    examSlug: row.exam_slug, paperYear: row.paper_year,
+    examLabel: ({ssc:'SSC',railway:'Railway',upsc:'UPSC',neet:'NEET',jee:'JEE','up-police':'UP Police',agniveer:'Agniveer',uppsc:'UPPSC',upsi:'UPSI',upsssc:'UPSSSC'})[row.exam_slug] || '',
+    resourceLabel: ({'question-paper':'Question Paper',solution:'Solution','answer-key':'Answer Key'})[row.resource_type] || '',
+    paperKindLabel: ({'daily-practice':'Daily Practice','latest-exam':'Latest Actual Exam'})[row.paper_kind] || ''
+  }));
+  render();
+}
+loadPublishedLibrary();
+</script>
+</body></html>
