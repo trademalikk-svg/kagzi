@@ -4,11 +4,14 @@ export async function onRequestPost({request,env}){
   let body;try{body=await request.json();}catch{return Response.json({error:"Invalid request."},{status:400});}
   const question=typeof body.question==="string"?body.question.trim():"";
   if(!question||question.length>1500)return Response.json({error:"सवाल 1 से 1500 अक्षरों के बीच लिखें।"},{status:400});
+  const history=Array.isArray(body.history)?body.history.slice(-6).filter(item=>
+    item&&["user","assistant"].includes(item.role)&&typeof item.content==="string"&&item.content.trim()&&item.content.length<=1500
+  ):[];
   if(!env.AI||typeof env.AI.run!=="function")return Response.json({error:"AI सुविधा अभी configure नहीं है। कृपया नीचे दी गई सेवा डायरेक्टरी और सरकारी लिंक इस्तेमाल करें।",code:"AI_NOT_CONFIGURED"},{status:503});
   const system=`You are KAGZI Jan Seva Assistant. Answer in the user's language (Hindi or English), in simple concise language. You provide general information only, not official legal, eligibility, financial, medical or government determinations. Never claim that KAGZI issues, approves, verifies or submits applications. Never invent fees, deadlines, eligibility, required documents or portal links. When uncertain, say so and direct the user to the relevant official department. You may mention these known official portals only when relevant: UP e-District https://edistrict.up.gov.in/ ; UP Food and Civil Supplies https://fcs.up.gov.in/ ; UP Social Welfare https://sspy-up.gov.in/ ; Civil Registration System https://crsorgi.gov.in/ ; National Scholarship Portal https://scholarships.gov.in/ ; PM-KISAN https://pmkisan.gov.in/ ; UP Bhulekh https://upbhulekh.gov.in/ ; National Career Service https://www.ncs.gov.in/ ; Election Commission https://voters.eci.gov.in/ ; Parivahan https://parivahan.gov.in/ . Do not ask for OTPs, passwords, payment PINs, full identity numbers, bank details or uploaded documents. If asked to apply on behalf of the user, explain that you only guide them and they must use the official portal themselves. Do not imply that portal links were checked live.`;
   try{
     const result=await env.AI.run("@cf/zai-org/glm-4.7-flash",{
-      messages:[{role:"system",content:system},{role:"user",content:question}],
+      messages:[{role:"system",content:system},...history.map(item=>({role:item.role,content:item.content})),{role:"user",content:question}],
       temperature:0.2,
       max_completion_tokens:650,
       chat_template_kwargs:{enable_thinking:false}
