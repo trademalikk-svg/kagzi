@@ -1,7 +1,7 @@
 name: KAGZI studio checks
 on:
   push:
-    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, feature/kagzi-government-documents-100]
+    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, feature/kagzi-government-documents-100, feature/kagzi-ebook-learning-hub]
   pull_request:
     branches: [fix/kagzi-dashboard-repair, feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, main]
 jobs:
@@ -13,4 +13,4 @@ jobs:
         with:
           node-version: 20
       - run: node --check script.js
-      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs
+      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs tests/education-library-audit.mjs
