@@ -22,9 +22,16 @@ test('search matches title, author, subject and description case-insensitively',
 });
 
 test('combined language and category filters narrow results together', () => {
-  const results = filterBooks(books, { language: 'en', category: 'knowledge' });
+  const results = filterBooks(books, { language: 'en', category: 'literature' });
   assert.ok(results.length > 0);
   assert.ok(results.every(book => book.language === 'en' && book.category === 'knowledge'));
+});
+
+test('catalogue entries do not depend on external reading URLs', () => {
+  for (const book of books) {
+    assert.equal('sourceUrl' in book, false);
+    assert.ok(book.contentPath === null || /^\\/library\\/books\\/[a-z0-9-]+\\.pdf$/i.test(book.contentPath));
+  }
 });
 
 test('unknown language and unmatched query return no results', () => {
