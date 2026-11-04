@@ -26,25 +26,27 @@ h1{font-size:clamp(24px,4vw,36px);margin:10px 0}p{color:var(--muted);line-height
 <iframe id="viewer" class="viewer" title="Book reader" loading="lazy"></iframe>
 </section></main>
 <script type="module">
-import { books } from './education-data.mjs';
+import { supabase } from './kagzi-supabase.js';
 const id = new URLSearchParams(location.search).get('book');
-const book = books.find(item => item.id === id);
 const title = document.getElementById('title');
 const byline = document.getElementById('byline');
 const notice = document.getElementById('notice');
 const viewer = document.getElementById('viewer');
-if (!book) {
-  title.textContent = 'किताब नहीं मिली';
-  byline.textContent = 'कृपया KAGZI Library से किताब चुनें।';
-} else {
-  title.textContent = book.title;
-  title.dir = book.language === 'ur' ? 'rtl' : 'auto';
-  byline.textContent = book.author + ' · ' + book.languageLabel;
-  if (book.contentPath) {
-    viewer.src = book.contentPath;
-    viewer.style.display = 'block';
-    notice.style.display = 'none';
-  }
+async function openBook(){
+ if(!id){title.textContent='किताब नहीं मिली';byline.textContent='कृपया KAGZI Library से किताब चुनें।';return;}
+ const {data:book,error}=await supabase.from('kagzi_library_files')
+  .select('title,author,language,storage_path,is_published')
+  .eq('id',id).eq('is_published',true).maybeSingle();
+ if(error||!book){title.textContent='किताब उपलब्ध नहीं है';byline.textContent='यह किताब हटाई गई है या अभी प्रकाशित नहीं है।';return;}
+ title.textContent=book.title;
+ title.dir=book.language==='ur'?'rtl':'auto';
+ byline.textContent=book.author+' · '+({hi:'हिंदी',en:'English',ur:'اردو'})[book.language];
+ const {data,error:signError}=await supabase.storage.from('kagzi-library').createSignedUrl(book.storage_path,3600);
+ if(signError||!data?.signedUrl){notice.textContent='इस PDF को अभी खोला नहीं जा सका। कृपया बाद में प्रयास करें।';return;}
+ viewer.src=data.signedUrl;
+ viewer.style.display='block';
+ notice.style.display='none';
 }
+openBook();
 </script>
 </body></html>
