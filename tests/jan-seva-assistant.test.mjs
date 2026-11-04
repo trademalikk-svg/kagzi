@@ -64,3 +64,24 @@ test("rejects an empty AI response", async () => {
   const response = await onRequestPost({ request: makeRequest(JSON.stringify({ question: "पेंशन की जानकारी" })), env });
   assert.equal(response.status, 502);
 });
+
+test("reads OpenAI-compatible GLM chat completion content", async () => {
+  let options;
+  const env = { AI: { run: async (_model, input) => { options = input; return { choices: [{ message: { content: "आय प्रमाणपत्र के लिए e-District पोर्टल देखें।" } }] }; } } };
+  const response = await onRequestPost({ request: makeRequest(JSON.stringify({ question: "आय प्रमाणपत्र कैसे बनवाएँ?" })), env });
+  const data = await response.json();
+  assert.equal(response.status, 200);
+  assert.match(data.reply, /e-District/);
+  assert.equal(options.max_completion_tokens, 650);
+  assert.equal(options.chat_template_kwargs.enable_thinking, false);
+});
+
+test("accepts nested response and output_text response formats", async () => {
+  for (const result of [{ result: { response: "nested reply" } }, { output_text: "output reply" }, { text: "text reply" }]) {
+    const env = { AI: { run: async () => result } };
+    const response = await onRequestPost({ request: makeRequest(JSON.stringify({ question: "सेवा बताइए" })), env });
+    const data = await response.json();
+    assert.equal(response.status, 200);
+    assert.ok(data.reply);
+  }
+});
