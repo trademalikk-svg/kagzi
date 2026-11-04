@@ -100,7 +100,7 @@ body{background:#f4f6fc;color:#0b1835}
 .vip-join b{font:900 18px Manrope}
 .vip-join p{font-size:11px;margin:6px 0 12px}
 .vip-join a{display:inline-block;background:#081a39;color:#fff;text-decoration:none;padding:8px 15px;border-radius:20px;font-size:10px;font-weight:800}
-.welcome-row,.search-panel,.stats-grid,.section-heading,.tools-grid{display:none!important}
+.welcome-row,.search-panel,.stats-grid,.section-heading{display:none!important}
 footer{background:#06142e;color:#d6deed;margin:0 -22px;padding:22px 28px 8px}
 footer a{color:#f1ca71}
 @media(max-width:1050px){.vip-nav{gap:0}.vip-nav a{padding:10px 7px;font-size:10px}.vip-brand{min-width:190px}.vip-hero{gap:8px;padding:25px 14px}.vip-hero-art{width:105px}.vip-dual-panels{grid-template-columns:1fr}.vip-bottom-row{grid-template-columns:1fr}}
@@ -136,7 +136,7 @@ footer a{color:#f1ca71}
 <a class="vip-brand" href="#home"><span class="vip-brand-mark">K</span><span><b>KAGZI</b><small>Digital Services for Everyone</small></span></a>
 <nav class="vip-nav" aria-label="Main navigation"><a class="active" href="#home">⌂ Home</a><a href="modules.html">Tools⌄</a><a href="gov-documents.html">Documents⌄</a><a href="#education-preview">Education⌄</a><a href="modules.html?category=ai">AI Tools⌄</a><a href="about.html">More⌄</a></nav>
 <div class="vip-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search tools and documents..." aria-label="Search tools and documents"><button id="searchBtn" type="button">Search</button></div>
-<div class="vip-auth"><a class="auth-link" href="auth.html?mode=login">Log in</a><a class="auth-primary" href="auth.html?mode=signup">Sign up</a></div>
+<div class="vip-auth"><button class="upgrade-btn" id="upgradeBtn" type="button">✦ Premium</button><a class="auth-link" href="auth.html?mode=login">Log in</a><a class="auth-primary" href="auth.html?mode=signup">Sign up</a></div>
 <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 </header>
 <section class="vip-hero-grid">
@@ -153,7 +153,7 @@ footer a{color:#f1ca71}
 </section>
 <section class="vip-bottom-row"><div class="vip-glance"><div><b>Kagzi at a Glance</b><small>Learn. Work. Grow.</small></div><div><strong>65+</strong><small>Workspace Tools</small></div><div><strong>Hindi + English</strong><small>Language Support</small></div></div><div class="vip-join"><b>One Platform. Two Spaces.</b><p>Digital services today, a dedicated learning space ahead.</p><a href="auth.html?mode=signup">Get Started →</a></div></section>
 <section class="welcome-row"><div><div class="eyebrow"><span class="live-dot"></span> YOUR DOCUMENT WORKSPACE</div><h1>Everything organised.<br><span>All in one place.</span></h1><p class="welcome-copy">Create, manage and work with your documents from one simple workspace.</p></div><div class="welcome-art" aria-hidden="true"><div class="art-glow"></div><div class="paper paper-back"></div><div class="paper paper-front"><div class="paper-line wide"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-stamp">K</div></div><div class="art-spark">✦</div></div></section>
-<section class="search-panel"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Search tools, documents and features..." aria-label="Search tools and features"><kbd>⌘ K</kbd><button id="searchBtn">Search</button></section>
+<section class="search-panel"><span class="search-icon">⌕</span><input id="legacySearchInput" type="search" placeholder="Search tools, documents and features..." aria-label="Search tools and features"><kbd>⌘ K</kbd><button id="legacySearchBtn">Search</button></section>
 <section class="stats-grid"><article class="stat-card"><div class="stat-icon blue">▤</div><div><small>MY DOCUMENTS</small><strong id="docCount">0</strong><span>Ready to organise</span></div></article><article class="stat-card"><div class="stat-icon violet">✧</div><div><small>MODULE CATALOGUE</small><strong>65</strong><span>Availability shown per tool</span></div></article><article class="stat-card"><div class="stat-icon gold">◷</div><div><small>RECENT ACTIVITY</small><strong>—</strong><span>Your activity will appear here</span></div></article></section>
 <section class="section-heading" id="tools"><div><div class="eyebrow">GET THINGS DONE</div><h2>Quick access</h2><p>Choose a workspace to get started.</p></div><a href="modules.html" class="text-link">View all tools <span>→</span></a></section>
 <div class="tools-grid" id="toolGrid">
