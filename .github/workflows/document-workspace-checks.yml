@@ -15,4 +15,4 @@ jobs:
       - run: node --check auth-guard.js
       - run: node --check script.js
       - run: node --check gov-documents.js
-      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/education-library-audit.mjs tests/education-reader-audit.mjs tests/gov-directory-audit.mjs tests/office-tools-audit.mjs tests/document-library-audit.mjs
+      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/education-library-audit.mjs tests/education-reader-audit.mjs tests/gov-directory-audit.mjs tests/office-tools-audit.mjs tests/document-library-audit.mjs tests/owner-security-audit.mjs
