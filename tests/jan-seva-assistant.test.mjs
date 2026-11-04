@@ -125,3 +125,15 @@ test("Jan Seva FAQ renders 100 searchable answers from service routes and common
   assert.match(page, /id="faqSearch"/);
   assert.match(page, /jan-seva-faq\.js/);
 });
+
+
+test("Government document directory has 100 source-linked entries and a preparation checklist", async () => {
+  const source = await readFile(new URL("../gov-documents.js", import.meta.url), "utf8");
+  const html = await readFile(new URL("../gov-documents.html", import.meta.url), "utf8");
+  const raw = source.slice(source.indexOf("const raw=["), source.indexOf("];", source.indexOf("const raw=[")));
+  const entries = (raw.match(/^\["/gm) || []).length;
+  assert.equal(entries, 100);
+  assert.match(source, /आवेदन से पहले तैयारी चेकलिस्ट/);
+  assert.match(source, /पात्रता और दस्तावेज़ों की अंतिम सूची संबंधित विभाग से पुष्टि करें/);
+  assert.match(html, /id="cards"/);
+});
