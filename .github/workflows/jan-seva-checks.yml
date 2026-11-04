@@ -1,7 +1,7 @@
 name: KAGZI Jan Seva checks
 on:
   push:
-    branches: [feature/jan-seva-module]
+    branches: [feature/jan-seva-complete-v2]
     paths:
       - "jan-seva.html"
       - "jan-seva.css"
