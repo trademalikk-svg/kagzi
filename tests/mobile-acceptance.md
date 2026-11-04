@@ -1,43 +1,29 @@
-# KAGZI dashboard mobile and desktop acceptance
+# KAGZI dashboard and studio acceptance
 
-## Automated audit
-- [ ] Run `node --test tests/dashboard-audit.mjs`
-- [ ] Confirm all 65 catalogue IDs are unique and classified.
-- [ ] Confirm dashboard in-page links resolve and element IDs are unique.
+## Automated checks
+- [ ] Run `node --check script.js`.
+- [ ] Run `node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs`.
+- [ ] Confirm 65 catalogue IDs are unique and classified.
+- [ ] Confirm studio IDs are unique and labels resolve.
 
 ## Android Chrome (360–390 px)
-- [ ] Open the dashboard directly.
-- [ ] Open and close the sidebar.
-- [ ] Tap every sidebar entry and verify the intended page/section.
-- [ ] Tap every quick-access category card.
-- [ ] Confirm filtered categories appear correctly in `modules.html`.
-- [ ] Open each module labelled Available and verify its actual workspace.
-- [ ] Refresh and use browser Back.
-- [ ] Confirm no dead tap target or horizontal overflow.
+- [ ] Open the dashboard directly; open and close the sidebar.
+- [ ] Tap PDF Studio and Photo Studio cards and use browser Back.
+- [ ] Confirm studio navigation links scroll to the correct tool cards.
+- [ ] Confirm no horizontal overflow or dead tap targets.
+- [ ] Photo: resize, format conversion, passport presets, crop, rotate and target-KB compression.
+- [ ] Photo: request AI background removal, verify CDN/model notice and manual colour fill.
+- [ ] PDF: preview, merge, split, extract, compress, remove, rotate, reorder, image-to-PDF, PDF-to-images and add-text.
+- [ ] Confirm clear errors for corrupt files, missing selections and unavailable libraries.
 
 ## Desktop Chromium
-- [ ] Repeat category, sidebar, quick-access, refresh and Back checks.
-- [ ] Search modules and filter each category.
-- [ ] Verify unavailable modules do not claim to be open tools.
+- [ ] Repeat all Photo/PDF workflow checks.
+- [ ] Confirm previews and downloads work and originals remain unchanged.
 
-## Existing workflow regression
-- [ ] PDF merge
-- [ ] PDF split / extract
-- [ ] Image to PDF
-- [ ] PDF compression (confirm raster/text-loss warning)
-- [ ] Remove, rotate and reorder pages
-- [ ] Add-text PDF overlay
-- [ ] OCR image-to-text
-- [ ] Photo resize and format export
-- [ ] Document list and folder metadata
-- [ ] Privacy checker
-
-## Privacy and failure cases
-- [ ] Confirm local file workflows do not upload automatically.
-- [ ] Test unsupported or corrupt input and readable recovery messages.
-- [ ] Test denied camera/file permissions where applicable.
-
-## Release gate
-- [ ] Record actual browser/device results.
-- [ ] Review a Cloudflare Pages preview branch on Android.
-- [ ] Do not merge to `main` or launch until the user reviews the preview.
+## Privacy and release gate
+- [ ] Confirm files are never automatically uploaded to KAGZI.
+- [ ] Confirm AI model assets load only after the user requests background removal.
+- [ ] Confirm compression warning explains that PDF text may no longer be selectable.
+- [ ] Verify common passport size presets are clearly labelled as starting sizes, not official guarantees.
+- [ ] Record real Android and desktop results.
+- [ ] Do not merge to `main` or launch until the user reviews the preview and approves.
