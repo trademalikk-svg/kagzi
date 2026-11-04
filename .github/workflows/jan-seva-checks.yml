@@ -1,0 +1,31 @@
+name: KAGZI Jan Seva checks
+on:
+  push:
+    branches: [feature/jan-seva-module]
+    paths:
+      - "jan-seva.html"
+      - "jan-seva.css"
+      - "jan-seva.js"
+      - "functions/api/jan-seva-assistant.js"
+      - "tests/jan-seva-assistant.test.mjs"
+      - ".github/workflows/jan-seva-checks.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "jan-seva.html"
+      - "jan-seva.css"
+      - "jan-seva.js"
+      - "functions/api/jan-seva-assistant.js"
+      - "tests/jan-seva-assistant.test.mjs"
+      - ".github/workflows/jan-seva-checks.yml"
+jobs:
+  jan-seva:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --check jan-seva.js
+      - run: node --check functions/api/jan-seva-assistant.js
+      - run: node --test tests/jan-seva-assistant.test.mjs
