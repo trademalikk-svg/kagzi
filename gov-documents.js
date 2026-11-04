@@ -101,7 +101,6 @@ const raw=[
 ["Widow Pension — Scheme Information","पेंशन और बैंकिंग","state","विधवा पेंशन योजनाओं की जानकारी।","pension","राज्य के मौजूदा पात्रता और आवेदन नियम देखें।"],
 ["Disability Pension — Scheme Information","पेंशन और बैंकिंग","state","दिव्यांग पेंशन योजनाओं की जानकारी।","pension","राज्य के disability assessment और आय मानदंड जाँचें।"],
 ["Jeevan Pramaan Digital Life Certificate","पेंशन और बैंकिंग","central","डिजिटल life certificate की आधिकारिक जानकारी।","umang","Pension Disbursing Authority द्वारा स्वीकार्य प्रक्रिया जाँचें।"],
-["UP e-District Certificate Application","उत्तर प्रदेश सेवाएँ","up","UP e-District पर उपलब्ध प्रमाणपत्र सेवाएँ।","up","सेवा की उपलब्धता, शुल्क और समयसीमा जिले के अनुसार देखें।"]
 ];
 const docs=raw.map((r,i)=>({id:i+1,name:r[0],category:r[1],region:r[2],desc:r[3],portal:portals[r[4]],guide:r[5]}));
 const cards=document.getElementById('cards'),search=document.getElementById('search'),category=document.getElementById('category'),region=document.getElementById('region'),count=document.getElementById('count');
