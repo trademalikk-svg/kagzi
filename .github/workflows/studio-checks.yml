@@ -13,5 +13,5 @@ jobs:
         with:
           node-version: 20
       - run: node --check script.js
-      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs
       - run: node --test tests/jan-seva-assistant.test.mjs
+      - run: node --test tests/dashboard-audit.mjs tests/studio-ui-audit.mjs tests/gov-directory-audit.mjs
