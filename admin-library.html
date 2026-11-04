@@ -42,8 +42,14 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 <div><label for="language">Language</label><select id="language"><option value="hi">हिंदी</option><option value="en">English</option><option value="ur">اردو</option></select></div>
 </div>
 <label for="category">Category</label><select id="category">
-<option value="literature">Literature</option><option value="knowledge">Knowledge</option><option value="exam">Exam Preparation</option><option value="business">Business</option><option value="current-affairs">Current Affairs</option><option value="handwritten-notes">Handwritten Notes</option>
+<option value="literature">Literature</option><option value="knowledge">Knowledge</option><option value="exam">Exam Preparation</option><option value="business">Business</option><option value="current-affairs">Current Affairs</option><option value="handwritten-notes">Handwritten Notes</option><option value="previous-papers">Previous Year Papers</option>
 </select>
+<div id="previousPaperFields" class="hidden">
+<label for="examSlug">Exam Folder</label><select id="examSlug">
+<option value="ssc">SSC</option><option value="railway">Railway</option><option value="upsc">UPSC</option><option value="neet">NEET</option><option value="jee">JEE</option><option value="up-police">UP Police</option><option value="agniveer">Agniveer</option><option value="uppsc">UPPSC</option><option value="upsi">UPSI</option><option value="upsssc">UPSSSC</option>
+</select>
+<div class="grid"><div><label for="paperYear">Paper Year</label><select id="paperYear" required></select></div><div><label for="resourceType">PDF Type</label><select id="resourceType"><option value="question-paper">Question Paper</option><option value="solution">Solution</option><option value="answer-key">Answer Key</option></select></div></div>
+</div>
 <label for="description">Short Description</label><textarea id="description" maxlength="2000"></textarea>
 <label for="rights">Content Rights</label><select id="rights"><option value="public-domain">Public domain</option><option value="licensed">Licensed</option><option value="permission-granted">Written permission granted</option></select>
 <label for="rightsReference">Rights proof / source details</label><textarea id="rightsReference" minlength="3" maxlength="1000" required placeholder="Example: public-domain edition details, license name, or permission record"></textarea>
@@ -71,6 +77,12 @@ togglePassword.addEventListener('click',()=>{
 });
 const uploadStatus=document.getElementById('uploadStatus');
 let currentUser=null;
+const categoryInput=document.getElementById('category');
+const previousPaperFields=document.getElementById('previousPaperFields');
+const paperYearInput=document.getElementById('paperYear');
+for(let year=new Date().getFullYear();year>=new Date().getFullYear()-9;year--){const option=document.createElement('option');option.value=String(year);option.textContent=String(year);paperYearInput.append(option);}
+categoryInput.addEventListener('change',()=>previousPaperFields.classList.toggle('hidden',categoryInput.value!=='previous-papers'));
+
 async function refreshAccess(){
  const {data:{user}}=await supabase.auth.getUser();
  currentUser=user;
@@ -109,6 +121,9 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
    author:document.getElementById('author').value.trim(),
    language:document.getElementById('language').value,
    category:document.getElementById('category').value,
+   exam_slug:categoryInput.value==='previous-papers'?document.getElementById('examSlug').value:null,
+   paper_year:categoryInput.value==='previous-papers'?Number(paperYearInput.value):null,
+   resource_type:categoryInput.value==='previous-papers'?document.getElementById('resourceType').value:null,
    description:document.getElementById('description').value.trim(),
    storage_path:path,file_size_bytes:file.size,
    rights_status:document.getElementById('rights').value,
