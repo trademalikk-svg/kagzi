@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /auth.html
+Disallow: /auth.js
+Disallow: /config.js
+Disallow: /functions/
+Disallow: /tests/
+
+Sitemap: https://kagzi-8cy.pages.dev/sitemap.xml
