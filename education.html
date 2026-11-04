@@ -26,7 +26,7 @@ section{padding:62px 0}.section-head{display:flex;align-items:end;justify-conten
 <a class="tile" href="#notes"><div class="tile-icon">✍️</div><h3>Handwritten Notes</h3><p>विषय और परीक्षा के अनुसार व्यवस्थित notes।</p></a>
 <a class="tile" href="#creator"><div class="tile-icon">✨</div><h3>AI Book Creator</h3><p>अपनी जानकारी से किताब का draft और structure बनाएँ।</p></a>
 </div></div></section>
-<section id="library"><div class="wrap"><div class="section-head"><div><div class="kicker">Curated reading</div><h2>eBook Library</h2></div><p>गुणवत्ता पहले, संख्या बाद में</p></div><div class="toolbar" id="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="literature">Hindi Literature</button><button class="filter" data-filter="knowledge">Knowledge</button><button class="filter" data-filter="exam">Exam Preparation</button><button class="filter" data-filter="business">Business</button><button class="filter" data-filter="current-affairs">Current Affairs</button><button class="filter" data-filter="handwritten-notes">Handwritten Notes</button></div><div class="toolbar" id="languageFilters" aria-label="Filter by language"><button class="filter active" data-language="all">All languages</button><button class="filter" data-language="hi">हिंदी</button><button class="filter" data-language="en">English</button><button class="filter" data-language="ur">اردو</button></div><div class="shelf" id="bookShelf" aria-live="polite">
+<section id="library"><div class="wrap"><div class="section-head"><div><div class="kicker">Curated reading</div><h2>eBook Library</h2></div><p>गुणवत्ता पहले, संख्या बाद में</p></div><div class="toolbar" id="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="literature">Hindi Literature</button><button class="filter" data-filter="knowledge">Knowledge</button><button class="filter" data-filter="exam">Exam Preparation</button><button class="filter" data-filter="business">Business</button><button class="filter" data-filter="current-affairs">Current Affairs</button><button class="filter" data-filter="handwritten-notes">Handwritten Notes</button><button class="filter" data-filter="previous-papers">Previous Year Papers</button></div><div class="toolbar" id="examFilters" aria-label="Previous paper exam folders"><button class="filter active" data-exam="all">All Exams</button><button class="filter" data-exam="ssc">SSC</button><button class="filter" data-exam="railway">Railway</button><button class="filter" data-exam="upsc">UPSC</button><button class="filter" data-exam="neet">NEET</button><button class="filter" data-exam="jee">JEE</button><button class="filter" data-exam="up-police">UP Police</button><button class="filter" data-exam="agniveer">Agniveer</button><button class="filter" data-exam="uppsc">UPPSC</button><button class="filter" data-exam="upsi">UPSI</button><button class="filter" data-exam="upsssc">UPSSSC</button></div><div class="toolbar" id="languageFilters" aria-label="Filter by language"><button class="filter active" data-language="all">All languages</button><button class="filter" data-language="hi">हिंदी</button><button class="filter" data-language="en">English</button><button class="filter" data-language="ur">اردو</button></div><div class="shelf" id="bookShelf" aria-live="polite">
 <div class="empty" id="emptyState">अभी KAGZI Library में प्रकाशित सामग्री उपलब्ध नहीं है। Admin Upload से अधिकृत PDF जोड़ने के बाद यहाँ दिखेगी।</div>
 </div></div></section>
 <section id="current"><div class="wrap feature-grid"><article class="feature"><div class="feature-top"><span class="kicker">Updated learning</span><span class="coming">CONTENT PIPELINE</span></div><h3>🗞️ Current Affairs</h3><p>Current Affairs को तारीख और विषय के अनुसार व्यवस्थित किया जाएगा। हर update के साथ source और publication date दिखेगी, ताकि पुरानी या अपुष्ट जानकारी को नई खबर की तरह न दिखाया जाए।</p><ul><li>Daily News Brief</li><li>Weekly & Monthly PDF digest</li><li>National, International, Economy, Science</li><li>UP Current Affairs और exam quiz</li></ul></article>
@@ -43,20 +43,23 @@ const shelf = document.getElementById('bookShelf');
 const searchInput = document.getElementById('searchInput');
 const categoryButtons = [...document.querySelectorAll('#filters [data-filter]')];
 const languageButtons = [...document.querySelectorAll('#languageFilters [data-language]')];
+const examButtons = [...document.querySelectorAll('#examFilters [data-exam]')];
 const emptyState = document.getElementById('emptyState');
 let activeCategory = 'all';
 let activeLanguage = 'all';
+let activeExam = 'all';
 
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[char]));
 
 function render() {
-  const visibleBooks = filterBooks(books, {
+  let visibleBooks = filterBooks(books, {
     query: searchInput.value,
     language: activeLanguage,
     category: activeCategory
   });
+  if (activeExam !== 'all') visibleBooks = visibleBooks.filter(book => book.examSlug === activeExam);
   shelf.querySelectorAll('.item').forEach(card => card.remove());
   visibleBooks.forEach((book, index) => {
     const card = document.createElement('article');
@@ -115,6 +118,11 @@ categoryButtons.forEach(button => button.addEventListener('click', () => {
   setActive(categoryButtons, button);
   render();
 }));
+examButtons.forEach(button => button.addEventListener('click', () => {
+  activeExam = button.dataset.exam;
+  setActive(examButtons, button);
+  render();
+}));
 languageButtons.forEach(button => button.addEventListener('click', () => {
   activeLanguage = button.dataset.language;
   setActive(languageButtons, button);
@@ -130,7 +138,7 @@ async function loadPublishedLibrary() {
   emptyState.textContent = 'KAGZI Library से प्रकाशित सामग्री लोड हो रही है…';
   const { data, error } = await supabase
     .from('kagzi_library_files')
-    .select('id,title,author,language,category,description,storage_path,rights_status,rights_reference')
+    .select('id,title,author,language,category,description,storage_path,rights_status,rights_reference,exam_slug,paper_year,resource_type')
     .eq('is_published', true)
     .order('created_at', { ascending: false });
   if (error) {
@@ -145,7 +153,10 @@ async function loadPublishedLibrary() {
     category: row.category, subject: row.category.replaceAll('-', ' '),
     description: row.description || '', sourceName: 'KAGZI Library',
     contentPath: row.storage_path, rightsStatus: row.rights_status,
-    rightsNote: row.rights_reference
+    rightsNote: row.rights_reference,
+    examSlug: row.exam_slug, paperYear: row.paper_year,
+    examLabel: ({ssc:'SSC',railway:'Railway',upsc:'UPSC',neet:'NEET',jee:'JEE','up-police':'UP Police',agniveer:'Agniveer',uppsc:'UPPSC',upsi:'UPSI',upsssc:'UPSSSC'})[row.exam_slug] || '',
+    resourceLabel: ({'question-paper':'Question Paper',solution:'Solution','answer-key':'Answer Key'})[row.resource_type] || ''
   }));
   render();
 }
