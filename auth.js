@@ -1,6 +1,6 @@
 (function(){
  const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
- let mode=params.get('mode')==='signup'?'signup':'login',client=null;
+ let mode=params.get('mode')==='signup'?'signup':'login',client=null;\n const requestedRedirect=params.get('redirect')||'index.html';\n const safeRedirect=requestedRedirect.startsWith('/')&&!requestedRedirect.startsWith('//')?requestedRedirect:(/^[a-z0-9_./#?=&%-]+$/i.test(requestedRedirect)&&!requestedRedirect.includes('\\\\')?requestedRedirect:'index.html');
  const message=$('authMessage'),form=$('authForm');
  function render(){
   const signup=mode==='signup';
@@ -30,7 +30,7 @@
    const result=mode==='signup'?await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/auth.html?mode=login'}}):await client.auth.signInWithPassword({email,password});
    if(result.error)throw result.error;
    if(mode==='signup'&&!result.data.session)setMessage('Account request created. Check your email for the confirmation link, then log in.');
-   else{setMessage('Login successful. Opening your KAGZI workspace…');location.href='index.html';}
+   else{setMessage('Login successful. Opening your KAGZI workspace…');location.href=safeRedirect;}
   }catch(error){setMessage(error.message||'Authentication could not be completed.');}
   finally{button.disabled=false;button.textContent=mode==='signup'?'Create account':'Log in';}
  });
