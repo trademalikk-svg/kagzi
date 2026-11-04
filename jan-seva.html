@@ -36,6 +36,8 @@
   <div class="chat-card"><div class="chat-title"><span class="status-dot"></span><div><b>KAGZI Jan Seva AI</b><small>AI सहायता उपलब्धता खाते की सीमा पर निर्भर</small></div></div>
     <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="bubble bot">नमस्ते! सरकारी सेवा के बारे में अपना सवाल लिखें। OTP, पासवर्ड या पूरा पहचान नंबर साझा न करें।</div></div>
     <form id="chatForm"><textarea id="chatInput" rows="2" maxlength="1500" placeholder="अपना सवाल लिखें…" required></textarea><button id="sendButton" type="submit">भेजें</button></form>
+    <div class="voice-controls"><button id="voiceInputButton" type="button" class="voice-button">🎙 बोलकर लिखें</button><button id="readAnswerButton" type="button" class="voice-button" disabled>🔊 जवाब सुनें</button><label class="voice-language-label" for="voiceLanguage">भाषा</label><select id="voiceLanguage" aria-label="बोलने की भाषा"><option value="hi-IN">हिंदी</option><option value="en-IN">English</option></select><label class="voice-auto-label"><input id="autoSpeak" type="checkbox"> जवाब अपने-आप सुनें</label></div>
+    <p id="voiceStatus" class="chat-status" role="status">माइक और आवाज़ की सुविधा आपके ब्राउज़र पर निर्भर करती है।</p>
     <p id="chatStatus" class="chat-status" role="status">AI सेवा उपलब्ध न होने पर भी ऊपर की सेवा डायरेक्टरी काम करेगी।</p>
   </div>
 </section>
