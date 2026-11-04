@@ -112,3 +112,16 @@ test("Jan Seva directory contains at least 65 distinct service routes with HTTPS
   assert.ok(base + items.length >= 65, "at least 65 service entries are required");
   assert.ok(items.every(item => Array.isArray(item) && typeof item[0] === "string" && item[3].startsWith("https://")));
 });
+
+
+test("Jan Seva FAQ renders 100 searchable answers from service routes and common guidance", async () => {
+  const faq = await readFile(new URL("../jan-seva-faq.js", import.meta.url), "utf8");
+  const page = await readFile(new URL("../jan-seva.html", import.meta.url), "utf8");
+  const common = faq.slice(faq.indexOf("const common=["), faq.indexOf("];", faq.indexOf("const common=[")));
+  const commonCount = (common.match(/^\[/gm) || []).length;
+  assert.equal(commonCount, 34, "34 general questions should complement the service-specific FAQs");
+  assert.match(faq, /const serviceFaqs=services\.map/);
+  assert.match(faq, /const faqs=\[\.\.\.serviceFaqs/);
+  assert.match(page, /id="faqSearch"/);
+  assert.match(page, /jan-seva-faq\.js/);
+});
