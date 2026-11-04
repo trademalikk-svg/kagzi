@@ -122,9 +122,10 @@ const previewInput=$('#pdfPreviewInput');
 if(previewInput){previewInput.addEventListener('change',async()=>{const file=previewInput.files[0],canvas=$('#pdfPreviewCanvas'),status=$('#pdfPreviewStatus');$('#pdfPreviewName').textContent=file?file.name:'No PDF selected';if(!file){status.textContent='Choose a PDF to preview.';canvas.width=canvas.height=0;return;}try{if(!window.pdfjsLib)throw new Error('PDF preview library did not load.');status.textContent='Rendering first page…';pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';const doc=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const page=await doc.getPage(1);const viewport=page.getViewport({scale:Math.min(1.2,520/page.getViewport({scale:1}).width)});canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;status.textContent='Showing page 1 of '+doc.numPages+'.';page.cleanup();await doc.destroy();}catch(err){status.textContent=err.message||'Could not preview this PDF.';canvas.width=canvas.height=0;}});}
 
 // PDF editor: adds a new text overlay to one selected page; original content remains intact.
-const editPdfInput=$('#editPdfInput'),editPdfBtn=$('#editPdfBtn');
+const editPdfInput=$('#editPdfInput'),editPdfBtn=$('#editPdfBtn'),editPdfUploadBtn=$('#editPdfUploadBtn');
 if(editPdfInput&&editPdfBtn){
- editPdfInput.addEventListener('change',()=>{$('#editPdfName').textContent=editPdfInput.files[0]?.name||'No PDF selected';editPdfBtn.disabled=!editPdfInput.files.length;});
+ editPdfInput.addEventListener('change',()=>{$('#editPdfName').textContent=editPdfInput.files[0]?.name||'No PDF selected';editPdfBtn.disabled=!editPdfInput.files.length;if(editPdfUploadBtn)editPdfUploadBtn.disabled=!editPdfInput.files.length;const st=$('#editPdfUploadStatus');if(st)st.textContent=editPdfInput.files.length?'PDF selected. Tap Upload PDF to load it into the editor.':'PDF is processed locally in your browser; it is not sent to a server.';});
+ if(editPdfUploadBtn)editPdfUploadBtn.addEventListener('click',()=>{const file=editPdfInput.files[0];if(!file)return;const st=$('#editPdfUploadStatus');if(st)st.textContent='PDF loaded in this browser and ready to edit: '+file.name;notify('PDF loaded locally and ready to edit.');});
  editPdfBtn.addEventListener('click',async()=>{
   try{
    if(!window.PDFLib)throw new Error('PDF library did not load. Refresh and try again.');
