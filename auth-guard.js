@@ -23,12 +23,12 @@
   if(document.body.dataset.kagziProtected==='true'){
     hasSession().then(ok=>{if(!ok)location.replace(loginUrl());});
   }
-  document.addEventListener('click',function(event){
+  let replaying=false;\n  document.addEventListener('click',function(event){
     const target=event.target instanceof Element?event.target:null;
     if(!target)return;
     const tool=target.closest('.module-card, .tool-card, #pdfWorkbench, #scanner, #photoStudio, #recent, .office-tool, [data-requires-auth]');
     const toolNav=target.closest('a[href*="#pdfWorkbench"],a[href*="#scanner"],a[href*="#photoStudio"],a[href="document-library.html"],a[href="office.html"],a[href="gov-documents.html"],a[href^="modules.html"]');
-    if(tool||toolNav)requireLogin(event);
+    if((tool||toolNav)&&!replaying){\n      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();\n      hasSession().then(ok=>{if(ok){replaying=true;target.closest('.module-card, .tool-card, #pdfWorkbench, #scanner, #photoStudio, #recent, .office-tool, [data-requires-auth], a[href*=\"#pdfWorkbench\"],a[href*=\"#scanner\"],a[href*=\"#photoStudio\"],a[href=\"document-library.html\"],a[href=\"office.html\"],a[href=\"gov-documents.html\"],a[href^=\"modules.html\"]')?.click();replaying=false;}else location.href=loginUrl();});\n    }
   },true);
   window.KAGZI_AUTH_GUARD={hasSession,requireLogin};
 })();
