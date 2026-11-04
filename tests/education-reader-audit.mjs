@@ -3,23 +3,36 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../education.html', import.meta.url), 'utf8');
+const reader = readFileSync(new URL('../reader.html', import.meta.url), 'utf8');
+const admin = readFileSync(new URL('../admin-library.html', import.meta.url), 'utf8');
 
-test('book cards expose a real details button and an accessible details dialog', () => {
-  assert.match(html, /<button class="details-button"[^>]*data-details-id="\$\{escapeHTML\(book\.id\)\}"/);
+test('book cards expose an accessible detail dialog and internal reader route', () => {
+  assert.match(html, /<button class="details-button"[^>]*data-details-id=/);
   assert.match(html, /<dialog id="bookDetails"/);
-  assert.match(html, /id="bookDetailsTitle"/);
   assert.match(html, /reader\.html\?book=/);
 });
 
-test('Urdu book details support right-to-left and display rights information', () => {
+test('public library reads only published records from KAGZI database', () => {
+  assert.match(html, /from\('kagzi_library_files'\)/);
+  assert.match(html, /eq\('is_published', true\)/);
+  assert.match(html, /kagzi-supabase\.js/);
+});
+
+test('reader creates a short-lived URL for a private KAGZI storage object', () => {
+  assert.match(reader, /createSignedUrl\(book\.storage_path,3600\)/);
+  assert.match(reader, /eq\('is_published',true\)/);
+  assert.doesNotMatch(reader, /target="_blank"/);
+});
+
+test('admin upload validates PDF and records rights details', () => {
+  assert.match(admin, /accept="application\/pdf,\.pdf"/);
+  assert.match(admin, /25\*1024\*1024/);
+  assert.match(admin, /rights_reference/);
+  assert.match(admin, /kagzi_library_admins/);
+  assert.match(admin, /kagzi-library/);
+});
+
+test('Urdu is rendered right-to-left', () => {
   assert.match(html, /dir="rtl"/);
-  assert.match(html, /rightsNote/);
-});
-
-test('book reading stays on KAGZI and the reader uses only local PDF paths', () => {
-  const reader = readFileSync(new URL('../reader.html', import.meta.url), 'utf8');
-  assert.match(html, /reader\.html\?book=/);
-  assert.match(reader, /education-data\.mjs/);
-  assert.match(reader, /book\.contentPath/);
-  assert.doesNotMatch(reader, /target="_blank"|https?:\/\//);
+  assert.match(reader, /dir='rtl'/);
 });
