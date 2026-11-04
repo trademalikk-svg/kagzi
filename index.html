@@ -74,7 +74,7 @@ body{background:#f4f6fc;color:#0b1835}
 .doc-cloud{position:absolute;right:0;bottom:8px;background:#eaf2ff;color:#17427f;border-radius:50%;width:46px;height:46px;display:grid;place-items:center;font-size:29px;font-weight:900}
 .edu-cap{position:absolute;top:0;font-size:75px;color:#e9bd5c;text-shadow:0 8px 18px #0009}
 .edu-books{position:absolute;bottom:0;font:900 45px/1.05 Manrope;color:#e9edf7;text-shadow:0 7px 10px #0008;transform:perspective(100px) rotateX(7deg)}
-.vip-dual-panels{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin:17px 0}
+.vip-dual-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:17px 0}
 .vip-panel{background:#fff;border:1px solid #e4d5b8;border-radius:16px;padding:15px;box-shadow:0 5px 16px #172c5010}
 .vip-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .vip-panel-head h2{font:800 19px Manrope;margin:0;color:#0b1835}
@@ -137,6 +137,25 @@ img,video,canvas,iframe{max-width:100%}
 @media (max-width:420px){.vip-brand b{font-size:18px}.vip-auth .auth-link,.vip-auth .auth-primary{padding:7px 8px;font-size:9px}.vip-hero{gap:5px}.vip-hero-art{width:70px;flex-basis:70px}.vip-hero-copy h1{font-size:36px}.vip-hero-copy h2{font-size:20px}.vip-panel-head{align-items:flex-start;gap:8px}.vip-panel-head h2{font-size:14px}.vip-glance>div{min-width:44%}}
 </style>
 
+<style id="kagzi-front-document-panel">
+/* Keep the three primary workspaces visually equal on the homepage. */
+.vip-dual-panels{grid-template-columns:repeat(3,minmax(0,1fr))}
+.vip-document-panel .vip-service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.vip-document-panel .vip-service-grid a{min-height:78px}
+@media(max-width:1050px){.vip-dual-panels{grid-template-columns:1fr}}
+</style>
+
+<style id="kagzi-featured-document-library">
+.featured-library{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:18px 0 22px;padding:20px 24px;border:1px solid rgba(151,111,255,.48);border-radius:18px;background:linear-gradient(110deg,rgba(91,55,160,.24),rgba(28,20,51,.94));box-shadow:0 12px 34px rgba(0,0,0,.18)}
+.featured-library-main{display:flex;align-items:center;gap:16px;min-width:0}
+.featured-library-icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:15px;background:rgba(151,111,255,.2);font-size:28px}
+.featured-library-copy strong{display:block;font-size:clamp(19px,2.2vw,25px);font-weight:900;letter-spacing:.025em;color:#fff}
+.featured-library-copy span{display:block;margin-top:5px;color:#c9c0df;font-size:13px}
+.featured-library-link{flex:0 0 auto;padding:12px 18px;border-radius:11px;background:#a78bfa;color:#170d2c!important;font-weight:900;text-decoration:none}
+.featured-library-link:hover{filter:brightness(1.08)}
+@media(max-width:560px){.featured-library{align-items:flex-start;padding:15px;gap:12px}.featured-library-main{gap:11px}.featured-library-icon{width:44px;height:44px;flex-basis:44px;font-size:23px}.featured-library-copy strong{font-size:17px}.featured-library-copy span{font-size:11px}.featured-library-link{padding:10px 12px;font-size:12px;align-self:center}}
+</style>
+
 </head>
 <body>
 <div class="app-shell">
@@ -166,23 +185,34 @@ img,video,canvas,iframe{max-width:100%}
 <header class="topbar vip-topbar">
 <a class="vip-brand" href="#home"><span class="vip-brand-mark">K</span><span><b>KAGZI AI</b><small>Jan Seva &amp; Education</small></span></a>
 <nav class="vip-nav" aria-label="Main navigation">
-<a class="active" href="#home">⌂ Home</a><a href="#jan-seva">AI Jan Seva</a><a href="#education">Education</a><a href="gov-documents.html">Digital Documents</a><a href="#schemes">Government Schemes</a><a href="#exams">Exams</a><a href="#news">News</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+<a class="active" href="#home">⌂ Home</a><a href="jan-seva.html">AI Jan Seva</a><a href="#education">Education</a><a href="gov-documents.html">Government Documents</a><a href="#document-edit">Document Edit</a><a href="jan-seva.html">Government Schemes</a><a href="modules.html?category=education">Exams</a><a href="jan-seva.html">News</a><a href="about.html">About</a><a href="contact.html">Contact</a>
 </nav>
 <div class="vip-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search services, eBooks or documents..." aria-label="Search services, eBooks or documents"><button id="searchBtn" type="button">Search</button></div>
 <div class="vip-auth"><a class="auth-link" href="auth.html?mode=login">Login</a><a class="auth-primary" href="auth.html?mode=signup">Sign Up</a></div>
 <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 </header>
+<section class="featured-library" aria-label="Featured Document Library">
+  <div class="featured-library-main">
+    <span class="featured-library-icon" aria-hidden="true">▤</span>
+    <div class="featured-library-copy"><strong>DOCUMENT LIBRARY</strong><span>Upload, read and organise your PDF documents</span></div>
+  </div>
+  <a class="featured-library-link" href="document-library.html">OPEN LIBRARY ↗</a>
+</section>
 <section class="vip-hero-grid" aria-label="KAGZI AI introduction">
 <article class="vip-hero vip-hero-main"><div class="vip-hero-art"><span class="doc-sheet">🇮🇳</span><span class="doc-folder">✦</span><span class="doc-cloud">✓</span></div><div class="vip-hero-copy"><div class="vip-kicker">ONE PLATFORM · MANY POSSIBILITIES</div><h1>KAGZI AI</h1><h2>Jan Seva &amp; Education</h2><h3>सरकारी सेवाएँ, शिक्षा और डिजिटल सुविधाएँ</h3><p>जनसेवा, पढ़ाई और जरूरी दस्तावेज़ — अब एक ही मंच पर।</p><a class="vip-cta" href="#main-services">आज ही शुरुआत करें <span>→</span></a></div></article>
 <article class="vip-hero vip-hero-education"><div class="vip-hero-copy"><div class="vip-kicker">सेवा भी · शिक्षा भी</div><h2>आपका डिजिटल<br>सहयोगी मंच</h2><p>सरकारी योजनाओं की जानकारी पाएँ, पढ़ाई की सामग्री खोजें और उपयोगी दस्तावेज़ों तक पहुँचें।</p><a class="vip-cta" href="#main-services">सेवाएँ देखें <span>→</span></a></div><div class="vip-hero-art edu-art"><span class="edu-cap">✺</span><span class="edu-books">📚</span></div></article>
 </section>
 <section class="vip-dual-panels" id="main-services">
-<article class="vip-panel" id="jan-seva"><div class="vip-panel-head"><h2><span>🏛️</span> AI Jan Seva</h2><a href="#schemes">सभी सेवाएँ →</a></div><div class="vip-service-grid">
-<a href="#schemes"><span>📋</span>सरकारी योजनाएँ</a><a href="#citizen-services"><span>🧾</span>नागरिक सेवाएँ</a><a href="gov-documents.html"><span>📑</span>दस्तावेज़ जानकारी</a><a href="contact.html"><span>✦</span>AI सहायता</a>
+<article class="vip-panel" id="jan-seva"><div class="vip-panel-head"><h2><span>🏛️</span> AI Jan Seva</h2><a href="jan-seva.html">सभी सेवाएँ →</a></div><div class="vip-service-grid">
+<a href="jan-seva.html"><span>📋</span>सरकारी योजनाएँ</a><a href="jan-seva.html"><span>🧾</span>नागरिक सेवाएँ</a><a href="gov-documents.html"><span>📑</span>दस्तावेज़ जानकारी</a><a href="contact.html"><span>✦</span>AI सहायता</a>
 </div><p class="vip-panel-note">योजनाओं, पात्रता और आवेदन प्रक्रिया की सरल जानकारी।</p></article>
-<article class="vip-panel vip-education-panel" id="education"><div class="vip-panel-head"><h2><span>🎓</span> Education</h2><a href="#study-material">अध्ययन सामग्री →</a></div><div class="vip-education-grid">
+<article class="vip-panel vip-document-edit-panel" id="document-edit"><div class="vip-panel-head"><h2><span>📝</span> Document Edit</h2><a href="#pdfWorkbench">एडिटिंग खोलें →</a></div><div class="vip-service-grid">
+<a href="#pdfWorkbench"><span>📄</span>PDF Edit &amp; Pages</a><a href="#pdfWorkbench"><span>🔗</span>Merge / Split</a><a href="#scanner"><span>🔎</span>Scan &amp; OCR</a><a href="#photoStudio"><span>🖼️</span>Photo Edit</a>
+</div><p class="vip-panel-note">PDF, स्कैन और फोटो दस्तावेज़ों पर काम करने के टूल।</p></article>
+<article class="vip-panel vip-education-panel" id="education"><div class="vip-panel-head"><h2><span>🎓</span> Education</h2><a href="modules.html?category=education">अध्ययन सामग्री →</a></div><div class="vip-education-grid">
 <div><span>📚</span><b>eBooks &amp; PDF</b><small>डिजिटल लाइब्रेरी</small></div><div><span>✍️</span><b>Study Notes</b><small>विषयवार नोट्स</small></div><div><span>📝</span><b>Exam Preparation</b><small>परीक्षा तैयारी</small></div><div><span>🗞️</span><b>Current Affairs</b><small>समसामयिकी</small></div><div><span>🤖</span><b>AI Study Help</b><small>सीखने में सहायता</small></div>
 </div></article>
+
 </section>
 <section class="vip-bottom-row" id="digital-documents">
 <div class="vip-glance"><div><b>Digital Documents</b><small>जरूरी जानकारी एक जगह</small></div><div><strong>500+</strong><small>सरकारी दस्तावेज़</small></div><div><strong>65+</strong><small>जानकारीपूर्ण लेख</small></div></div>
