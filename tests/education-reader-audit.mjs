@@ -34,5 +34,5 @@ test('admin upload validates PDF and records rights details', () => {
 
 test('Urdu is rendered right-to-left', () => {
   assert.match(html, /dir="rtl"/);
-  assert.match(reader, /dir='rtl'/);
+  assert.match(reader, /language==='ur'\?'rtl'/);
 });
