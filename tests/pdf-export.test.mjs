@@ -73,3 +73,11 @@ test('PDF export revokes its temporary URL if the browser download click fails',
   assert.throws(() => api.download(new Uint8Array([9]), 'document.pdf'), /download blocked/);
   assert.deepEqual(calls.revoked, ['blob:test-pdf']);
 });
+
+test('PDF editor loads the export helper before editor code and uses it for edited and split PDFs', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('src="pdf-export.js"') < html.indexOf('src="pdf-editor.js"'));
+  assert.match(editor, /KAGZIPdfExport\.download\(finalBytes/);
+  assert.match(editor, /KAGZIPdfExport\.download\(bytes/);
+});
