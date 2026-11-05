@@ -67,3 +67,11 @@ test('OCR language selector offers individual Hindi, English and Urdu plus a com
     assert.match(html, new RegExp('value="' + code.replaceAll('+', '\\+') + '"'));
   }
 });
+
+test('camera capture is single-flight and restores the capture control after errors', async () => {
+  const scanner = await readFile(new URL('../pdf-scanner.js', import.meta.url), 'utf8');
+  assert.match(scanner, /let stream=null,capturing=false/);
+  assert.match(scanner, /if\(capturing\)return/);
+  assert.match(scanner, /finally\{capturing=false;if\(button\)button\.disabled=!stream;\}/);
+  assert.match(scanner, /if\(stream\)stream\.getTracks\(\)\.forEach\(track=>track\.stop\(\)\)/);
+});
