@@ -168,7 +168,8 @@ test('PDF note annotations render a bounded note box and readable text on the se
     StandardFonts: { Helvetica: 'Helvetica' },
     rgb: (r, g, b) => ({ r, g, b })
   };
-  const result = sandbox.window.KAGZIPdfCreateNoteAnnotation(page, PDFLib, 'Review this section', 280, 390);
+  const pdfDocument = { embedFont: async name => name };
+  const result = await sandbox.window.KAGZIPdfCreateNoteAnnotation(page, pdfDocument, PDFLib, 'Review this section', 280, 390);
   assert.deepEqual(JSON.parse(JSON.stringify(result)), { x: 140, y: 328, width: 152, height: 64 });
   assert.equal(calls.length, 2);
   assert.equal(calls[0].type, 'rectangle');
@@ -177,6 +178,7 @@ test('PDF note annotations render a bounded note box and readable text on the se
   assert.equal(calls[1].type, 'text');
   assert.equal(calls[1].text, 'Review this section');
   assert.equal(calls[1].options.maxWidth, 136);
+  assert.equal(calls[1].options.font, 'Helvetica');
 });
 
 test('PDF note annotation renderer rejects blank notes and missing page geometry', async () => {
@@ -185,6 +187,7 @@ test('PDF note annotation renderer rejects blank notes and missing page geometry
   vm.runInNewContext(source, sandbox);
   const renderer = sandbox.window.KAGZIPdfCreateNoteAnnotation;
   assert.equal(typeof renderer, 'function');
-  assert.equal(renderer({ getSize: () => ({ width: 300, height: 400 }) }, { StandardFonts: {}, rgb() {} }, '   ', 20, 20), null);
-  assert.equal(renderer({}, { StandardFonts: {}, rgb() {} }, 'Note', 20, 20), null);
+  const pdfDocument = { embedFont: async name => name };
+  assert.equal(await renderer({ getSize: () => ({ width: 300, height: 400 }) }, pdfDocument, { StandardFonts: {}, rgb() {} }, '   ', 20, 20), null);
+  assert.equal(await renderer({}, pdfDocument, { StandardFonts: {}, rgb() {} }, 'Note', 20, 20), null);
 });
