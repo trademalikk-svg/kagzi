@@ -28,6 +28,13 @@ Run these checks on the feature branch before merging.
 6. Start another image placement and tap **Cancel image**; confirm the preview is removed and no image is added.
 7. Use Undo after placement and confirm the embedded image is removed.
 
+## Select and visually cover an image added in this session
+1. Add an image using the placement preview and confirm it appears on the current page.
+2. Click its selection outline; confirm the remove/cover control becomes enabled.
+3. Activate the control and confirm the image area is covered in the page preview and after export.
+4. Confirm the editor warns that the original image data may remain embedded; this is not secure redaction or guaranteed data erasure.
+5. Reopen a different page and confirm the selection outline is not shown there.
+
 ## Image placement controls (size bounds)
 1. Open a PDF and choose a PNG or JPG image.
 2. Set image width to a valid percentage between 5 and 100.
