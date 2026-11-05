@@ -150,3 +150,41 @@ test('workspace panel toggles update collapsed state and accessible labels', asy
   assert.equal(nodes.toggleInspector.textContent, 'Show properties');
   assert.equal(nodes.toggleInspector.getAttribute('aria-label'), 'Show properties panel');
 });
+
+
+test('PDF note annotations render a bounded note box and readable text on the selected page', async () => {
+  const source = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const sandbox = { window: {}, document: { addEventListener() {} } };
+  vm.runInNewContext(source, sandbox);
+  assert.equal(typeof sandbox.window.KAGZIPdfCreateNoteAnnotation, 'function',
+    'the editor must expose its note-annotation renderer');
+  const calls = [];
+  const page = {
+    getSize: () => ({ width: 300, height: 400 }),
+    drawRectangle: options => calls.push({ type: 'rectangle', options }),
+    drawText: (text, options) => calls.push({ type: 'text', text, options })
+  };
+  const PDFLib = {
+    StandardFonts: { Helvetica: 'Helvetica' },
+    rgb: (r, g, b) => ({ r, g, b })
+  };
+  const result = sandbox.window.KAGZIPdfCreateNoteAnnotation(page, PDFLib, 'Review this section', 280, 390);
+  assert.deepEqual(JSON.parse(JSON.stringify(result)), { x: 140, y: 328, width: 152, height: 64 });
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].type, 'rectangle');
+  assert.equal(calls[0].options.x, 140);
+  assert.equal(calls[0].options.y, 328);
+  assert.equal(calls[1].type, 'text');
+  assert.equal(calls[1].text, 'Review this section');
+  assert.equal(calls[1].options.maxWidth, 136);
+});
+
+test('PDF note annotation renderer rejects blank notes and missing page geometry', async () => {
+  const source = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const sandbox = { window: {}, document: { addEventListener() {} } };
+  vm.runInNewContext(source, sandbox);
+  const renderer = sandbox.window.KAGZIPdfCreateNoteAnnotation;
+  assert.equal(typeof renderer, 'function');
+  assert.equal(renderer({ getSize: () => ({ width: 300, height: 400 }) }, { StandardFonts: {}, rgb() {} }, '   ', 20, 20), null);
+  assert.equal(renderer({}, { StandardFonts: {}, rgb() {} }, 'Note', 20, 20), null);
+});
