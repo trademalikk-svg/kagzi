@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function bindPanelToggle(root, buttonId, panelId, expandedLabel, collapsedLabel) {
+  function bindPanelToggle(root, buttonId, panelId, expandedLabel, collapsedLabel, expandedAriaLabel, collapsedAriaLabel) {
     const button = root.getElementById(buttonId);
     const panel = root.getElementById(panelId);
     if (!button || !panel || typeof button.addEventListener !== 'function') return;
@@ -9,6 +9,7 @@
     const initialExpanded = button.getAttribute('aria-expanded') !== 'false';
     button.setAttribute('aria-expanded', String(initialExpanded));
     button.textContent = initialExpanded ? expandedLabel : collapsedLabel;
+    button.setAttribute('aria-label', initialExpanded ? expandedAriaLabel : collapsedAriaLabel);
     panel.classList.toggle('is-collapsed', !initialExpanded);
 
     button.addEventListener('click', function () {
@@ -16,14 +17,15 @@
       const nextExpanded = !currentlyExpanded;
       button.setAttribute('aria-expanded', String(nextExpanded));
       button.textContent = nextExpanded ? expandedLabel : collapsedLabel;
+      button.setAttribute('aria-label', nextExpanded ? expandedAriaLabel : collapsedAriaLabel);
       panel.classList.toggle('is-collapsed', !nextExpanded);
     });
   }
 
   function init(root) {
     const doc = root || document;
-    bindPanelToggle(doc, 'togglePageRail', 'pdfPageRailPanel', 'Hide pages', 'Show pages');
-    bindPanelToggle(doc, 'toggleInspector', 'pdfSelectionProperties', 'Hide properties', 'Show properties');
+    bindPanelToggle(doc, 'togglePageRail', 'pdfPageRailPanel', 'Hide pages', 'Show pages', 'Hide page thumbnails', 'Show page thumbnails');
+    bindPanelToggle(doc, 'toggleInspector', 'pdfSelectionProperties', 'Hide properties', 'Show properties', 'Hide properties panel', 'Show properties panel');
   }
 
   window.KAGZIPdfWorkspace = { init };
