@@ -1,0 +1,39 @@
+name: PDF editor checks
+on:
+  pull_request:
+    paths:
+      - "pdf-editor.js"
+      - "pdf-editor.html"
+      - "pdf-editor.css"
+      - "pdf-server-adapter.js"
+      - ".github/workflows/pdf-editor-check.yml"
+  push:
+    branches:
+      - main
+      - pdf-editor-design
+    paths:
+      - "pdf-editor.js"
+      - "pdf-editor.html"
+      - "pdf-editor.css"
+      - "pdf-server-adapter.js"
+      - ".github/workflows/pdf-editor-check.yml"
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check editor JavaScript syntax
+        run: node --check pdf-editor.js
+      - name: Check server adapter JavaScript syntax
+        run: node --check pdf-server-adapter.js
+      - name: Check editor page references
+        run: |
+          test -f pdf-editor.html
+          test -f pdf-editor.css
+          grep -q 'src="pdf-editor.js"' pdf-editor.html
+          grep -q 'src="pdf-server-adapter.js"' pdf-editor.html
+          grep -q 'href="pdf-editor.css"' pdf-editor.html
