@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 test('image editor exposes OCR line normalization and keeps text plus bounding boxes', async () => {
   const source = await readFile(new URL('../image-text-editor.js', import.meta.url), 'utf8');
-  const sandbox = { window: {}, document: { addEventListener() {} } };
+  const sandbox = { window: {}, document: { readyState: 'loading', addEventListener() {} } };
   vm.runInNewContext(source, sandbox);
   assert.equal(typeof sandbox.window.KAGZIImageEditor.normalizeOcrLines, 'function');
   const result = sandbox.window.KAGZIImageEditor.normalizeOcrLines([
