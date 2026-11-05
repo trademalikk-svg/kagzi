@@ -78,9 +78,9 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  window.KAGZIPdfEditorAppendOcrText=async(text)=>{
   if(!workingBytes||!pdfDoc)throw new Error('Open a destination PDF before adding an OCR text page.');
   const value=String(text||'').trim();if(!value)throw new Error('There is no OCR text to add.');
-  const pageWidth=595.28,pageHeight=841.89,scale=2,canvasWidth=Math.round(pageWidth*scale),canvasHeight=Math.round(pageHeight*scale),margin=92,lineHeight=44,fontSize=29;
-  const paragraphs=value.replace(/\\r/g,'').split('\\n'),pages=[];let canvas=document.createElement('canvas');canvas.width=canvasWidth;canvas.height=canvasHeight;let ctx=canvas.getContext('2d');
-  const newPage=()=>{canvas=document.createElement('canvas');canvas.width=canvasWidth;canvas.height=canvasHeight;ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvasWidth,canvasHeight);ctx.fillStyle='#17233c';ctx.font='29px Arial, sans-serif';ctx.textBaseline='top';ctx.direction='inherit';pages.push(canvas);return margin;};
+  const pageWidth=595.28,pageHeight=841.89,scale=2,canvasWidth=Math.round(pageWidth*scale),canvasHeight=Math.round(pageHeight*scale),margin=92,lineHeight=44;
+  const paragraphs=value.replace(/\r/g,'').split('\n'),pages=[];let canvas=document.createElement('canvas');canvas.width=canvasWidth;canvas.height=canvasHeight;let ctx=canvas.getContext('2d');
+  const newPage=()=>{canvas=document.createElement('canvas');canvas.width=canvasWidth;canvas.height=canvasHeight;ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvasWidth,canvasHeight);ctx.fillStyle='#17233c';ctx.font='29px Arial, sans-serif';ctx.textBaseline='top';ctx.direction=/[\u0600-\u06FF]/.test(value)?'rtl':'ltr';pages.push(canvas);return margin;};
   let y=newPage();
   for(const paragraph of paragraphs){const words=paragraph.split(/\\s+/).filter(Boolean);if(!words.length){y+=lineHeight;if(y>canvasHeight-margin){y=newPage();}continue;}let line='';for(const word of words){const candidate=line?line+' '+word:word;if(ctx.measureText(candidate).width>canvasWidth-margin*2&&line){ctx.fillText(line,margin,y);y+=lineHeight;line=word;if(y>canvasHeight-margin){y=newPage();}}else line=candidate;}if(line){ctx.fillText(line,margin,y);y+=lineHeight;}y+=12;if(y>canvasHeight-margin)y=newPage();}
   const pdf=await PDFLib.PDFDocument.load(workingBytes.slice());remember();
