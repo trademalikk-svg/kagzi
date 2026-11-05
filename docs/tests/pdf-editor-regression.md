@@ -19,6 +19,14 @@ Run these checks on the feature branch before merging.
 5. Export and reopen the destination; confirm the inserted pages and order persist.
 6. Try with no source file and with a malformed source PDF; confirm a clear error and no partial document change.
 
+## Image placement controls
+1. Open a PDF and choose a PNG or JPG image.
+2. Set image width to a valid percentage between 5 and 100.
+3. Click the page to place the image and confirm the exported image width follows the chosen percentage while preserving aspect ratio.
+4. Use Undo to remove the most recently placed image, then place it again at a different position to verify the reposition workflow.
+5. Clear a pending image before placement and confirm no image is inserted.
+6. Try a width below 5 and above 100; confirm the editor clamps to the supported range.
+
 ## Inspector text styling
 1. Open a PDF containing selectable text and select a text span.
 2. Change the replacement text, font size, font family, bold, alignment, color and opacity in the Inspector.
