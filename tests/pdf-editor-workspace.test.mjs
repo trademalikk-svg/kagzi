@@ -51,7 +51,7 @@ test('PDF editor provides local merge and split handlers', async () => {
   assert.match(js, /copyPages\(source,indices\)/);
 });
 
-test('reviewed OCR text can be appended to an open PDF as clearly labeled visual pages', async () => {
+test('PDF filename validation and OCR word wrapping use the intended regular expressions', async () => {\n  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');\n  assert.match(js, /!\\\\?\\.pdf\\\\\$\/i/);\n  assert.match(js, /paragraph\\.split\\(\\/\\\\s\\+\\/\\)/);\n});\n\ntest('reviewed OCR text can be appended to an open PDF as clearly labeled visual pages', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
   const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
   const scanner = await readFile(new URL('../pdf-scanner.js', import.meta.url), 'utf8');
