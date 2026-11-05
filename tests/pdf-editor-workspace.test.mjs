@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
 
 test('PDF editor exposes document-first workspace regions and accessible file/export controls', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
@@ -73,4 +74,69 @@ test('PDF editor loads local OCR and camera scripts before the editor initialize
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
   assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
   assert.ok(html.indexOf('src="pdf-scanner.js"') < html.indexOf('src="pdf-editor.js"'));
+});
+
+
+test('mobile workspace exposes accessible page and properties panel toggles', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  for (const [buttonId, panelId] of [
+    ['togglePageRail', 'pdfPageRailPanel'],
+    ['toggleInspector', 'pdfInspector']
+  ]) {
+    assert.match(html, new RegExp('id="' + buttonId + '"'));
+    assert.match(html, new RegExp('aria-controls="' + panelId + '"'));
+    assert.match(html, new RegExp('aria-expanded="true"'));
+  }
+  assert.match(html, /src="pdf-editor-workspace\.js"/);
+});
+
+test('workspace panel toggles update collapsed state and accessible labels', async () => {
+  const source = await readFile(new URL('../pdf-editor-workspace.js', import.meta.url), 'utf8');
+  function element() {
+    const classes = new Set();
+    const listeners = {};
+    const attributes = new Map();
+    return {
+      listeners,
+      textContent: '',
+      classList: {
+        toggle(name, force) {
+          if (force === undefined ? !classes.has(name) : force) classes.add(name);
+          else classes.delete(name);
+        },
+        contains(name) { return classes.has(name); }
+      },
+      addEventListener(name, callback) { listeners[name] = callback; },
+      getAttribute(name) { return attributes.get(name) ?? null; },
+      setAttribute(name, value) { attributes.set(name, String(value)); }
+    };
+  }
+  const nodes = {
+    togglePageRail: element(),
+    pdfPageRailPanel: element(),
+    toggleInspector: element(),
+    pdfInspector: element()
+  };
+  for (const id of ['togglePageRail', 'toggleInspector']) {
+    nodes[id].setAttribute('aria-expanded', 'true');
+  }
+  const document = { getElementById: id => nodes[id] || null };
+  const window = {};
+  vm.runInNewContext(source, { window, document });
+  window.KAGZIPdfWorkspace.init(document);
+
+  nodes.togglePageRail.listeners.click();
+  assert.equal(nodes.togglePageRail.getAttribute('aria-expanded'), 'false');
+  assert.equal(nodes.pdfPageRailPanel.classList.contains('is-collapsed'), true);
+  assert.equal(nodes.togglePageRail.textContent, 'Show pages');
+
+  nodes.togglePageRail.listeners.click();
+  assert.equal(nodes.togglePageRail.getAttribute('aria-expanded'), 'true');
+  assert.equal(nodes.pdfPageRailPanel.classList.contains('is-collapsed'), false);
+  assert.equal(nodes.togglePageRail.textContent, 'Hide pages');
+
+  nodes.toggleInspector.listeners.click();
+  assert.equal(nodes.toggleInspector.getAttribute('aria-expanded'), 'false');
+  assert.equal(nodes.pdfInspector.classList.contains('is-collapsed'), true);
+  assert.equal(nodes.toggleInspector.textContent, 'Show properties');
 });
