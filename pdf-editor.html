@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f7fc">
+<title>KAGZI PDF Editor — Edit PDF Online</title>
+<meta name="description" content="Edit PDF pages in your browser with KAGZI. Add text, images and highlights, rotate, reorder, delete pages and download.">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/pdf-editor.html">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pdf-editor.css">
+</head>
+<body class="pdf-editor-page">
+<header class="editor-top"><a href="index.html" class="editor-brand"><span>K</span><b>KAGZI</b></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
+<main class="editor-wrap">
+<section class="editor-intro"><p class="editor-kicker">KAGZI DOCUMENT STUDIO</p><h1>PDF Editor</h1><p>PDF खोलें, बदलाव करें और edited file डाउनलोड करें। आपका document इस editor में browser के अंदर ही process होता है।</p></section>
+<section class="privacy-banner"><b>🔒 Browser-only processing</b><span>इस editor में PDF आपके device से server पर upload नहीं होती। Server processing अभी उपलब्ध नहीं है।</span></section>
+<section class="editor-shell">
+<div class="editor-toolbar">
+<label class="editor-file-btn" for="pdfFileInput">Choose PDF</label><input id="pdfFileInput" type="file" accept="application/pdf,.pdf">
+<button id="prevPage" type="button" disabled>←</button><label class="sr-only" for="pageNumber">Page number</label><input id="pageNumber" type="number" min="1" value="1" disabled><span>/ <b id="pageCount">0</b></span><button id="nextPage" type="button" disabled>→</button>
+<button id="zoomOut" type="button" disabled>−</button><span id="zoomLabel">100%</span><button id="zoomIn" type="button" disabled>+</button>
+</div>
+<div class="editor-workspace">
+<aside class="editor-tools" aria-label="Editing tools">
+<button id="selectTool" class="active" type="button" disabled>↖ Select</button>
+<button id="textTool" type="button" disabled> T Text</button>
+<button id="imageTool" type="button" disabled>▧ Image</button>
+<button id="highlightTool" type="button" disabled>▰ Highlight</button>
+<label for="imageFileInput">Choose image</label><input id="imageFileInput" type="file" accept="image/png,image/jpeg" disabled>
+<hr>
+<button id="rotatePage" type="button" disabled>↻ Rotate 90°</button>
+<button id="deletePage" type="button" disabled>Delete page</button>
+<button id="movePageUp" type="button" disabled>↑ Move up</button>
+<button id="movePageDown" type="button" disabled>↓ Move down</button>
+<button id="undoEdit" type="button" disabled>↶ Undo</button>
+</aside>
+<div class="page-stage">
+<div id="emptyEditor" class="empty-editor"><span>▤</span><b>Choose a PDF to begin</b><small>PDF files are opened locally in your browser.</small></div>
+<div id="canvasWrap" class="canvas-wrap" hidden><canvas id="pdfCanvas"></canvas><div id="editorOverlay" class="editor-overlay" aria-label="PDF editing surface"></div></div>
+<p id="editorStatus" class="editor-status" role="status" aria-live="polite">No PDF selected.</p>
+</div>
+</div>
+<div class="editor-bottom"><div><b>Editing mode</b><span id="activeToolLabel">Select</span></div><button id="downloadEditedPdf" type="button" disabled>Download edited PDF</button></div>
+</section>
+<section class="server-panel"><div><b>Need larger-file processing?</b><p>Server processing will be enabled only after KAGZI configures private temporary storage, a verified processor and automatic deletion.</p></div><button type="button" disabled title="Server processing is not configured">Server processing unavailable</button></section>
+<p class="editor-footnote">Note: Text and image tools add overlays; they do not rewrite the PDF's original text. Highlight is a visual annotation, not secure redaction. Keep your original document.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="pdf-server-adapter.js"></script><script src="pdf-editor.js"></script>
+</body></html>
