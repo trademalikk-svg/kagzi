@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-let stream=null;
+let stream=null,capturing=false;
 const byId=id=>document.getElementById(id);
 function status(message){const node=byId('scannerStatus');if(node)node.textContent=message;}
 function ocrStatus(message){const node=byId('ocrEditStatus');if(node)node.textContent=message;}
@@ -21,20 +21,39 @@ async function recognizeSource(source,label){
 async function openCamera(){
  const video=byId('cameraPreview');
  if(!navigator.mediaDevices?.getUserMedia){status('Camera API is unavailable. Open this page over HTTPS in a supported browser.');return;}
- try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});video.srcObject=stream;video.hidden=false;await video.play();byId('captureScan').disabled=false;byId('closeCameraScanner').disabled=false;status('Camera ready. Place the page in view and tap Capture page.');}
- catch(error){status(error.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in browser settings.':'Could not open camera. Check camera availability and permissions.');}
+ try{
+  if(stream)closeCamera();
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+  video.srcObject=stream;video.hidden=false;await video.play();
+  byId('captureScan').disabled=false;byId('closeCameraScanner').disabled=false;
+  status('Camera ready. Place the page in view and tap Capture page.');
+ }catch(error){
+  if(stream)stream.getTracks().forEach(track=>track.stop());
+  stream=null;if(video){video.srcObject=null;video.hidden=true;}
+  if(byId('captureScan'))byId('captureScan').disabled=true;
+  if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;
+  status(error.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in browser settings.':'Could not open camera. Check camera availability and permissions.');
+ }
 }
 function closeCamera(){if(stream)stream.getTracks().forEach(track=>track.stop());stream=null;const video=byId('cameraPreview');if(video){video.pause();video.srcObject=null;video.hidden=true;}if(byId('captureScan'))byId('captureScan').disabled=true;if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;status('Camera closed.');}
 async function capture(){
- const video=byId('cameraPreview'),canvas=byId('scanPreviewCanvas');if(!stream||!video.videoWidth){status('Open the camera first.');return;}
- const maxWidth=1800,scale=Math.min(1,maxWidth/video.videoWidth);canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
- const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);
- const frame=ctx.getImageData(0,0,canvas.width,canvas.height),pixels=frame.data;
- for(let i=0;i<pixels.length;i+=4){const gray=.299*pixels[i]+.587*pixels[i+1]+.114*pixels[i+2],enhanced=Math.max(0,Math.min(255,(gray-128)*1.12+128));pixels[i]=pixels[i+1]=pixels[i+2]=enhanced;}
- ctx.putImageData(frame,0,0);
- const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.9));if(!blob){status('Could not capture this page.');return;}
- if(typeof window.KAGZIPdfEditorAppendScan!=='function'){status('PDF editor is still loading. Try again.');return;}
- const ok=await window.KAGZIPdfEditorAppendScan(blob);if(ok){status('Captured page added to your PDF. Automatic OCR started.');await recognizeSource(blob,'Scanned page');}
+ const video=byId('cameraPreview'),canvas=byId('scanPreviewCanvas'),button=byId('captureScan');
+ if(capturing)return;
+ if(!stream||!video||!video.videoWidth){status('Open the camera first.');return;}
+ capturing=true;if(button)button.disabled=true;
+ try{
+  const maxWidth=1800,scale=Math.min(1,maxWidth/video.videoWidth);canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
+  const ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  const frame=ctx.getImageData(0,0,canvas.width,canvas.height),pixels=frame.data;
+  for(let i=0;i<pixels.length;i+=4){const gray=.299*pixels[i]+.587*pixels[i+1]+.114*pixels[i+2],enhanced=Math.max(0,Math.min(255,(gray-128)*1.12+128));pixels[i]=pixels[i+1]=pixels[i+2]=enhanced;}
+  ctx.putImageData(frame,0,0);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.9));
+  if(!blob)throw new Error('Could not capture this page.');
+  if(typeof window.KAGZIPdfEditorAppendScan!=='function')throw new Error('PDF editor is still loading. Try again.');
+  const ok=await window.KAGZIPdfEditorAppendScan(blob);
+  if(ok){status('Captured page added to your PDF. Automatic OCR started.');await recognizeSource(blob,'Scanned page');}
+ }catch(error){status(error.message||'Could not scan this page.');}
+ finally{capturing=false;if(button)button.disabled=!stream;}
 }
 function downloadText(){const text=output()?.value||'';if(!text.trim())return;const blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kagzi-ocr-text.txt';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);ocrStatus('Edited OCR text downloaded.');}
 async function copyText(){const text=output()?.value||'';if(!text.trim())return;try{await navigator.clipboard.writeText(text);ocrStatus('OCR text copied.');}catch(e){ocrStatus('Clipboard permission unavailable. Select and copy the text manually.');}}
