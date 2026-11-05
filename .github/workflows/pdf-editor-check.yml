@@ -6,6 +6,10 @@ on:
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
+      - "image-text-editor.js"
+      - "image-text-editor.html"
+      - "image-text-editor.css"
+      - "tests/image-text-editor.test.mjs"
       - ".github/workflows/pdf-editor-check.yml"
   push:
     branches:
@@ -16,6 +20,10 @@ on:
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
+      - "image-text-editor.js"
+      - "image-text-editor.html"
+      - "image-text-editor.css"
+      - "tests/image-text-editor.test.mjs"
       - ".github/workflows/pdf-editor-check.yml"
 
 jobs:
@@ -30,10 +38,17 @@ jobs:
         run: node --check pdf-editor.js
       - name: Test PDF render metrics
         run: node --test tests/pdf-editor-render-audit.mjs
+      - name: Check image editor JavaScript syntax
+        run: node --check image-text-editor.js
+      - name: Test image OCR line normalization
+        run: node --test tests/image-text-editor.test.mjs
       - name: Check server adapter JavaScript syntax
         run: node --check pdf-server-adapter.js
       - name: Check editor page references
         run: |
+          test -f image-text-editor.html
+          test -f image-text-editor.css
+          grep -q image-text-editor.js image-text-editor.html
           test -f pdf-editor.html
           test -f pdf-editor.css
           grep -q 'src="pdf-editor.js"' pdf-editor.html
