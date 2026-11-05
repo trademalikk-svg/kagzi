@@ -149,10 +149,18 @@ img,video,canvas,iframe{max-width:100%}
 @media(max-width:560px){.featured-library{align-items:flex-start;padding:15px;gap:12px}.featured-library-main{gap:11px}.featured-library-icon{width:44px;height:44px;flex-basis:44px;font-size:23px}.featured-library-copy strong{font-size:17px}.featured-library-copy span{font-size:11px}.featured-library-link{padding:10px 12px;font-size:12px;align-self:center}}
 </style>
 
+
+<style id="kagzi-sidebar-activation">
+/* Keep the existing sidebar as the single navigation drawer on every screen size. */
+#sidebar{display:flex!important;transform:translateX(-105%);transition:transform .22s ease;pointer-events:none;z-index:1002;box-shadow:12px 0 32px rgba(5,18,45,.18)}
+#sidebar.open{transform:translateX(0);pointer-events:auto}
+.vip-topbar .menu-btn{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;margin:0;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.06);color:#fff;font-size:21px;line-height:1;cursor:pointer}
+@media(prefers-reduced-motion:reduce){#sidebar{transition:none}}
+</style>
 </head>
 <body>
 <div class="app-shell">
-<aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar" aria-hidden="true">
 <a class="brand" href="#"><span class="brand-mark">K</span><span>KAGZI<small>DOCUMENT WORKSPACE</small></span></a>
 <div class="workspace-label">WORKSPACE</div>
 <nav class="side-nav">
@@ -182,7 +190,7 @@ img,video,canvas,iframe{max-width:100%}
 </nav>
 <div class="vip-search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search services, eBooks or documents..." aria-label="Search services, eBooks or documents"><button id="searchBtn" type="button">Search</button></div>
 <div class="vip-auth"><a class="auth-link" href="auth.html?mode=login">Login</a><a class="auth-primary" href="auth.html?mode=signup">Sign Up</a></div>
-<button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+<button class="menu-btn" id="menuBtn" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Open menu">☰</button>
 </header>
 <section class="featured-library" aria-label="Featured Document Library">
   <div class="featured-library-main">
