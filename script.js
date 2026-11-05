@@ -1,5 +1,34 @@
 // Workspace navigation uses native anchors and CSS :target fallback.
-const $=s=>document.querySelector(s);const toast=$('#toast');let toastTimer;function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}$('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));document.addEventListener('click',e=>{if(window.innerWidth<=760&&!e.target.closest('#sidebar')&&!e.target.closest('#menuBtn'))$('#sidebar').classList.remove('open')});const picker=$('#filePicker');let sessionDocuments=[];function chooseFile(){picker.click()}$('#addDocBtn').addEventListener('click',chooseFile);$('#emptyAddBtn').addEventListener('click',chooseFile);
+const $=s=>document.querySelector(s);const toast=$('#toast');let toastTimer;function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}const menuButton=$('#menuBtn'),sidebar=$('#sidebar');
+function setSidebarOpen(open){
+ if(!menuButton||!sidebar)return;
+ sidebar.classList.toggle('open',open);
+ menuButton.setAttribute('aria-expanded',String(open));
+ menuButton.setAttribute('aria-label',open?'Close menu':'Open menu');
+ sidebar.setAttribute('aria-hidden',String(!open));
+}
+if(menuButton&&sidebar){
+ menuButton.setAttribute('aria-controls','sidebar');
+ menuButton.setAttribute('aria-expanded','false');
+ sidebar.setAttribute('aria-hidden','true');
+ menuButton.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('open')));
+ document.addEventListener('click',event=>{
+  if(!sidebar.classList.contains('open'))return;
+  const target=event.target instanceof Element?event.target:null;
+  if(!target||target.closest('#sidebar')||target.closest('#menuBtn'))return;
+  setSidebarOpen(false);
+ });
+ sidebar.addEventListener('click',event=>{
+  const target=event.target instanceof Element?event.target:null;
+  if(target&&target.closest('a[href]'))setSidebarOpen(false);
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&sidebar.classList.contains('open')){
+   setSidebarOpen(false);
+   menuButton.focus();
+  }
+ });
+}const picker=$('#filePicker');let sessionDocuments=[];function chooseFile(){picker.click()}$('#addDocBtn').addEventListener('click',chooseFile);$('#emptyAddBtn').addEventListener('click',chooseFile);
 function formatBytes(bytes){if(bytes<1024)return bytes+' B';if(bytes<1048576)return (bytes/1024).toFixed(1)+' KB';return (bytes/1048576).toFixed(1)+' MB';}
 function renderDocuments(){const list=$('#documentList'),query=$('#documentFilter').value.trim().toLowerCase();list.innerHTML='';const filtered=sessionDocuments.filter(item=>item.file.name.toLowerCase().includes(query));$('#documentCountLabel').textContent=sessionDocuments.length+' file'+(sessionDocuments.length===1?'':'s')+' in this session';$('#docCount').textContent=String(sessionDocuments.length);$('#documentEmpty').hidden=sessionDocuments.length>0;if(sessionDocuments.length&&filtered.length===0){const msg=document.createElement('p');msg.className='document-empty';msg.textContent='No file names match this filter.';list.append(msg);}filtered.forEach(item=>{const row=document.createElement('div');row.className='document-row';const icon=document.createElement('div');icon.className='document-file-icon';icon.textContent=item.file.type==='application/pdf'?'PDF':item.file.type.startsWith('image/')?'IMG':'DOC';const meta=document.createElement('div');meta.className='document-meta';const name=document.createElement('b');name.textContent=item.file.name;const details=document.createElement('small');details.textContent=formatBytes(item.file.size)+' · '+(item.file.type||'Unknown file type');meta.append(name,details);const actions=document.createElement('div');actions.className='document-actions';if(item.file.type==='application/pdf'||item.file.type.startsWith('image/')){const view=document.createElement('button');view.textContent='Preview';view.addEventListener('click',()=>{const url=URL.createObjectURL(item.file);const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener';link.click();setTimeout(()=>URL.revokeObjectURL(url),60000);});actions.append(view);}const remove=document.createElement('button');remove.className='remove-file';remove.textContent='Remove';remove.addEventListener('click',()=>{sessionDocuments=sessionDocuments.filter(doc=>doc.id!==item.id);renderDocuments();notify('Removed from this session.');});actions.append(remove);row.append(icon,meta,actions);list.append(row);});}
 picker.addEventListener('change',()=>{const incoming=[...picker.files];incoming.forEach(file=>sessionDocuments.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),file}));picker.value='';renderDocuments();if(incoming.length)notify(incoming.length+' file'+(incoming.length===1?'':'s')+' added to this session.');});
