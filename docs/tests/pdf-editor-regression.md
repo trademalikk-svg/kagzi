@@ -19,6 +19,13 @@ Run these checks on the feature branch before merging.
 5. Export and reopen the destination; confirm the inserted pages and order persist.
 6. Try with no source file and with a malformed source PDF; confirm a clear error and no partial document change.
 
+## Inspector text styling
+1. Open a PDF containing selectable text and select a text span.
+2. Change the replacement text, font size, font family, bold, alignment, color and opacity in the Inspector.
+3. Apply the edit and confirm the preview reflects the selected style.
+4. Export and reopen the PDF; confirm the replacement overlay retains the selected style.
+5. Confirm nearby content and page layout remain acceptable; complex scripts and non-standard fonts require separate compatibility testing.
+
 ## Watermark and page numbers
 1. Open a multi-page PDF and enter a short watermark label.
 2. Apply watermark and confirm it appears on every page with readable content still visible.
