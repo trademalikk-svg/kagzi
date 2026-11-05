@@ -11,6 +11,14 @@ Run these checks on the feature branch before merging.
 6. Undo and confirm the document returns to two pages.
 7. Try the action with no PDF open; the control must remain disabled.
 
+## Insert pages from another PDF
+1. Open a destination PDF with at least two pages and select page 1.
+2. Choose a separate valid PDF in the Merge PDF files picker.
+3. Activate **Insert first PDF after current page**.
+4. Confirm all pages from the selected source PDF appear immediately after page 1, and the editor selects the first inserted page.
+5. Export and reopen the destination; confirm the inserted pages and order persist.
+6. Try with no source file and with a malformed source PDF; confirm a clear error and no partial document change.
+
 ## Existing page actions
 - Rotate the current page and confirm its rotation persists after export/reopen.
 - Move a page up/down and confirm thumbnail order and exported order match.
