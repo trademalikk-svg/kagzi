@@ -9,6 +9,8 @@ on:
       - "tests/pdf-editor-workspace.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
+      - "pdf-editor-workspace.css"
+      - "pdf-editor-workspace.js"
       - "pdf-server-adapter.js"
       - "image-text-editor.js"
       - "image-text-editor.html"
@@ -45,6 +47,8 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
+      - name: Check workspace controls JavaScript syntax
+        run: node --check pdf-editor-workspace.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
       - name: Check camera scanner JavaScript syntax
