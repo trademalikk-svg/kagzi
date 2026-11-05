@@ -5,7 +5,7 @@ const byId=id=>document.getElementById(id);
 function status(message){const node=byId('scannerStatus');if(node)node.textContent=message;}
 function ocrStatus(message){const node=byId('ocrEditStatus');if(node)node.textContent=message;}
 function output(){return byId('ocrResults');}
-function syncActions(){const hasText=!!(output()?.value||'').trim();['downloadOcrText','copyOcrText','addOcrTextPage'].forEach(id=>{const node=byId(id);if(node)node.disabled=!hasText;});}
+function syncActions(){const hasText=!!(output()?.value||'').trim();['downloadOcrText','copyOcrText'].forEach(id=>{const node=byId(id);if(node)node.disabled=!hasText;});const addPage=byId('addOcrTextPage');if(addPage)addPage.disabled=!hasText||!window.KAGZIPdfEditorHasDocument?.();}
 async function recognizeSource(source,label){
  const out=output();if(!out||typeof window.KAGZIPdfOcrRecognize!=='function'){ocrStatus('OCR engine is unavailable. Refresh after the OCR library loads.');return null;}
  const language=byId('ocrLanguage')?.value||'eng';
