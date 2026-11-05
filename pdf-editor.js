@@ -1,6 +1,7 @@
 (function(){
 'use strict';
-const MIN_ZOOM=.5,MAX_ZOOM=2.5,ZOOM_STEP=.15;\nfunction renderMetrics(width,height,dpr){const outputScale=Math.max(1,Math.min(Number(dpr)||1,2));return{cssWidth:width,cssHeight:height,pixelWidth:Math.ceil(width*outputScale),pixelHeight:Math.ceil(height*outputScale),outputScale};}
+const MIN_ZOOM=.5,MAX_ZOOM=2.5,ZOOM_STEP=.15;
+function renderMetrics(width,height,dpr){const outputScale=Math.max(1,Math.min(Number(dpr)||1,2));return{cssWidth:width,cssHeight:height,pixelWidth:Math.ceil(width*outputScale),pixelHeight:Math.ceil(height*outputScale),outputScale};}
 function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  if(window.__kagziPdfEditorInitialized)return;window.__kagziPdfEditorInitialized=true;
  const el=elements||Object.fromEntries(['pdfFileInput','pdfCanvas','pageNumber','pageCount','zoomIn','zoomOut','prevPage','nextPage','zoomLabel','textTool','imageTool','highlightTool','selectTool','rotatePage','deletePage','movePageUp','movePageDown','undoEdit','downloadEditedPdf','editorStatus','emptyEditor','canvasWrap','editorOverlay','activeToolLabel','imageFileInput'].map(id=>[id,document.getElementById(id)]));
@@ -34,6 +35,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  el.downloadEditedPdf.addEventListener('click',async()=>{try{if(!workingBytes)throw new Error('Open a PDF first.');const checked=await PDFLib.PDFDocument.load(workingBytes.slice());if(!checked.getPageCount())throw new Error('The output PDF has no pages.');const blob=new Blob([workingBytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(originalFile.name.replace(/\.pdf$/i,'')||'document')+'-edited.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);status('Edited PDF downloaded.');}catch(e){status(e.message||'Could not export this PDF.');}});
  updateControls();setTool('select');
 }
-window.KAGZIPdfRenderMetrics=renderMetrics;\nwindow.initPdfEditor=initPdfEditor;
+window.KAGZIPdfRenderMetrics=renderMetrics;
+window.initPdfEditor=initPdfEditor;
 document.addEventListener('DOMContentLoaded',()=>initPdfEditor({pdfjsLib:window.pdfjsLib,PDFLib:window.PDFLib,JSZip:window.JSZip}));
 })();
