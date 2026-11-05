@@ -52,12 +52,14 @@ test('OCR progress reports a bounded integer percentage', async () => {
   let logger;
   const window = loadOcr(async (language, oem, options) => {
     logger = options.logger;
-    return { recognize: async () => ({ data: { text: 'done', confidence: 100, words: [] } }) };
+    return { recognize: async () => {
+      logger({ status: 'recognizing text', progress: 0.57 });
+      logger({ status: 'recognizing text', progress: 1.5 });
+      return { data: { text: 'done', confidence: 100, words: [] } };
+    } };
   });
   const progress = [];
   await window.KAGZIPdfOcrRecognize({}, 'eng', value => progress.push(value));
-  logger({ status: 'recognizing text', progress: 0.57 });
-  logger({ status: 'recognizing text', progress: 1.5 });
   assert.deepEqual(progress, [57, 100]);
 });
 
