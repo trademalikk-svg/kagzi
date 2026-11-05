@@ -24,10 +24,10 @@ test('OCR engine reuses a worker per language and returns normalized text and wo
     created.push({ language, oem, options });
     return worker;
   });
-  const first = await window.KAGZIPdfOcrRecognize({ name: 'scan.jpg' }, 'hin+eng', () => {});
-  const second = await window.KAGZIPdfOcrRecognize({ name: 'scan2.jpg' }, 'hin+eng', () => {});
+  const first = await window.KAGZIPdfOcrRecognize({ name: 'scan.jpg' }, 'eng+hin', () => {});
+  const second = await window.KAGZIPdfOcrRecognize({ name: 'scan2.jpg' }, 'eng+hin', () => {});
   assert.equal(created.length, 1);
-  assert.equal(created[0].language, 'hin+eng');
+  assert.equal(created[0].language, 'eng+hin');
   assert.equal(first.text, 'नमस्ते world');
   assert.equal(first.confidence, 91);
   assert.equal(first.words[0].text, 'नमस्ते');
