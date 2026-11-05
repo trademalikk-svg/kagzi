@@ -45,6 +45,10 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
+      - name: Check local OCR JavaScript syntax
+        run: node --check pdf-ocr.js
+      - name: Check camera scanner JavaScript syntax
+        run: node --check pdf-scanner.js
       - name: Test PDF render metrics
         run: node --test tests/pdf-editor-render-audit.mjs
       - name: Check image editor JavaScript syntax
