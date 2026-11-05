@@ -160,6 +160,18 @@ img,video,canvas,iframe{max-width:100%}
 .vip-topbar .menu-btn{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;margin:0;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.06);color:#fff;font-size:21px;line-height:1;cursor:pointer}
 @media(prefers-reduced-motion:reduce){#sidebar{transition:none}}
 </style>
+
+<style id="kagzi-home-image-studio">
+.kagzi-home-image-studio{margin:22px 0 26px;padding:20px;background:linear-gradient(135deg,#071735,#0b2e69);border:1px solid #d7ad4c;border-radius:18px;box-shadow:0 14px 34px #06173520}
+.kagzi-home-image-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:15px;color:#fff}
+.kagzi-home-image-head span{font-size:10px;letter-spacing:2px;font-weight:900;color:#ffd66f}
+.kagzi-home-image-head h2{font:800 clamp(22px,3vw,32px) Manrope;margin:5px 0;color:#fff}
+.kagzi-home-image-head p{margin:0;color:#d9e5fb;font-size:13px}
+.kagzi-home-image-head>a{flex:0 0 auto;padding:11px 16px;border-radius:24px;background:linear-gradient(135deg,#ffe5a5,#eab94c);color:#10203d;text-decoration:none;font-size:12px;font-weight:900}
+.kagzi-image-editor-frame{display:block;width:100%;height:1120px;border:1px solid #d8e0ed;border-radius:13px;background:#f5f7fc}
+.kagzi-image-studio-note{margin:12px 2px 0;color:#d6e2f8;font-size:11px}
+@media(max-width:760px){.kagzi-home-image-studio{padding:12px;margin:14px 0}.kagzi-home-image-head{align-items:flex-start;flex-direction:column}.kagzi-home-image-head>a{align-self:flex-start}.kagzi-image-editor-frame{height:1550px;border-radius:10px}}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -206,6 +218,14 @@ img,video,canvas,iframe{max-width:100%}
 <section class="vip-hero-grid" aria-label="KAGZI AI introduction">
 <article class="vip-hero vip-hero-main"><div class="vip-hero-art"><span class="doc-sheet">🇮🇳</span><span class="doc-folder">✦</span><span class="doc-cloud">✓</span></div><div class="vip-hero-copy"><div class="vip-kicker">ONE PLATFORM · MANY POSSIBILITIES</div><h1>KAGZI AI</h1><h2>Jan Seva &amp; Education</h2><h3>सरकारी सेवाएँ, शिक्षा और डिजिटल सुविधाएँ</h3><p>जनसेवा, पढ़ाई और जरूरी दस्तावेज़ — अब एक ही मंच पर।</p><a class="vip-cta" href="#main-services">आज ही शुरुआत करें <span>→</span></a></div></article>
 <article class="vip-hero vip-hero-education"><div class="vip-hero-copy"><div class="vip-kicker">सेवा भी · शिक्षा भी</div><h2>आपका डिजिटल<br>सहयोगी मंच</h2><p>सरकारी योजनाओं की जानकारी पाएँ, पढ़ाई की सामग्री खोजें और उपयोगी दस्तावेज़ों तक पहुँचें।</p><a class="vip-cta" href="#main-services">सेवाएँ देखें <span>→</span></a></div><div class="vip-hero-art edu-art"><span class="edu-cap">✺</span><span class="edu-books">📚</span></div></article>
+</section>
+<section class="kagzi-home-image-studio" id="image-studio">
+  <div class="kagzi-home-image-head">
+    <div><span>✦ KAGZI CREATOR STUDIO</span><h2>Image Text Editor</h2><p>Image upload करें, text detect करें, edit करें और export करें — इसी Home Page पर।</p></div>
+    <a href="image-text-editor.html" target="_blank" rel="noopener">Open Full Editor ↗</a>
+  </div>
+  <iframe class="kagzi-image-editor-frame" src="image-text-editor.html" title="KAGZI Image Text Editor workspace" loading="lazy"></iframe>
+  <p class="kagzi-image-studio-note">Hindi + English OCR · Text editing · Cleanup · Add text · Effects · PNG / JPG / WebP export</p>
 </section>
 <section class="vip-dual-panels" id="main-services">
 <article class="vip-panel" id="jan-seva"><div class="vip-panel-head"><h2><span>🏛️</span> AI Jan Seva</h2><a href="#schemes">सभी सेवाएँ →</a></div><div class="vip-service-grid">
