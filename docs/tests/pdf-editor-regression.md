@@ -72,6 +72,14 @@ Run these checks on the feature branch before merging.
 - Delete a page from a multi-page PDF and confirm the page count decreases.
 - Attempt to delete the only page and confirm the editor refuses without changing the document.
 
+## OCR text export page
+1. Open a destination PDF and run OCR on an image or current PDF page.
+2. Edit the recognized text in the OCR textarea and choose **Add OCR text as PDF page**.
+3. Confirm the text is wrapped across one or more new pages at the end of the document and the final new page is selected.
+4. Export and reopen the PDF; confirm the OCR text is visible, including Hindi where the browser font supports it.
+5. Confirm the UI describes this as a visual/image-based page, not selectable/searchable text.
+6. Confirm the action is disabled when there is no open destination PDF or no OCR text.
+
 ## General regression
 - Open a valid PDF, navigate, zoom, merge, split, and export.
 - Open a non-PDF file and confirm a clear error.
