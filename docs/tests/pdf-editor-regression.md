@@ -19,6 +19,13 @@ Run these checks on the feature branch before merging.
 5. Export and reopen the destination; confirm the inserted pages and order persist.
 6. Try with no source file and with a malformed source PDF; confirm a clear error and no partial document change.
 
+## Watermark and page numbers
+1. Open a multi-page PDF and enter a short watermark label.
+2. Apply watermark and confirm it appears on every page with readable content still visible.
+3. Add page numbers and confirm each page shows its correct `current / total` number.
+4. Export and reopen the PDF to confirm both operations persist.
+5. Undo after each operation and confirm the previous document state is restored.
+
 ## Existing page actions
 - Rotate the current page and confirm its rotation persists after export/reopen.
 - Move a page up/down and confirm thumbnail order and exported order match.
