@@ -1,0 +1,71 @@
+name: PDF editor checks
+on:
+  pull_request:
+    paths:
+      - "pdf-editor.js"
+      - "pdf-ocr.js"
+      - "pdf-scanner.js"
+      - "index.html"
+      - "tests/pdf-editor-workspace.test.mjs"
+      - "pdf-editor.html"
+      - "pdf-editor.css"
+      - "pdf-server-adapter.js"
+      - "image-text-editor.js"
+      - "image-text-editor.html"
+      - "image-text-editor.css"
+      - "tests/image-text-editor.test.mjs"
+      - ".github/workflows/pdf-editor-check.yml"
+  push:
+    branches:
+      - main
+      - pdf-editor-design
+    paths:
+      - "pdf-editor.js"
+      - "pdf-ocr.js"
+      - "pdf-scanner.js"
+      - "tests/pdf-editor-workspace.test.mjs"
+      - "pdf-editor.html"
+      - "pdf-editor.css"
+      - "pdf-server-adapter.js"
+      - "image-text-editor.js"
+      - "image-text-editor.html"
+      - "image-text-editor.css"
+      - "tests/image-text-editor.test.mjs"
+      - ".github/workflows/pdf-editor-check.yml"
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test document-first PDF workspace
+        run: node --test tests/pdf-editor-workspace.test.mjs
+      - name: Check editor JavaScript syntax
+        run: node --check pdf-editor.js
+      - name: Check local OCR JavaScript syntax
+        run: node --check pdf-ocr.js
+      - name: Check camera scanner JavaScript syntax
+        run: node --check pdf-scanner.js
+      - name: Test PDF render metrics
+        run: node --test tests/pdf-editor-render-audit.mjs
+      - name: Check image editor JavaScript syntax
+        run: node --check image-text-editor.js
+      - name: Test image OCR line normalization
+        run: node --test tests/image-text-editor.test.mjs
+      - name: Check server adapter JavaScript syntax
+        run: node --check pdf-server-adapter.js
+      - name: Check editor page references
+        run: |
+          test -f image-text-editor.html
+          test -f image-text-editor.css
+          grep -q image-text-editor.js image-text-editor.html
+          test -f pdf-editor.html
+          test -f pdf-editor.css
+          grep -q 'src="pdf-editor.js"' pdf-editor.html
+          grep -q 'src="pdf-ocr.js"' pdf-editor.html
+          grep -q 'src="pdf-scanner.js"' pdf-editor.html
+          grep -q 'src="pdf-server-adapter.js"' pdf-editor.html
+          grep -q 'href="pdf-editor.css"' pdf-editor.html
