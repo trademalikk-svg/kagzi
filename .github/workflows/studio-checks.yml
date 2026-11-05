@@ -18,4 +18,5 @@ jobs:
       - run: node --test tests/dashboard-audit.mjs
       - run: node --test tests/navigation-menu-audit.mjs
       - run: node --test tests/studio-ui-audit.mjs
+      - run: node --test tests/ocr-auto-edit-audit.mjs
       - run: node --test tests/gov-directory-audit.mjs
