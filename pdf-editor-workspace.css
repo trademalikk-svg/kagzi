@@ -1,0 +1,54 @@
+/* Responsive controls for the existing PDF workspace. Desktop keeps both panels expanded. */
+.workspace-panel-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid #d8e1ef;
+  border-radius: 7px;
+  background: #f7f9fd;
+  color: #29436d;
+  font: 700 10px/1.2 "DM Sans", Arial, sans-serif;
+  cursor: pointer;
+}
+.workspace-panel-toggle:focus-visible {
+  outline: 2px solid #315fe9;
+  outline-offset: 2px;
+}
+.rail-heading-title,
+.inspector-heading-copy {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.inspector-heading-copy {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+@media (max-width: 650px) {
+  .rail-heading {
+    align-items: center;
+    gap: 8px;
+  }
+  .workspace-panel-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+  .page-rail.is-collapsed .page-thumbnails {
+    display: none;
+  }
+  #pdfSelectionProperties.is-collapsed {
+    display: none;
+  }
+  .inspector-head {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .inspector-heading-copy {
+    flex: 1 1 auto;
+  }
+}
