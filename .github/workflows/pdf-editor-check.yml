@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "pdf-editor.js"
+      - "index.html"
+      - "tests/pdf-editor-workspace.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -34,6 +36,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Test document-first PDF workspace
+        run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
       - name: Test PDF render metrics
