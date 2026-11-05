@@ -52,6 +52,13 @@ Run these checks on the feature branch before merging.
 4. Export and reopen the PDF; confirm the replacement overlay retains the selected style.
 5. Confirm nearby content and page layout remain acceptable; complex scripts and non-standard fonts require separate compatibility testing.
 
+## Text edit history and styling bounds
+1. Select existing text, change it in the Inspector, and apply the edit.
+2. Confirm Undo restores the prior text preview and Redo restores the replacement.
+3. Set opacity to 100% and confirm the exported overlay is fully opaque; set 50% and confirm it is visibly translucent.
+4. Enable Bold for newly added text and confirm the exported text uses a bold built-in font where available.
+5. Confirm text edits remain attached to their original page after moving, deleting, duplicating, or inserting pages.
+
 ## Watermark and page numbers
 1. Open a multi-page PDF and enter a short watermark label.
 2. Apply watermark and confirm it appears on every page with readable content still visible.
