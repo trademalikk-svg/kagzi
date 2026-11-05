@@ -7,6 +7,7 @@ on:
       - "pdf-scanner.js"
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
+      - "tests/pdf-ocr.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-editor-workspace.css"
@@ -49,6 +50,8 @@ jobs:
         run: node --check pdf-editor.js
       - name: Check workspace controls JavaScript syntax
         run: node --check pdf-editor-workspace.js
+      - name: Test multilingual OCR worker behavior
+        run: node --test tests/pdf-ocr.test.mjs
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
       - name: Check camera scanner JavaScript syntax
