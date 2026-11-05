@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "pdf-editor.js"
+      - "pdf-ocr.js"
+      - "pdf-scanner.js"
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
       - "pdf-editor.html"
@@ -19,6 +21,9 @@ on:
       - pdf-editor-design
     paths:
       - "pdf-editor.js"
+      - "pdf-ocr.js"
+      - "pdf-scanner.js"
+      - "tests/pdf-editor-workspace.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -56,5 +61,7 @@ jobs:
           test -f pdf-editor.html
           test -f pdf-editor.css
           grep -q 'src="pdf-editor.js"' pdf-editor.html
+          grep -q 'src="pdf-ocr.js"' pdf-editor.html
+          grep -q 'src="pdf-scanner.js"' pdf-editor.html
           grep -q 'src="pdf-server-adapter.js"' pdf-editor.html
           grep -q 'href="pdf-editor.css"' pdf-editor.html
