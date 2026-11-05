@@ -1,25 +1,24 @@
-# PDF Editor Execution Progress
+# KAGZI PDF Editor — Rendering Fix Progress
 
-Plan: `docs/plans/2026-11-05-pdf-editor.md`
+## User-reported issues
+- PDF preview appears blurry.
+- Page rendering is choppy.
+- Editing appears not to work as expected.
 
-## Implemented on branch `pdf-editor-design`
-- Dedicated responsive `pdf-editor.html` and `pdf-editor.css`.
-- PDF.js loading, page preview, page navigation, zoom, and local file handling in `pdf-editor.js`.
-- Text, PNG/JPEG image and visual highlight overlays.
-- Rotate, delete, reorder, undo and PDF export.
-- Disabled server adapter that refuses processing because no backend is configured.
-- Homepage and PDF tools entry links.
-- Manual smoke checklist and GitHub Actions JavaScript syntax checks.
+## Changes on `pdf-editor-design`
+- Added high-DPI canvas rendering (device pixel ratio capped at 2) while keeping CSS page dimensions stable.
+- Serialized canvas rendering: cancel and await the previous PDF.js render task before starting a new one.
+- Removed an unnecessary eager pdf-lib parse during initial file opening.
+- Added automated render-metrics tests in `tests/pdf-editor-render-audit.mjs`.
 
-## Verification evidence
-- GitHub Actions workflow **PDF editor checks** passed on commit `a5ea276d94d132957bc5625745ba82e32fa5338b`.
-- Cloudflare Pages preview deployment succeeded for that commit: `https://b305a18a.kagzi-8cy.pages.dev`.
-- Live page scrape confirmed editor page title, empty state, status text, and navigation links from homepage and PDF tools page.
-- The separate existing **KAGZI studio checks** workflow fails at `tests/dashboard-audit.mjs` because existing dashboard fragment links `schemes`, `exams`, `news`, `citizen-services`, and `study-material` do not resolve. The failure is outside the PDF editor files; it should be addressed separately.
+## Important capability limitation
+- Text tool adds a new overlay; it does not replace existing PDF text in place.
+- Highlight is a visual overlay, not secure redaction.
+- True text replacement needs a separate text-layer/content-stream workflow and possibly OCR for scanned PDFs. This prototype is not yet a full Sejda-equivalent editor.
 
-## Still requires hands-on verification
-- Select a real PDF on mobile and desktop and verify page rendering.
-- Test text/image/highlight operations and export in an independent PDF viewer.
-- Test malformed/password-protected PDFs and local memory limits.
-- Inspect browser network requests during a real local editing session to confirm no document upload.
-- Keep PR #27 in draft until the manual PDF interaction checks are performed.
+## Verification still required
+- Confirm automated PDF editor tests pass on latest commit.
+- Test a multi-page PDF on Android Chrome and desktop.
+- Verify sharpness, page navigation, overlay placement and export in an independent PDF reader.
+- Large PDFs may still be limited by browser memory; server processing is not configured.
+- Keep PR #27 in draft until hands-on PDF tests pass.
