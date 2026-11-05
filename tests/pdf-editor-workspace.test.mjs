@@ -79,15 +79,22 @@ test('PDF editor loads local OCR and camera scripts before the editor initialize
 
 test('mobile workspace exposes accessible page and properties panel toggles', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
-  for (const [buttonId, panelId] of [
-    ['togglePageRail', 'pdfPageRailPanel'],
-    ['toggleInspector', 'pdfInspector']
+  for (const [buttonId, controlledId] of [
+    ['togglePageRail', 'pdfPageRail'],
+    ['toggleInspector', 'pdfSelectionProperties']
   ]) {
     assert.match(html, new RegExp('id="' + buttonId + '"'));
-    assert.match(html, new RegExp('aria-controls="' + panelId + '"'));
+    assert.match(html, new RegExp('aria-controls="' + controlledId + '"'));
     assert.match(html, new RegExp('aria-expanded="true"'));
   }
+  assert.match(html, /href="pdf-editor-workspace\.css"/);
   assert.match(html, /src="pdf-editor-workspace\.js"/);
+  assert.match(html, /KAGZIPdfWorkspace\.init\(document\)/);
+
+  const css = await readFile(new URL('../pdf-editor-workspace.css', import.meta.url), 'utf8');
+  assert.match(css, /\.page-rail\.is-collapsed \.page-thumbnails/);
+  assert.match(css, /#pdfSelectionProperties\.is-collapsed/);
+  assert.match(css, /@media\s*\(max-width:\s*650px\)/);
 });
 
 test('workspace panel toggles update collapsed state and accessible labels', async () => {
@@ -115,7 +122,7 @@ test('workspace panel toggles update collapsed state and accessible labels', asy
     togglePageRail: element(),
     pdfPageRailPanel: element(),
     toggleInspector: element(),
-    pdfInspector: element()
+    pdfSelectionProperties: element()
   };
   for (const id of ['togglePageRail', 'toggleInspector']) {
     nodes[id].setAttribute('aria-expanded', 'true');
@@ -137,6 +144,6 @@ test('workspace panel toggles update collapsed state and accessible labels', asy
 
   nodes.toggleInspector.listeners.click();
   assert.equal(nodes.toggleInspector.getAttribute('aria-expanded'), 'false');
-  assert.equal(nodes.pdfInspector.classList.contains('is-collapsed'), true);
+  assert.equal(nodes.pdfSelectionProperties.classList.contains('is-collapsed'), true);
   assert.equal(nodes.toggleInspector.textContent, 'Show properties');
 });
