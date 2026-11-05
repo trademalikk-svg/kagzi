@@ -31,3 +31,28 @@ test('PDF editor exposes redo, annotations, text alignment and editing controls'
     assert.match(html, new RegExp('id="' + id + '"'), 'missing editor control: ' + id);
   }
 });
+
+
+test('PDF editor wires camera bridge inside initialized editor scope', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /window\.KAGZIPdfEditorOpenFile=loadPdf/);
+  assert.match(js, /window\.KAGZIPdfEditorAppendScan=async\(blob\)/);
+  assert.doesNotMatch(js, /\nwindow\.KAGZIPdfEditorOpenFile=loadPdf/);
+  assert.match(js, /window\.KAGZIPdfEditorDetectPageText=detectPageText/);
+});
+
+test('PDF editor provides local merge and split handlers', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  for (const id of ['mergePdfInput', 'mergePdfButton', 'splitStartPage', 'splitEndPage', 'splitPdfButton']) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(js, /copyPages\(source,source\.getPageIndices\(\)\)/);
+  assert.match(js, /copyPages\(source,indices\)/);
+});
+
+test('PDF editor loads local OCR and camera scripts before the editor initializer', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
+  assert.ok(html.indexOf('src="pdf-scanner.js"') < html.indexOf('src="pdf-editor.js"'));
+});
