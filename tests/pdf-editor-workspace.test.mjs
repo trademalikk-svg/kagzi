@@ -136,14 +136,17 @@ test('workspace panel toggles update collapsed state and accessible labels', asy
   assert.equal(nodes.togglePageRail.getAttribute('aria-expanded'), 'false');
   assert.equal(nodes.pdfPageRailPanel.classList.contains('is-collapsed'), true);
   assert.equal(nodes.togglePageRail.textContent, 'Show pages');
+  assert.equal(nodes.togglePageRail.getAttribute('aria-label'), 'Show page thumbnails');
 
   nodes.togglePageRail.listeners.click();
   assert.equal(nodes.togglePageRail.getAttribute('aria-expanded'), 'true');
   assert.equal(nodes.pdfPageRailPanel.classList.contains('is-collapsed'), false);
   assert.equal(nodes.togglePageRail.textContent, 'Hide pages');
+  assert.equal(nodes.togglePageRail.getAttribute('aria-label'), 'Hide page thumbnails');
 
   nodes.toggleInspector.listeners.click();
   assert.equal(nodes.toggleInspector.getAttribute('aria-expanded'), 'false');
   assert.equal(nodes.pdfSelectionProperties.classList.contains('is-collapsed'), true);
   assert.equal(nodes.toggleInspector.textContent, 'Show properties');
+  assert.equal(nodes.toggleInspector.getAttribute('aria-label'), 'Show properties panel');
 });
