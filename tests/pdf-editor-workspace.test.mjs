@@ -191,3 +191,19 @@ test('PDF note annotation renderer rejects blank notes and missing page geometry
   assert.equal(await renderer({ getSize: () => ({ width: 300, height: 400 }) }, pdfDocument, { StandardFonts: {}, rgb() {} }, '   ', 20, 20), null);
   assert.equal(await renderer({}, pdfDocument, { StandardFonts: {}, rgb() {} }, 'Note', 20, 20), null);
 });
+
+
+test('a first camera scan does not create an invalid null-byte undo snapshot', async () => {
+  const source = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const sandbox = { window: {}, document: { addEventListener() {} } };
+  vm.runInNewContext(source, sandbox);
+  const rememberBeforeScan = sandbox.window.KAGZIPdfEditorRememberBeforeAppendScan;
+  assert.equal(typeof rememberBeforeScan, 'function',
+    'the editor must expose the guarded scan-history boundary');
+  let snapshots = 0;
+  assert.equal(rememberBeforeScan(null, () => { snapshots += 1; }), false);
+  assert.equal(snapshots, 0, 'a new scan must not record an empty-document snapshot');
+  assert.equal(rememberBeforeScan(new Uint8Array([1, 2, 3]), () => { snapshots += 1; }), true);
+  assert.equal(snapshots, 1, 'an existing document must still be undoable before adding a scan');
+  assert.match(source, /rememberBeforeAppendScan\(workingBytes,\s*remember\)/);
+});
