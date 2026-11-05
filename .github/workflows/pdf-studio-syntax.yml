@@ -1,0 +1,32 @@
+name: PDF Studio syntax checks
+
+on:
+  push:
+    branches:
+      - feature/pdf-studio-phase1
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'pdf-editor.js'
+      - 'pdf-ocr.js'
+      - 'pdf-scanner.js'
+      - 'pdf-server-adapter.js'
+      - '.github/workflows/pdf-studio-syntax.yml'
+
+jobs:
+  javascript-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse PDF Studio scripts
+        run: |
+          node --check pdf-editor.js
+          node --check pdf-ocr.js
+          node --check pdf-scanner.js
+          node --check pdf-server-adapter.js
