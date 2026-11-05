@@ -2,46 +2,44 @@
 <html lang="hi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f5f7fc">
-<title>KAGZI PDF Editor — Edit PDF Online</title>
-<meta name="description" content="Edit PDF pages in your browser with KAGZI. Add text, images and highlights, rotate, reorder, delete pages and download.">
+<meta name="theme-color" content="#071735">
+<title>KAGZI PDF Editor — Document Studio</title>
+<meta name="description" content="Open and edit PDF documents locally with KAGZI Document Studio. Add text, images, highlights and manage pages.">
 <link rel="canonical" href="https://kagzi-8cy.pages.dev/pdf-editor.html">
 <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pdf-editor.css">
 </head>
 <body class="pdf-editor-page">
-<header class="editor-top"><a href="index.html" class="editor-brand"><span>K</span><b>KAGZI</b></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
+<header class="editor-top"><a href="index.html" class="editor-brand"><span>K</span><b>KAGZI</b><small>DOCUMENT STUDIO</small></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
 <main class="editor-wrap">
-<section class="editor-intro"><p class="editor-kicker">KAGZI DOCUMENT STUDIO</p><h1>PDF Editor</h1><p>PDF खोलें, बदलाव करें और edited file डाउनलोड करें। आपका document इस editor में browser के अंदर ही process होता है।</p></section>
-<section class="privacy-banner"><b>🔒 Browser-only processing</b><span>इस editor में PDF आपके device से server पर upload नहीं होती। Server processing अभी उपलब्ध नहीं है।</span></section>
+<section class="editor-intro"><div><p class="editor-kicker">KAGZI DOCUMENT STUDIO</p><h1>PDF Editor</h1><p>अपना PDF खोलें, पेज चुनें, document पर बदलाव करें और edited PDF डाउनलोड करें। Processing आपके browser में होती है।</p></div><label class="editor-file-btn editor-upload-hero" for="pdfFileInput">＋ Open PDF</label></section>
+<section class="privacy-banner"><b>🔒 Private local editing</b><span>आपकी PDF इस editor में आपके device पर process होती है। कोई server upload नहीं होता।</span></section>
 <section class="editor-shell">
 <div class="editor-toolbar">
-<label class="editor-file-btn" for="pdfFileInput">Choose PDF</label><input id="pdfFileInput" type="file" accept="application/pdf,.pdf">
-<button id="prevPage" type="button" disabled>←</button><label class="sr-only" for="pageNumber">Page number</label><input id="pageNumber" type="number" min="1" value="1" disabled><span>/ <b id="pageCount">0</b></span><button id="nextPage" type="button" disabled>→</button>
-<button id="zoomOut" type="button" disabled>−</button><span id="zoomLabel">100%</span><button id="zoomIn" type="button" disabled>+</button>
+<label class="editor-file-btn" for="pdfFileInput">Open PDF</label><input id="pdfFileInput" type="file" accept="application/pdf,.pdf" aria-label="Choose a PDF document">
+<div class="toolbar-divider"></div>
+<button id="prevPage" type="button" disabled aria-label="Previous page">←</button><label class="sr-only" for="pageNumber">Page number</label><input id="pageNumber" type="number" min="1" value="1" disabled><span class="page-total">/ <b id="pageCount">0</b></span><button id="nextPage" type="button" disabled aria-label="Next page">→</button>
+<div class="toolbar-divider"></div><button id="zoomOut" type="button" disabled>−</button><span id="zoomLabel">100%</span><button id="zoomIn" type="button" disabled>＋</button>
+<div class="toolbar-spacer"></div><button id="downloadEditedPdf" class="download-top" type="button" disabled>↓ Export PDF</button>
 </div>
 <div class="editor-workspace">
-<aside class="editor-tools" aria-label="Editing tools">
-<button id="selectTool" class="active" type="button" disabled>↖ Select</button>
-<button id="textTool" type="button" disabled> T Text</button>
-<button id="imageTool" type="button" disabled>▧ Image</button>
-<button id="highlightTool" type="button" disabled>▰ Highlight</button>
-<label for="imageFileInput">Choose image</label><input id="imageFileInput" type="file" accept="image/png,image/jpeg" disabled>
-<hr>
-<button id="rotatePage" type="button" disabled>↻ Rotate 90°</button>
-<button id="deletePage" type="button" disabled>Delete page</button>
-<button id="movePageUp" type="button" disabled>↑ Move up</button>
-<button id="movePageDown" type="button" disabled>↓ Move down</button>
-<button id="undoEdit" type="button" disabled>↶ Undo</button>
-</aside>
-<div class="page-stage">
-<div id="emptyEditor" class="empty-editor"><span>▤</span><b>Choose a PDF to begin</b><small>PDF files are opened locally in your browser.</small></div>
+<aside class="page-rail" aria-label="PDF page navigation"><div class="rail-heading"><b>Pages</b><span id="railPageCount">0</span></div><div id="pdfPageRail" class="page-thumbnails"><div class="rail-empty">PDF pages will appear here</div></div></aside>
+<section class="document-area" aria-label="PDF document workspace">
+<div class="document-tools">
+<button id="selectTool" class="active" type="button" disabled>↖ Select</button><button id="textTool" type="button" disabled> T Text</button><button id="imageTool" type="button" disabled>▧ Image</button><button id="highlightTool" type="button" disabled>▰ Highlight</button>
+<span class="tool-separator"></span><button id="rotatePage" type="button" disabled>↻ Rotate</button><button id="undoEdit" type="button" disabled>↶ Undo</button>
+</div>
+<div id="pdfCanvasHost" class="page-stage">
+<div id="emptyEditor" class="empty-editor"><span>▤</span><b>Open a PDF to start editing</b><small>Choose a document from your device. Your original file stays unchanged.</small><label class="editor-file-btn" for="pdfFileInput">Choose PDF</label></div>
 <div id="canvasWrap" class="canvas-wrap" hidden><canvas id="pdfCanvas"></canvas><div id="editorOverlay" class="editor-overlay" aria-label="PDF editing surface"></div></div>
 <p id="editorStatus" class="editor-status" role="status" aria-live="polite">No PDF selected.</p>
 </div>
-</div>
-<div class="editor-bottom"><div><b>Editing mode</b><span id="activeToolLabel">Select</span></div><button id="downloadEditedPdf" type="button" disabled>Download edited PDF</button></div>
+<div class="page-management"><label for="imageFileInput">＋ Add image</label><input id="imageFileInput" type="file" accept="image/png,image/jpeg" disabled><button id="movePageUp" type="button" disabled>↑ Move page up</button><button id="movePageDown" type="button" disabled>↓ Move page down</button><button id="deletePage" type="button" disabled>Delete page</button></div>
 </section>
-<section class="server-panel"><div><b>Need larger-file processing?</b><p>Server processing will be enabled only after KAGZI configures private temporary storage, a verified processor and automatic deletion.</p></div><button type="button" disabled title="Server processing is not configured">Server processing unavailable</button></section>
+<aside id="pdfInspector" class="pdf-inspector" aria-label="Properties inspector"><div class="inspector-head"><span>PROPERTIES</span><b>Inspector</b></div><section id="pdfSelectionProperties" class="inspector-section"><div class="inspector-empty"><span>✦</span><b>No object selected</b><p>Select a text or image object on the page to view its editing properties.</p></div><label for="inspectorText">Text</label><textarea id="inspectorText" rows="3" disabled placeholder="Select a text object"></textarea><div class="inspector-grid"><label>Font size<input id="inspectorFontSize" type="number" min="6" max="96" value="14" disabled></label><label>Opacity<input id="inspectorOpacity" type="number" min="0" max="100" value="100" disabled></label></div><label for="inspectorFontColor">Text colour</label><input id="inspectorFontColor" type="color" value="#17233c" disabled><label for="inspectorAlignment">Alignment</label><select id="inspectorAlignment" disabled><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select><p class="inspector-note">Current build: added text and images are PDF overlays. Original PDF text is not rewritten.</p></section></aside>
+</div>
+<div class="editor-bottom"><div><b>Editing mode</b><span id="activeToolLabel">Select</span></div><button id="downloadEditedPdfBottom" type="button" disabled>Download edited PDF</button></div>
+</section>
+<section class="server-panel"><div><b>OCR & advanced document editing</b><p>OCR text discovery will be available only when a supported local OCR engine is configured. Exact original font reconstruction cannot be guaranteed.</p></div><span class="capability-pill">Local-only mode</span></section>
 <p class="editor-footnote">Note: Text and image tools add overlays; they do not rewrite the PDF's original text. Highlight is a visual annotation, not secure redaction. Keep your original document.</p>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
