@@ -12,7 +12,7 @@ test('OCR result is an editable field with copy and text export actions', () => 
 });
 
 test('choosing an image automatically starts local OCR', () => {
-  assert.match(scanner, /ocrImageInput[sS]*?addEventListener\('change'/);
+  assert.match(scanner, /ocrImageInput[\\s\\S]*?\\?\\.addEventListener\\('change'/);
   assert.match(scanner, /recognizeSource\(file,'Selected image'\)/);
 });
 
