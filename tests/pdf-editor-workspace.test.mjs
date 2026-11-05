@@ -51,6 +51,24 @@ test('PDF editor provides local merge and split handlers', async () => {
   assert.match(js, /copyPages\(source,indices\)/);
 });
 
+test('PDF filename validation and OCR word wrapping use the intended regular expressions', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.ok(js.includes('!/\\.pdf$/i'));
+  assert.ok(js.includes('paragraph.split(/\\s+/)'));
+});
+
+test('reviewed OCR text can be appended to an open PDF as clearly labeled visual pages', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const scanner = await readFile(new URL('../pdf-scanner.js', import.meta.url), 'utf8');
+  assert.match(html, /id="addOcrTextPage"/);
+  assert.match(js, /window\.KAGZIPdfEditorAppendOcrText=async\(text\)/);
+  assert.match(js, /image-based text, not a searchable text layer/);
+  assert.match(js, /value\.replace\(/);
+  assert.match(scanner, /addOcrTextPage/);
+  assert.match(scanner, /KAGZIPdfEditorHasDocument/);
+});
+
 test('PDF editor loads local OCR and camera scripts before the editor initializer', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
   assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
