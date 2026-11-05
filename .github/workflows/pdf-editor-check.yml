@@ -28,7 +28,7 @@ jobs:
           node-version: 22
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
-      - name: Check server adapter JavaScript syntax
+      - name: Test PDF render metrics\n        run: node --test tests/pdf-editor-render-audit.mjs\n      - name: Check server adapter JavaScript syntax
         run: node --check pdf-server-adapter.js
       - name: Check editor page references
         run: |
