@@ -5,7 +5,7 @@ const byId=id=>document.getElementById(id);
 function status(message){const node=byId('scannerStatus');if(node)node.textContent=message;}
 function ocrStatus(message){const node=byId('ocrEditStatus');if(node)node.textContent=message;}
 function output(){return byId('ocrResults');}
-function syncActions(){const hasText=!!(output()?.value||'').trim();['downloadOcrText','copyOcrText'].forEach(id=>{const node=byId(id);if(node)node.disabled=!hasText;});}
+function syncActions(){const hasText=!!(output()?.value||'').trim();['downloadOcrText','copyOcrText','addOcrTextPage'].forEach(id=>{const node=byId(id);if(node)node.disabled=!hasText;});}
 async function recognizeSource(source,label){
  const out=output();if(!out||typeof window.KAGZIPdfOcrRecognize!=='function'){ocrStatus('OCR engine is unavailable. Refresh after the OCR library loads.');return null;}
  const language=byId('ocrLanguage')?.value||'eng';
@@ -45,6 +45,7 @@ function bind(){
  byId('ocrImageInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(file)await recognizeSource(file,'Selected image');});
  byId('scanImageOcr')?.addEventListener('click',async()=>{const file=byId('ocrImageInput')?.files?.[0];if(file)await recognizeSource(file,'Selected image');else ocrStatus('Choose an image first.');});
  output()?.addEventListener('input',syncActions);
+ byId('addOcrTextPage')?.addEventListener('click',async()=>{const text=output()?.value||'';if(!text.trim())return;if(typeof window.KAGZIPdfEditorAppendOcrText!=='function'){ocrStatus('PDF editor is not ready. Refresh and try again.');return;}try{ocrStatus('Adding OCR text to the open PDF…');await window.KAGZIPdfEditorAppendOcrText(text);ocrStatus('OCR text page added. It is a visual page image, not searchable text.');}catch(error){ocrStatus('Could not add OCR text page: '+(error.message||'operation failed'));}});
  byId('downloadOcrText')?.addEventListener('click',downloadText);
  byId('copyOcrText')?.addEventListener('click',copyText);
  window.addEventListener('pagehide',closeCamera);syncActions();
