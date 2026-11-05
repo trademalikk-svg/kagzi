@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071735">
+<title>KAGZI Image Text Editor — Edit Text in Photos</title>
+<meta name="description" content="Detect and edit text in photos with OCR. Upload an image, select detected text, edit and export locally in your browser.">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/image-text-editor.html">
+<link rel="stylesheet" href="image-text-editor.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="index.html"><span>K</span><b>KAGZI</b></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
+<main class="wrap">
+<section class="intro"><p class="eyebrow">KAGZI IMAGE STUDIO</p><h1>Image Text Editor</h1><p>Photo upload करें, OCR से text पहचानें, text पर टैप करके edit करें और image export करें।</p></section>
+<section class="privacy"><b>🔒 Private browser processing</b><span>Image आपके browser में process होती है। OCR language data पहली बार CDN से load होगा।</span></section>
+<section class="workspace">
+<div class="toolbar">
+<label class="primary" for="imageInput">Upload Image</label><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
+<select id="ocrLanguage" aria-label="OCR language"><option value="eng+hin">Hindi + English</option><option value="eng">English</option><option value="hin">Hindi</option></select>
+<button id="detectText" disabled>Detect Text</button><button id="downloadImage" disabled>Download Image</button>
+</div>
+<div class="editor-layout">
+<aside class="side">
+<h2>Text editor</h2>
+<p id="selectionHint">Image upload करके Detect Text दबाएँ, फिर पहचाने गए text पर टैप करें।</p>
+<label for="editText">Selected text</label><textarea id="editText" rows="4" placeholder="Select detected text…" disabled></textarea>
+<div class="field"><label for="fontSize">Font size</label><input id="fontSize" type="number" min="8" max="160" value="24" disabled></div>
+<div class="field"><label for="textColor">Text color</label><input id="textColor" type="color" value="#111111" disabled></div>
+<div class="field"><label for="coverColor">Background cover</label><input id="coverColor" type="color" value="#ffffff" disabled></div>
+<button id="applyEdit" class="apply" disabled>Apply text change</button>
+<button id="undoEdit" disabled>Undo last change</button>
+<p class="hint">Text replacement OCR box पर cover लगाकर नया text draw करता है। Complex background में cover color manually चुनें।</p>
+</aside>
+<section class="canvas-area">
+<div id="emptyState" class="empty"><b>▧</b><strong>Your image will appear here</strong><span>PNG, JPG या WebP चुनें</span></div>
+<div id="imageStage" class="image-stage" hidden><canvas id="imageCanvas"></canvas><div id="ocrLayer" class="ocr-layer"></div></div>
+<p id="status" role="status" aria-live="polite">No image selected.</p>
+</section>
+</div>
+</section>
+<section class="note"><b>Note:</b> OCR accuracy image quality और language पर निर्भर करती है। यह editor visible image text को cover करके नया text draw करता है; यह original source text layer को वापस नहीं बनाता। Original image की copy सुरक्षित रखें।</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="image-text-editor.js"></script>
+</body></html>
