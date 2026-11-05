@@ -1,45 +1,38 @@
 <!doctype html>
-<html lang="hi">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071735">
-<title>KAGZI Image Text Editor — Edit Text in Photos</title>
-<meta name="description" content="Detect and edit text in photos with OCR. Upload an image, select detected text, edit and export locally in your browser.">
-<link rel="canonical" href="https://kagzi-8cy.pages.dev/image-text-editor.html">
-<link rel="stylesheet" href="image-text-editor.css">
-</head>
-<body>
-<header class="top"><a class="brand" href="index.html"><span>K</span><b>KAGZI</b></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
-<main class="wrap">
-<section class="intro"><p class="eyebrow">KAGZI IMAGE STUDIO</p><h1>Image Text Editor</h1><p>Photo upload करें, OCR से text पहचानें, text पर टैप करके edit करें और image export करें।</p></section>
-<section class="privacy"><b>🔒 Private browser processing</b><span>Image आपके browser में process होती है। OCR language data पहली बार CDN से load होगा।</span></section>
+<html lang="hi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071735">
+<title>KAGZI Image Text Editor</title><meta name="description" content="Browser-based OCR image text editor with text, cleanup, effects and export controls.">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/image-text-editor.html"><link rel="stylesheet" href="image-text-editor.css">
+</head><body><header class="top"><a class="brand" href="index.html"><span>K</span><b>KAGZI</b></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
+<main class="wrap"><section class="intro"><p class="eyebrow">KAGZI IMAGE STUDIO</p><h1>Image Text Editor</h1><p>Upload image, detect text, edit, remove, add text, adjust effects and export.</p></section>
+<section class="privacy"><b>🔒 Browser processing</b><span>Image editing browser में होती है। OCR language model पहली बार CDN से load होगा।</span></section>
 <section class="workspace">
-<div class="toolbar">
-<label class="primary" for="imageInput">Upload Image</label><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
+<div class="toolbar"><label class="primary" for="imageInput">＋ Open Image</label><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
 <select id="ocrLanguage" aria-label="OCR language"><option value="eng+hin">Hindi + English</option><option value="eng">English</option><option value="hin">Hindi</option></select>
-<button id="detectText" disabled>Detect Text</button><button id="downloadImage" disabled>Download Image</button>
-</div>
+<button id="detectText" disabled>Detect Text</button><button id="undoEdit" disabled>↶ Undo</button><button id="redoEdit" disabled>↷ Redo</button><button id="compareImage" disabled>Before / After</button><button id="downloadImage" disabled>Export ↓</button></div>
 <div class="editor-layout">
 <aside class="side">
-<h2>Text editor</h2>
-<p id="selectionHint">Image upload करके Detect Text दबाएँ, फिर पहचाने गए text पर टैप करें।</p>
-<label for="editText">Selected text</label><textarea id="editText" rows="4" placeholder="Select detected text…" disabled></textarea>
-<div class="field"><label for="fontSize">Font size</label><input id="fontSize" type="number" min="8" max="160" value="24" disabled></div>
+<details open><summary>Text editing</summary>
+<label for="editText">Text content</label><textarea id="editText" rows="3" placeholder="Select detected text…" disabled></textarea>
+<div class="field"><label for="fontFamily">Font family</label><select id="fontFamily" disabled><option>Arial</option><option>Georgia</option><option>Times New Roman</option><option>Verdana</option><option>Courier New</option></select></div>
+<div class="field"><label for="fontSize">Font size</label><input id="fontSize" type="number" min="8" max="180" value="24" disabled></div>
+<div class="field"><label for="fontWeight">Weight</label><select id="fontWeight" disabled><option value="400">Regular</option><option value="700">Bold</option><option value="300">Light</option></select></div>
 <div class="field"><label for="textColor">Text color</label><input id="textColor" type="color" value="#111111" disabled></div>
-<div class="field"><label for="coverColor">Background cover</label><input id="coverColor" type="color" value="#ffffff" disabled></div>
-<button id="applyEdit" class="apply" disabled>Apply text change</button>
-<button id="undoEdit" disabled>Undo last change</button>
-<p class="hint">Text replacement OCR box पर cover लगाकर नया text draw करता है। Complex background में cover color manually चुनें।</p>
+<div class="field"><label for="textOpacity">Opacity</label><input id="textOpacity" type="range" min="10" max="100" value="100" disabled></div>
+<div class="field"><label for="letterSpacing">Letter spacing</label><input id="letterSpacing" type="number" min="-5" max="30" value="0" disabled></div>
+<div class="field"><label for="textAlign">Alignment</label><select id="textAlign" disabled><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+<div class="checks"><label><input id="italicText" type="checkbox" disabled> Italic</label><label><input id="underlineText" type="checkbox" disabled> Underline</label></div>
+<div class="field"><label for="positionX">Position X</label><input id="positionX" type="number" disabled></div><div class="field"><label for="positionY">Position Y</label><input id="positionY" type="number" disabled></div>
+<div class="field"><label for="rotation">Rotation</label><input id="rotation" type="number" min="-180" max="180" value="0" disabled></div>
+<div class="field"><label for="coverColor">Cover color</label><input id="coverColor" type="color" value="#ffffff" disabled></div>
+<button id="applyEdit" class="apply" disabled>Apply text change</button></details>
+<details><summary>Remove / cleanup</summary><p class="small">Select a detected text region, then clear its visible lettering using a solid cover. Complex backgrounds need manual refinement.</p><button id="removeText" disabled>Remove selected text</button><button id="manualSelect" disabled>Draw manual region</button></details>
+<details><summary>Add text</summary><label for="newText">New text</label><textarea id="newText" rows="2" placeholder="Type text to add" disabled></textarea><button id="addText" disabled>Add text to image</button></details>
+<details><summary>Stamp / image</summary><label class="upload-small" for="stampInput">Upload stamp / image</label><input id="stampInput" type="file" accept="image/png,image/jpeg" disabled><button id="addStamp" disabled>Add stamp to canvas</button></details>
+<details><summary>Effects</summary><div class="field"><label for="brightness">Brightness</label><input id="brightness" type="range" min="0" max="200" value="100" disabled></div><div class="field"><label for="contrast">Contrast</label><input id="contrast" type="range" min="0" max="200" value="100" disabled></div><div class="field"><label for="saturation">Saturation</label><input id="saturation" type="range" min="0" max="200" value="100" disabled></div><div class="field"><label for="blur">Blur</label><input id="blur" type="range" min="0" max="10" value="0" disabled></div><button id="applyEffects" disabled>Apply effects</button><button id="resetEffects" disabled>Reset effects</button></details>
+<details open><summary>Recognized text · <span id="textCount">0</span></summary><p id="selectionHint" class="small">Detect text, then select any box or item.</p><div id="textList" class="text-list"></div></details>
+<details><summary>Export settings</summary><div class="field"><label for="exportFormat">Format</label><select id="exportFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div><div class="field"><label for="exportQuality">Quality</label><input id="exportQuality" type="range" min="40" max="100" value="95"></div><p class="small">Export keeps original canvas pixel dimensions.</p></details>
 </aside>
-<section class="canvas-area">
-<div id="emptyState" class="empty"><b>▧</b><strong>Your image will appear here</strong><span>PNG, JPG या WebP चुनें</span></div>
-<div id="imageStage" class="image-stage" hidden><canvas id="imageCanvas"></canvas><div id="ocrLayer" class="ocr-layer"></div></div>
-<p id="status" role="status" aria-live="polite">No image selected.</p>
-</section>
-</div>
-</section>
-<section class="note"><b>Note:</b> OCR accuracy image quality और language पर निर्भर करती है। यह editor visible image text को cover करके नया text draw करता है; यह original source text layer को वापस नहीं बनाता। Original image की copy सुरक्षित रखें।</section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="image-text-editor.js"></script>
-</body></html>
+<section class="canvas-area"><div id="emptyState" class="empty"><b>▧</b><strong>Your image will appear here</strong><span>PNG, JPG या WebP चुनें</span></div><div id="imageStage" class="image-stage" hidden><canvas id="imageCanvas"></canvas><div id="ocrLayer" class="ocr-layer"></div></div><p id="status" role="status" aria-live="polite">No image selected.</p></section>
+</div></section><section class="note"><b>Important:</b> यह editor visible pixels को edit करता है; original image की hidden design layers या exact source font recover नहीं करता। Text changes को केवल उन images पर करें जिन्हें edit करने की अनुमति है।</section></main>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script><script src="image-text-editor.js"></script></body></html>
