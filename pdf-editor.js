@@ -105,7 +105,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  window.KAGZIPdfEditorDetectPageText=detectPageText;
  updateControls();setTool('select');
 }
-window.KAGZIPdfRememberBeforeAppendScan=rememberBeforeAppendScan;
+window.KAGZIPdfEditorRememberBeforeAppendScan=rememberBeforeAppendScan;
 window.KAGZIPdfCreateNoteAnnotation=createNoteAnnotation;
 window.KAGZIPdfRenderMetrics=renderMetrics;
 window.initPdfEditor=initPdfEditor;
