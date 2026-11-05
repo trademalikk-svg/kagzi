@@ -87,6 +87,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
   for(const pageCanvas of pages){const blob=await new Promise(resolve=>pageCanvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('Could not render OCR text page.');const bytes=await blob.arrayBuffer(),image=await pdf.embedPng(bytes),page=pdf.addPage([pageWidth,pageHeight]);page.drawImage(image,{x:0,y:0,width:pageWidth,height:pageHeight});}
   workingBytes=await pdf.save();pageIndex=pdf.getPageCount()-1;await refreshWorkingPdf();await renderPageThumbnails();updateControls();status('OCR text added as '+pages.length+' visual PDF page(s). This is image-based text, not a searchable text layer.');
  };
+ window.KAGZIPdfEditorHasDocument=()=>!!(pdfDoc&&workingBytes);
  window.KAGZIPdfEditorDetectPageText=detectPageText;
  updateControls();setTool('select');
 }
