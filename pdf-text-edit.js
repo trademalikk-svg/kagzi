@@ -29,8 +29,19 @@ async function renderTextLayer(){
   const node=document.createElement('button');node.type='button';node.className='pdf-text-hit';node.style.left=left+'px';node.style.top=top+'px';node.style.width=Math.min(width,cssWidth-left)+'px';node.style.height=height+'px';node.title='Edit: '+item.str;node.setAttribute('aria-label','Edit text: '+item.str);node.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setSelection({text:item.str,left,top,width,height,scale,pageIndex:index,pageWidth:viewport.width,pageHeight:viewport.height},node);});
   layer.append(node);
  }
- if(!layer.childElementCount)hint('No selectable text layer found. This page may be a scanned image. Run OCR first; scanned-page text editing is being added separately.');
- else hint('Text blocks detected: '+layer.childElementCount+'. Tap any block to edit it.');
+ if(!layer.childElementCount){
+  hint('Scanned page detected. Running OCR to create selectable text regions…');
+  try{
+   const result=await window.KAGZIPdfEditorApi.detectPageText(index),ocrScale=1.6;
+   for(const region of (result.regions||[])){
+    const b=region.bbox;if(!b||!region.text)continue;
+    const left=b.x0/ocrScale*scale,top=b.y0/ocrScale*scale,width=Math.max(8,(b.x1-b.x0)/ocrScale*scale),height=Math.max(8,(b.y1-b.y0)/ocrScale*scale);
+    const node=document.createElement('button');node.type='button';node.className='pdf-text-hit';node.style.left=left+'px';node.style.top=top+'px';node.style.width=width+'px';node.style.height=height+'px';node.title='OCR: '+region.text;node.setAttribute('aria-label','Edit OCR text: '+region.text);
+    node.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setSelection({text:region.text,left,top,width,height,scale,pageIndex:index,pageWidth:viewport.width,pageHeight:viewport.height,ocr:true},node);});layer.append(node);
+   }
+   hint(layer.childElementCount?'OCR text blocks detected: '+layer.childElementCount+'. Tap a word to edit it.':'OCR did not find selectable words. Try a clearer scan.');
+  }catch(error){hint('OCR could not create selectable regions: '+(error.message||'unknown error'));}
+ }else hint('Text blocks detected: '+layer.childElementCount+'. Tap any block to edit it.');
 }
 async function applyReplacement(){
  const api=window.KAGZIPdfEditorApi;if(!api||!selected)return;
