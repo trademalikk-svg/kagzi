@@ -37,15 +37,16 @@ function loadExport(overrides = {}) {
 }
 
 test('PDF export downloads valid bytes with PDF MIME type and sanitized filename', () => {
-  const { api, calls, anchor } = loadExport();
+  const context = loadExport();
+  const { api, calls } = context;
   const result = api.download(new Uint8Array([1, 2, 3]), '../My report?.pdf');
   assert.equal(result.filename, 'My_report_.pdf');
   assert.equal(result.mimeType, 'application/pdf');
   assert.equal(result.size, 3);
   assert.equal(calls.created.length, 1);
   assert.equal(calls.created[0].type, 'application/pdf');
-  assert.equal(anchor.href, 'blob:test-pdf');
-  assert.equal(anchor.download, 'My_report_.pdf');
+  assert.equal(context.anchor.href, 'blob:test-pdf');
+  assert.equal(context.anchor.download, 'My_report_.pdf');
   assert.equal(calls.appended.length, 1);
   assert.equal(calls.clicked, true);
   assert.deepEqual(calls.removed, [true]);
