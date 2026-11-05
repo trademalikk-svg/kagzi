@@ -21,6 +21,15 @@ Run these checks on the feature branch before merging.
 
 ## Image placement controls
 1. Open a PDF and choose a PNG or JPG image.
+2. Set image width and click the page to create a pending image preview.
+3. Drag the preview to a different location; confirm it moves without creating duplicate previews.
+4. Tap **Place image** and confirm the image is embedded at the preview position.
+5. Export and reopen the PDF; confirm the image position and aspect ratio persist.
+6. Start another image placement and tap **Cancel image**; confirm the preview is removed and no image is added.
+7. Use Undo after placement and confirm the embedded image is removed.
+
+## Image placement controls (size bounds)
+1. Open a PDF and choose a PNG or JPG image.
 2. Set image width to a valid percentage between 5 and 100.
 3. Click the page to place the image and confirm the exported image width follows the chosen percentage while preserving aspect ratio.
 4. Use Undo to remove the most recently placed image, then place it again at a different position to verify the reposition workflow.
