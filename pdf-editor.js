@@ -46,7 +46,9 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
     const selectThisText=event=>{if(event){event.preventDefault();event.stopPropagation();}selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');status('Text selected. Inspector में बदलाव करें और Apply selected text edit दबाएँ।');};
     span.setAttribute('role','button');span.setAttribute('tabindex','0');span.setAttribute('aria-label','Select PDF text: '+item.str.slice(0,80));
     span.addEventListener('pointerdown',selectThisText,{passive:false});
-    span.addEventListener('click',event=>{if(!selectedText||selectedText.span!==span)selectThisText(event);else event.stopPropagation();});
+    span.addEventListener('pointerup',selectThisText,{passive:false});
+    span.addEventListener('touchend',selectThisText,{passive:false});
+    span.addEventListener('click',event=>{selectThisText(event);});
     span.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selectThisText(event);}});
     layer.append(span);
    }
