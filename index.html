@@ -377,7 +377,7 @@ img,video,canvas,iframe{max-width:100%}
    probe.onerror=function(){URL.revokeObjectURL(initialUrl);working=false;say('This file could not be opened as an image. Try a JPG or PNG photo.');};
    probe.src=initialUrl;
   }
-  input.addEventListener('change',function(){const f=input.files&&input.files[0];if(f)process(f);});
+  input.addEventListener('change',function(e){e.stopImmediatePropagation();const f=input.files&&input.files[0];if(f)process(f);},true);
   if(bg)bg.addEventListener('change',async function(){
    if(!sourceFile)return;
    if(!editedBlob){say('Choose a photo first.');return;}
@@ -392,7 +392,7 @@ img,video,canvas,iframe{max-width:100%}
     showImage(editedBlob);say('Background colour updated. Preview is ready.');
    }catch(e){say('Could not update background colour: '+(e.message||'please try again.'));}
   });
-  download.addEventListener('click',async function(){
+  download.addEventListener('click',async function(e){e.preventDefault();e.stopImmediatePropagation();
    try{
     if(!editedBlob)throw new Error('Choose a photo and wait for preview.');
     const preset=document.getElementById('passportPreset');
