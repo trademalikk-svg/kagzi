@@ -81,47 +81,69 @@ const photoStudio=$('#photoStudio');
 $('#closePhotoStudio').addEventListener('click',()=>{photoStudio.hidden=true;});
 const photoInput=$('#photoInput'),photoPreview=$('#photoPreview'),photoWidth=$('#photoWidth'),photoHeight=$('#photoHeight'),photoKeepRatio=$('#photoKeepRatio'),downloadPhotoBtn=$('#downloadPhotoBtn');
 let photoObjectUrl='',photoOriginalWidth=0,photoOriginalHeight=0;
-photoInput.addEventListener('change',()=>{
- const file=photoInput.files&&photoInput.files[0];
+window.kagziPhotoInputChanged=function(input){
+ const file=input&&input.files&&input.files[0];
+ const passportName=$('#passportPhotoName');
+ const resizeName=$('#photoName');
  downloadPhotoBtn.disabled=!file;
  photoPreview.style.display='none';
+ photoPreview.hidden=true;
  $('#photoPreviewEmpty').hidden=false;
  photoOriginalWidth=photoOriginalHeight=0;
  if(photoObjectUrl){URL.revokeObjectURL(photoObjectUrl);photoObjectUrl='';}
  if(!file){
-  $('#photoName').textContent='No image selected';
+  if(passportName)passportName.textContent='No photo selected. Choose a JPG, PNG or WebP image.';
+  if(resizeName)resizeName.textContent='No image selected';
   $('#photoDimensions').textContent='Choose an image to view its dimensions.';
+  photoBgBlobState.cutout=null;
+  passportDownload.disabled=true;
+  setPhotoStatus('Choose a photo to start automatic background editing.');
   return;
  }
- if(!file.type.startsWith('image/')){
+ const validType=/^(image\\/(jpeg|png|webp))$/i.test(file.type)||/\\.(jpe?g|png|webp)$/i.test(file.name);
+ if(!validType){
+  if(passportName)passportName.textContent='Unsupported file. Please choose JPG, PNG or WebP.';
   notify('Choose a JPG, PNG or WebP image.');
-  photoInput.value='';
+  input.value='';
   downloadPhotoBtn.disabled=true;
+  passportDownload.disabled=true;
   return;
  }
+ if(passportName)passportName.textContent='Selected: '+file.name+' · Loading preview…';
+ if(resizeName)resizeName.textContent=file.name;
  photoObjectUrl=URL.createObjectURL(file);
- $('#photoName').textContent=file.name;
  photoPreview.onload=()=>{
   photoOriginalWidth=photoPreview.naturalWidth;
   photoOriginalHeight=photoPreview.naturalHeight;
-  if(!photoOriginalWidth||!photoOriginalHeight){photoPreview.style.display='none';return;}
+  if(!photoOriginalWidth||!photoOriginalHeight)throw new Error('Image dimensions could not be read.');
   photoWidth.value=photoOriginalWidth;
   photoHeight.value=photoOriginalHeight;
+  $('#photoCropW').value=photoOriginalWidth;
+  $('#photoCropH').value=photoOriginalHeight;
   $('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';
-  photoPreview.style.display='block';
   photoPreview.hidden=false;
+  photoPreview.style.display='block';
   $('#photoPreviewEmpty').hidden=true;
   downloadPhotoBtn.disabled=false;
+  $('#compressPhotoBtn').disabled=false;
+  if(passportName)passportName.textContent='Selected: '+file.name+' · Preview ready';
+  setPhotoStatus('Photo loaded. Starting automatic background editing…');
+  autoRemovePassportBackground();
  };
  photoPreview.onerror=()=>{
+  photoPreview.hidden=true;
   photoPreview.style.display='none';
   $('#photoPreviewEmpty').hidden=false;
-  $('#photoDimensions').textContent='Preview could not load. Try another JPG or PNG image.';
-  notify('This image could not be previewed. Try another image.');
+  $('#photoDimensions').textContent='Preview could not load. Try another image.';
+  if(passportName)passportName.textContent='Could not load '+file.name+'. Try another JPG or PNG.';
   downloadPhotoBtn.disabled=true;
+  passportDownload.disabled=true;
+  notify('This image could not be previewed.');
  };
  photoPreview.src=photoObjectUrl;
-});
+};
+photoInput.onchange=function(){window.kagziPhotoInputChanged(this);};
+
 photoWidth.addEventListener('input',()=>{if(photoKeepRatio.checked&&photoOriginalWidth&&photoWidth.value){photoHeight.value=Math.max(1,Math.round(Number(photoWidth.value)*photoOriginalHeight/photoOriginalWidth));}});
 photoHeight.addEventListener('input',()=>{if(photoKeepRatio.checked&&photoOriginalHeight&&photoHeight.value){photoWidth.value=Math.max(1,Math.round(Number(photoHeight.value)*photoOriginalWidth/photoOriginalHeight));}});
 photoKeepRatio.addEventListener('change',()=>{if(photoKeepRatio.checked&&photoOriginalWidth){photoHeight.value=Math.max(1,Math.round(Number(photoWidth.value||photoOriginalWidth)*photoOriginalHeight/photoOriginalWidth));}});
@@ -171,7 +193,7 @@ async function autoRemovePassportBackground(){
  }catch(err){setPhotoStatus('Automatic background editing could not run: '+(err.message||'check your connection and try again.'));notify('AI background removal unavailable.');}
  finally{photoBgBlobState.processing=false;}
 }
-photoInput.addEventListener('change',()=>{setTimeout(()=>{const has=!!photoInput.files.length;$('#compressPhotoBtn').disabled=!has;passportDownload.disabled=!has;if(photoOriginalWidth){$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;}if(has)autoRemovePassportBackground();else{photoBgBlobState.cutout=null;setPhotoStatus('Choose a photo to start automatic background editing.');}},0);});
+// AI background removal starts after the image preview has loaded in kagziPhotoInputChanged.
 passportBgSelect.addEventListener('change',()=>{if(photoBgBlobState.cutout)applySelectedPassportBackground().catch(err=>{setPhotoStatus(err.message||'Could not apply this colour.');});});
 $('#passportPreset').addEventListener('change',e=>{const value=e.target.value;if(!value||value==='custom')return;const [w,h]=value.split('x').map(Number);photoWidth.value=w;photoHeight.value=h;photoKeepRatio.checked=false;setPhotoStatus('Photo size selected: '+w+' × '+h+' px. Verify the receiving authority requirements.');});
 passportDownload.addEventListener('click',async()=>{try{if(!photoBgBlobState.cutout)throw new Error('Wait for automatic background editing to finish.');const width=Number(photoWidth.value),height=Number(photoHeight.value);if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>12000||height>12000)throw new Error('Choose valid output dimensions.');passportDownload.disabled=true;passportDownload.textContent='Preparing download…';const blob=await buildPhotoBlob($('#photoFormat').value,Number($('#photoQuality').value)/100);downloadPhotoBlob(blob,'-passport');setPhotoStatus('Edited passport photo downloaded. Check the receiving authority photo rules before submitting.');}catch(err){notify(err.message||'Could not download the edited photo.');}finally{passportDownload.disabled=!photoBgBlobState.cutout;passportDownload.textContent='Download edited passport photo';}});
