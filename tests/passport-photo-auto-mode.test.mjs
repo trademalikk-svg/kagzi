@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-const passportScript = html.match(/<script id="kagzi-photo-standalone-fix">([\\s\\S]*?)<\\/script>/)?.[1] ?? '';
+const passportScript = html.match(/<script id="kagzi-photo-standalone-fix">([\s\S]*?)<\/script>/)?.[1] ?? '';
 
 test('passport defaults are automatic and advanced controls start collapsed', () => {
   assert.match(html, /<details class="passport-advanced" id="passportAdvancedSettings">/);
