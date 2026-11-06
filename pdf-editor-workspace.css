@@ -27,7 +27,7 @@
   align-items: flex-start;
   gap: 4px;
 }
-@media (max-width: 650px) {
+@media (max-width: 1150px) {
   .rail-heading {
     align-items: center;
     gap: 8px;
