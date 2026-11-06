@@ -3,7 +3,7 @@ from playwright.sync_api import sync_playwright
 from html import escape
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "current-affairs-book.html"
+SOURCE = ROOT / "current-affairs-book-source.html"
 OUT = {
     "daily": ROOT / "current-affairs/day/KAGZI-Daily-Current-Affairs-2026-11-06.pdf",
     "weekly": ROOT / "current-affairs/weekly/KAGZI-Weekly-Current-Affairs-2026-11.pdf",
