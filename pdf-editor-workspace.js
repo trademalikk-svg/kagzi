@@ -26,10 +26,11 @@
     const doc = root || document;
     bindPanelToggle(doc, 'togglePageRail', 'pdfPageRailPanel', 'Hide pages', 'Show pages', 'Hide page thumbnails', 'Show page thumbnails');
     bindPanelToggle(doc, 'toggleInspector', 'pdfSelectionProperties', 'Hide properties', 'Show properties', 'Hide properties panel', 'Show properties panel');
-    const workspace = doc.querySelector('.editor-workspace');
+    const query = typeof doc.querySelector === 'function' ? doc.querySelector.bind(doc) : () => null;
+    const workspace = query('.editor-workspace');
     const inspector = doc.getElementById('pdfInspector');
-    const shell = doc.querySelector('.editor-shell');
-    const toolbar = doc.querySelector('.editor-toolbar');
+    const shell = query('.editor-shell');
+    const toolbar = query('.editor-toolbar');
     if (workspace && inspector && shell && toolbar) {
       const placeInspector = () => {
         if (window.matchMedia('(max-width: 650px)').matches) {
