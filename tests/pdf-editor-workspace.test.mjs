@@ -74,3 +74,16 @@ test('PDF editor loads local OCR and camera scripts before the editor initialize
   assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
   assert.ok(html.indexOf('src="pdf-scanner.js"') < html.indexOf('src="pdf-editor.js"'));
 });
+
+
+test('PDF editor offers a local shared-document session and loads its bridge', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const bridge = await readFile(new URL('../pdf-document-session.js', import.meta.url), 'utf8');
+  for (const id of ['saveSharedSession', 'restoreSharedSession']) assert.match(html, new RegExp('id="' + id + '"'));
+  assert.match(html, /src="pdf-document-session\.js"/);
+  assert.match(js, /KAGZIPdfSession\.save/);
+  assert.match(js, /KAGZIPdfSession\.load/);
+  assert.match(bridge, /indexedDB\.open/);
+  assert.match(bridge, /KAGZIPdfSession/);
+});
