@@ -26,6 +26,21 @@
     const doc = root || document;
     bindPanelToggle(doc, 'togglePageRail', 'pdfPageRailPanel', 'Hide pages', 'Show pages', 'Hide page thumbnails', 'Show page thumbnails');
     bindPanelToggle(doc, 'toggleInspector', 'pdfSelectionProperties', 'Hide properties', 'Show properties', 'Hide properties panel', 'Show properties panel');
+    const workspace = doc.querySelector('.editor-workspace');
+    const inspector = doc.getElementById('pdfInspector');
+    const documentArea = doc.querySelector('.document-area');
+    const tools = doc.querySelector('.document-tools');
+    if (workspace && inspector && documentArea && tools) {
+      const placeInspector = () => {
+        if (window.matchMedia('(max-width: 650px)').matches) {
+          if (inspector.parentElement !== documentArea) documentArea.insertBefore(inspector, tools);
+        } else if (inspector.parentElement !== workspace) {
+          workspace.appendChild(inspector);
+        }
+      };
+      placeInspector();
+      window.addEventListener('resize', placeInspector, { passive: true });
+    }
   }
 
   window.KAGZIPdfWorkspace = { init };
