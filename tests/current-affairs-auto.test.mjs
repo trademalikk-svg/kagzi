@@ -24,10 +24,12 @@ test('archive viewer reads persisted official-source data and exposes all four p
   assert.ok(existsSync(new URL('scripts/update_current_affairs.py', root)));
 });
 
-test('all four folder pages route to their corresponding dynamic archive view', () => {
-  for (const view of ['day','weekly','monthly','yearly']) {
-    const page = read('current-affairs/'+view+'/index.html');
-    const target = view === 'day' ? 'daily' : view;
-    assert.ok(page.includes('../archive.html?view='+target));
-  }
+test('Daily and Weekly are open archives while Monthly and Yearly remain paid-only', () => {
+  assert.ok(read('current-affairs/day/index.html').includes('../archive.html?view=daily'));
+  assert.ok(read('current-affairs/weekly/index.html').includes('../archive.html?view=weekly'));
+  assert.ok(read('current-affairs/monthly/index.html').includes('MONTHLY · PAID ONLY'));
+  assert.ok(read('current-affairs/yearly/index.html').includes('Yearly · Paid Only'));
+  const archive = read('current-affairs/archive.html');
+  assert.ok(archive.includes('params.get("view")==="monthly"'));
+  assert.ok(archive.includes('params.get("view")==="yearly"'));
 });
