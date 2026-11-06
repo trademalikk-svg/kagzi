@@ -127,3 +127,19 @@ test('mobile inspector focus helper handles visual viewport and exposes reveal m
   assert.match(js, /visualViewport/);
   assert.match(js, /scrollIntoView/);
 });
+
+
+test('PDF editor exposes embedded Unicode font loading before custom-script export', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('fontkit.umd.min.js') < html.indexOf('src="pdf-editor.js"'), 'fontkit must load before editor initialization');
+  assert.match(js, /registerFontkit/);
+  assert.match(js, /NotoSansDevanagari/);
+  assert.match(js, /embedFont\(.*subset/s);
+});
+
+test('Unicode font loader fails safely when fontkit or a font file is unavailable', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /Unicode font support is unavailable/);
+  assert.match(js, /fetch\(/);
+});
