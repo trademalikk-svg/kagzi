@@ -277,6 +277,26 @@ jobs:
             classification: foundHindi ? 'Hindi text discovered; replacement test still required' : 'unsupported pending ToUnicode/CMap and glyph-mapping investigation'
           }, null, 2));
           hiEngine.destroy();
+
+          // Compare a fully embedded font with the subset-font fixture above.
+          const fullHindiDoc = await PDFDocument.create();
+          fullHindiDoc.registerFontkit(fontkit);
+          const fullHindiFont = await fullHindiDoc.embedFont(fs.readFileSync('test-fonts/NotoSansDevanagari.ttf'), { subset: false });
+          const fullHindiPage = fullHindiDoc.addPage([595.2756, 841.8898]);
+          fullHindiPage.drawText('हिंदी पाठ परीक्षण', { x: 50, y: 780, size: 18, font: fullHindiFont });
+          const fullHindiBytes = new Uint8Array(await fullHindiDoc.save({ useObjectStreams: true }));
+          const fullHiEngine = await PdfiumTextEngine.create(wasm, fullHindiBytes);
+          const fullHiRuns = fullHiEngine.readPage(0, 0);
+          const fullHiText = fullHiRuns.map(r => r.text).join(' ');
+          const fullExact = fullHiText.includes('हिंदी पाठ परीक्षण');
+          console.log(JSON.stringify({
+            fixture: 'fully embedded Noto Sans Devanagari (subset=false)',
+            discoveredRuns: fullHiRuns.length,
+            extractedText: fullHiText,
+            exactHindiRoundTripAvailable: fullExact,
+            classification: fullExact ? 'candidate only; native replacement still requires round-trip test' : 'unsupported; full embedding did not resolve text mapping'
+          }, null, 2));
+          fullHiEngine.destroy();
           NODE
 
       - name: Verify fail-closed handling of encrypted and malformed PDFs
