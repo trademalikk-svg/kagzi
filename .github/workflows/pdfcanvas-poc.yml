@@ -190,3 +190,69 @@ jobs:
             outputBytes: result.bytes.length
           }, null, 2));
           NODE
+
+
+      - name: Test multiple operators, mixed styles, and Hindi font handling
+        working-directory: vendor/pdfcanvas
+        run: |
+          npm install --no-save --package-lock=false --no-audit --no-fund @pdf-lib/fontkit
+          mkdir -p test-fonts
+          curl -fL --retry 3 'https://github.com/google/fonts/raw/main/ofl/notosansdevanagari/NotoSansDevanagari%5Bwght%5D.ttf' -o test-fonts/NotoSansDevanagari.ttf
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import fontkit from '@pdf-lib/fontkit';
+          import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+
+          // Distinct text-showing operators on the same baseline.
+          const operatorsDoc = await PDFDocument.create();
+          const regular = await operatorsDoc.embedFont(StandardFonts.Helvetica);
+          const bold = await operatorsDoc.embedFont(StandardFonts.HelveticaBold);
+          const opPage = operatorsDoc.addPage([595.2756, 841.8898]);
+          opPage.drawText('First operator', { x: 50, y: 780, size: 14, font: regular });
+          opPage.drawText('Second operator', { x: 150, y: 780, size: 14, font: regular });
+          opPage.drawText('Third operator', { x: 270, y: 780, size: 14, font: regular });
+          opPage.drawText('Mixed ', { x: 50, y: 740, size: 14, font: regular });
+          opPage.drawText('BOLD', { x: 91, y: 740, size: 14, font: bold });
+          const opBytes = new Uint8Array(await operatorsDoc.save({ useObjectStreams: true }));
+          const opEngine = await PdfiumTextEngine.create(wasm, opBytes);
+          const runs = opEngine.readPage(0, 0);
+          const allText = runs.map(r => r.text).join(' ');
+          assert.ok(allText.includes('First operator'));
+          assert.ok(allText.includes('Second operator'));
+          assert.ok(allText.includes('Third operator'));
+          const mixedRun = runs.find(r => r.text.includes('Mixed') || r.text.includes('BOLD'));
+          assert.ok(mixedRun, 'mixed-style line content should be discoverable');
+          console.log(JSON.stringify({
+            fixture: 'multiple text operators and mixed regular/bold style',
+            runCount: runs.length,
+            textRuns: runs.map(r => ({ text: r.text, editable: r.editable, mixed: r.mixed, canStyle: r.canStyle })),
+            mixedStyleReported: mixedRun.mixed === true,
+            classification: mixedRun.mixed === true ? 'requires conservative rejection or explicit style policy' : 'style boundary not represented as mixed; inspect run segmentation before editing'
+          }, null, 2));
+          opEngine.destroy();
+
+          // Hindi Devanagari using an openly licensed Noto Sans Devanagari font.
+          const hindiDoc = await PDFDocument.create();
+          hindiDoc.registerFontkit(fontkit);
+          const hindiFont = await hindiDoc.embedFont(fs.readFileSync('test-fonts/NotoSansDevanagari.ttf'), { subset: true });
+          const hindiPage = hindiDoc.addPage([595.2756, 841.8898]);
+          hindiPage.drawText('हिंदी पाठ परीक्षण', { x: 50, y: 780, size: 18, font: hindiFont, color: rgb(0, 0, 0) });
+          hindiPage.drawText('असंबंधित वाक्य सुरक्षित रहे', { x: 50, y: 740, size: 13, font: hindiFont });
+          const hindiBytes = new Uint8Array(await hindiDoc.save({ useObjectStreams: true }));
+          const hiEngine = await PdfiumTextEngine.create(wasm, hindiBytes);
+          const hiRuns = hiEngine.readPage(0, 0);
+          const hiText = hiRuns.map(r => r.text).join(' ');
+          const foundHindi = hiText.includes('हिंदी पाठ परीक्षण');
+          console.log(JSON.stringify({
+            fixture: 'embedded subset Noto Sans Devanagari',
+            discoveredRuns: hiRuns.length,
+            extractedText: hiText,
+            exactHindiRoundTripAvailable: foundHindi,
+            classification: foundHindi ? 'Hindi text discovered; replacement test still required' : 'unsupported pending ToUnicode/CMap and glyph-mapping investigation'
+          }, null, 2));
+          hiEngine.destroy();
+          NODE
