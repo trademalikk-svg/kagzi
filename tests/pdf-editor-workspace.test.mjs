@@ -9,7 +9,7 @@ test('mobile PDF inspector is inside the document flow directly before the page 
   const pageStage = html.indexOf('class="page-stage"');
   assert.ok(docTools < inspector && inspector < pageStage, 'inspector must sit between document tools and the PDF page');
   const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
-  assert.match(css, /\.pdf-inspector\\{position:sticky;top:0/);
+  assert.match(css, /\.pdf-inspector\\{position:relative;top:auto/);\n  assert.match(css, /overscroll-behavior:contain/);
   assert.doesNotMatch(css, /\.pdf-inspector\\{grid-column:auto/);
 });
 
