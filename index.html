@@ -309,5 +309,57 @@ img,video,canvas,iframe{max-width:100%}
     <p class="assistant-footnote">AI replies can be wrong. Do not share passwords, OTPs or sensitive document numbers.</p>
   </section>
 </div>
-<div class="toast" id="toast" role="status"></div><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script><script src="script.js?v=photo-fix-20261106-3"></script><script src="support.js"></script>
+<div class="toast" id="toast" role="status"></div><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script><script src="script.js?v=photo-fix-20261106-3"></script><script src="support.js"></script><script>
+(function(){
+ const input=document.getElementById('photoInput');
+ if(!input)return;
+ let lastKey='';
+ function handlePhotoPick(){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  const key=[file.name,file.size,file.lastModified].join(':');
+  if(key===lastKey)return;
+  lastKey=key;
+  const preview=document.getElementById('photoPreview');
+  const empty=document.getElementById('photoPreviewEmpty');
+  const status=document.getElementById('photoStatus');
+  const passportStatus=document.getElementById('passportBgStatus');
+  const name=document.getElementById('passportPhotoName');
+  const resizeName=document.getElementById('photoName');
+  if(name)name.textContent='Selected: '+file.name+' · Loading preview…';
+  if(resizeName)resizeName.textContent=file.name;
+  if(!file.type.startsWith('image/')&&!/\.(jpe?g|png|webp)$/i.test(file.name)){
+   if(name)name.textContent='Unsupported file. Choose JPG, PNG or WebP.';
+   return;
+  }
+  const url=URL.createObjectURL(file);
+  preview.onload=function(){
+   preview.hidden=false;preview.style.display='block';
+   if(empty)empty.hidden=true;
+   const w=preview.naturalWidth,h=preview.naturalHeight;
+   const dimensions=document.getElementById('photoDimensions');
+   if(dimensions)dimensions.textContent=w+' × '+h+' pixels';
+   const pw=document.getElementById('photoWidth'),ph=document.getElementById('photoHeight');
+   if(pw)pw.value=w;if(ph)ph.value=h;
+   const cw=document.getElementById('photoCropW'),ch=document.getElementById('photoCropH');
+   if(cw)cw.value=w;if(ch)ch.value=h;
+   if(name)name.textContent='Selected: '+file.name+' · Preview ready';
+   if(status)status.textContent='Photo selected. Preview is ready.';
+   if(passportStatus)passportStatus.textContent='Photo selected. AI background editing will start now.';
+   const regularDownload=document.getElementById('downloadPhotoBtn');
+   const compress=document.getElementById('compressPhotoBtn');
+   if(regularDownload)regularDownload.disabled=false;
+   if(compress)compress.disabled=false;
+   try{if(typeof window.autoRemovePassportBackground==='function')window.autoRemovePassportBackground();}catch(e){if(passportStatus)passportStatus.textContent='Photo preview ready. AI processing could not start: '+e.message;}
+  };
+  preview.onerror=function(){
+   if(name)name.textContent='Preview failed. Try a JPG or PNG image.';
+   if(status)status.textContent='Could not display this image.';
+  };
+  preview.src=url;
+ }
+ input.addEventListener('input',handlePhotoPick);
+ input.addEventListener('change',handlePhotoPick);
+})();
+</script>
 </body></html>
