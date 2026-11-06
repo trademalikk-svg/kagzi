@@ -634,7 +634,7 @@ const commonFaqs=[
 ["AI का जवाब अंतिम सरकारी आदेश है?","नहीं। AI जवाब सामान्य मार्गदर्शन है; अंतिम जानकारी विभाग से लें।"],
 ["शिकायत कहाँ करें?","संबंधित विभाग के आधिकारिक grievance/जनसुनवाई माध्यम का उपयोग करें।"]
 ];
-const serviceFaqs=services.map(s=>({q:s.name+" के लिए जानकारी कहाँ मिलेगी?",a:s.summary+" "+s.guide+" आधिकारिक पोर्टल: "+s.portal+" ("+s.url+")"}));
+const serviceFaqs=services.map(s=>{const g=getServiceGuide(s);return {q:s.name+" के लिए दस्तावेज़, पात्रता और आवेदन प्रक्रिया क्या है?",a:"दस्तावेज़: "+g.documents+" पात्रता: "+g.eligibility+" आवेदन प्रक्रिया: "+g.steps+" आधिकारिक पोर्टल: "+s.portal+" ("+s.url+")"};});
 const faqs=[...serviceFaqs,...commonFaqs.map(([q,a])=>({q,a}))].slice(0,100);
 function renderFaq(){const q=faqSearch.value.trim().toLocaleLowerCase();const filtered=faqs.filter(f=>(f.q+" "+f.a).toLocaleLowerCase().includes(q));faqCount.textContent=filtered.length+" सवाल";faqList.replaceChildren();if(!filtered.length){const p=document.createElement("p");p.textContent="कोई सवाल नहीं मिला। दूसरा शब्द खोजें।";faqList.append(p);return;}filtered.forEach((f,i)=>{const details=document.createElement("details");details.className="faq-item";const summary=document.createElement("summary");summary.textContent=f.q;const answer=document.createElement("p");answer.textContent=f.a;details.append(summary,answer);faqList.append(details);});}
 faqSearch.addEventListener("input",renderFaq);renderFaq();
