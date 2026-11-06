@@ -7,8 +7,6 @@ on:
       - "docs/jan-seva-competitors.json"
       - ".github/workflows/jan-seva-daily-growth.yml"
   workflow_dispatch:
-  schedule:
-    - cron: "30 2 * * *"
 permissions:
   contents: write
 concurrency:
