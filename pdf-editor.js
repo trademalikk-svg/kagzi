@@ -43,7 +43,11 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
     if(!item.str||!item.str.trim()||!item.transform)continue;
     const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(7,Math.hypot(tx[2],tx[3])),left=tx[4],top=tx[5]-fontHeight,width=Math.max(8,item.width*viewport.scale);
     const span=document.createElement('span');span.className='pdf-text-span';span.textContent=item.str;span.style.left=left+'px';span.style.top=top+'px';span.style.width=width+'px';span.style.height=(fontHeight*1.35)+'px';span.style.fontSize=fontHeight+'px';span.style.lineHeight='1.15';
-    span.addEventListener('click',event=>{event.stopPropagation();selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');status('Text selected. Edit it in the Inspector and tap Apply selected text edit.');});
+    const selectThisText=event=>{if(event){event.preventDefault();event.stopPropagation();}selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');status('Text selected. Inspector में बदलाव करें और Apply selected text edit दबाएँ।');};
+    span.setAttribute('role','button');span.setAttribute('tabindex','0');span.setAttribute('aria-label','Select PDF text: '+item.str.slice(0,80));
+    span.addEventListener('pointerdown',selectThisText,{passive:false});
+    span.addEventListener('click',event=>{if(!selectedText||selectedText.span!==span)selectThisText(event);else event.stopPropagation();});
+    span.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selectThisText(event);}});
     layer.append(span);
    }
    for(const edit of textEdits.filter(e=>e.pageIndex===pageIndex)){const spans=[...layer.children];const match=spans.find(s=>s.textContent===edit.original&&!s.dataset.edited);if(match){match.textContent=edit.text;match.dataset.edited='true';match.classList.add('edited');}}
