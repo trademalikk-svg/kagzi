@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS sources (
  id TEXT PRIMARY KEY, publisher TEXT NOT NULL, source_url TEXT NOT NULL UNIQUE,
+ category TEXT NOT NULL, region TEXT NOT NULL,
  source_type TEXT NOT NULL CHECK(source_type IN ('rss','json_api','open_data_json')),
  terms_url TEXT NOT NULL, permission_evidence TEXT NOT NULL,
  permission_status TEXT NOT NULL CHECK(permission_status IN ('pending','approved','revoked')),
@@ -23,3 +24,5 @@ CREATE TABLE IF NOT EXISTS update_items (
 );
 CREATE INDEX IF NOT EXISTS idx_update_items_public ON update_items(is_published,category,region,published_at);
 CREATE INDEX IF NOT EXISTS idx_sources_enabled ON sources(enabled,permission_status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_update_source_url ON update_items(source_id,official_url);
