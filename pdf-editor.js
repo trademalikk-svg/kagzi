@@ -1,5 +1,33 @@
 (function(){
 'use strict';
+window.KAGZIPdfMobileInspector={
+ bind({inspector,field,actions,viewport}={}){
+  if(!inspector||!field)return()=>{};
+  const revealActiveField=()=>{
+   const view=viewport||window.visualViewport;
+   const fieldRect=field.getBoundingClientRect();
+   const actionRect=actions?.getBoundingClientRect();
+   const visibleTop=view?view.offsetTop:0;
+   const visibleBottom=view?visibleTop+view.height:window.innerHeight;
+   const targetBottom=Math.max(fieldRect.bottom,actionRect?.bottom||0);
+   if(fieldRect.top<visibleTop||targetBottom>visibleBottom){
+    (actions&&targetBottom>visibleBottom?actions:field).scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
+   }
+  };
+  const onViewportChange=()=>{if(document.activeElement===field)revealActiveField();};
+  field.addEventListener('focus',revealActiveField);
+  viewport?.addEventListener?.('resize',onViewportChange);
+  viewport?.addEventListener?.('scroll',onViewportChange);
+  return()=>{field.removeEventListener('focus',revealActiveField);viewport?.removeEventListener?.('resize',onViewportChange);viewport?.removeEventListener?.('scroll',onViewportChange);};
+ },
+ revealActiveField(field,actions){
+  const target=actions||field;
+  if(target&&typeof target.scrollIntoView==='function')target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
+ }
+};
+})();
+(function(){
+'use strict';
 const MIN_ZOOM=.5,MAX_ZOOM=2.5,ZOOM_STEP=.15;
 function renderMetrics(width,height,dpr){const outputScale=Math.max(1,Math.min(Number(dpr)||1,2));return{cssWidth:width,cssHeight:height,pixelWidth:Math.ceil(width*outputScale),pixelHeight:Math.ceil(height*outputScale),outputScale};}
 function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
@@ -8,6 +36,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  const required=['pdfPageRail','railPageCount','downloadEditedPdfBottom','pdfFileInput','pdfCanvas','pageNumber','pageCount','zoomIn','zoomOut','prevPage','nextPage','downloadEditedPdf','editorStatus','emptyEditor','canvasWrap','editorOverlay'];
  if(required.some(k=>!el[k]))return;
  const status=m=>{el.editorStatus.textContent=m;};
+ const mobileInspectorCleanup=window.KAGZIPdfMobileInspector?.bind({inspector:document.getElementById('pdfInspector'),field:el.inspectorText,actions:document.querySelector('.inspector-actions'),viewport:window.visualViewport});
  if(!pdfjsLib||!PDFLib){status('PDF libraries did not load. Check your internet connection and refresh.');return;}
  window.__kagziPdfEditorInitialized=true;pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
  let originalFile=null,workingBytes=null,pdfDoc=null,pageIndex=0,zoom=1,tool='select',imageFile=null,pendingImagePlacement=null,history=[],redoHistory=[],renderTask=null,selectedText=null,textEdits=[],placedImages=[],selectedImageId=null,nextImageId=1;
@@ -29,7 +58,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
     if(!item.str||!item.str.trim()||!item.transform)continue;
     const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(7,Math.hypot(tx[2],tx[3])),left=tx[4],top=tx[5]-fontHeight,width=Math.max(8,item.width*viewport.scale);
     const span=document.createElement('span');span.className='pdf-text-span';span.textContent=item.str;span.style.left=left+'px';span.style.top=top+'px';span.style.width=width+'px';span.style.height=(fontHeight*1.35)+'px';span.style.fontSize=fontHeight+'px';span.style.lineHeight='1.15';
-    span.addEventListener('click',event=>{event.stopPropagation();selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.inspectorText.disabled=false;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');setTimeout(()=>el.inspectorText.focus({preventScroll:true}),50);status('चुना हुआ टेक्स्ट बदलें और Apply selected text edit दबाएँ।');});
+    span.addEventListener('click',event=>{event.stopPropagation();selectedText={pageIndex,original:item.str,displayText:span.textContent,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.inspectorText.disabled=false;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');setTimeout(()=>el.inspectorText.focus({preventScroll:true}),50);status('चुना हुआ टेक्स्ट बदलें और Apply selected text edit दबाएँ।');});
     layer.append(span);
    }
    for(const edit of textEdits.filter(e=>e.pageIndex===pageIndex)){const spans=[...layer.children];const match=spans.find(s=>s.textContent===edit.original&&!s.dataset.edited);if(match){match.textContent=edit.text;match.dataset.edited='true';match.classList.add('edited');}}
@@ -77,6 +106,15 @@ const task=pdfjsLib.getDocument({data:bytes.slice()});const doc=await task.promi
  if(el.redoEdit)el.redoEdit.addEventListener('click',async()=>{const next=redoHistory.pop();if(!next)return;history.push(snapshot());workingBytes=next.bytes;pageIndex=next.pageIndex;placedImages=(next.placedImages||[]).map(image=>({...image,bytes:image.bytes?image.bytes.slice():null}));textEdits=(next.textEdits||[]).map(edit=>({...edit}));selectedImageId=next.selectedImageId??null;selectedText=null;await refreshWorkingPdf();updateControls();status('Edit restored.');});
  el.downloadEditedPdf.addEventListener('click',async()=>{try{if(!workingBytes)throw new Error('Open a PDF first.');const checked=await PDFLib.PDFDocument.load(workingBytes.slice());if(!checked.getPageCount())throw new Error('The output PDF has no pages.');if(textEdits.length){for(const edit of textEdits){const target=checked.getPage(edit.pageIndex);if(!target)continue;target.drawRectangle({x:edit.x,y:edit.y,width:Math.max(8,edit.pdfWidth),height:Math.max(8,edit.pdfHeight),color:PDFLib.rgb(1,1,1),borderWidth:0});const family=edit.fontFamily==='TimesRoman'?'TimesRoman':edit.fontFamily==='Courier'?'Courier':'Helvetica',fontKey=family+(edit.bold?'Bold':''),font=await checked.embedFont(PDFLib.StandardFonts[fontKey]||PDFLib.StandardFonts.Helvetica),size=Math.max(6,Math.min(72,edit.fontSize)),hex=(edit.color||'#17233c').replace('#','').padEnd(6,'0').slice(0,6),red=parseInt(hex.slice(0,2),16)/255,green=parseInt(hex.slice(2,4),16)/255,blue=parseInt(hex.slice(4,6),16)/255;let x=edit.x;if(edit.align==='center')x+=Math.max(0,(edit.pdfWidth-font.widthOfTextAtSize(edit.text,size))/2);if(edit.align==='right')x+=Math.max(0,edit.pdfWidth-font.widthOfTextAtSize(edit.text,size));target.drawText(edit.text,{x,y:edit.y+Math.max(0,(edit.pdfHeight-size)/2),size,font,color:PDFLib.rgb(red,green,blue),opacity:Math.max(0,Math.min(1,Number(edit.opacity??100)/100)),maxWidth:Math.max(10,edit.pdfWidth),lineHeight:size*1.15});}}const finalBytes=await checked.save();const blob=new Blob([finalBytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(originalFile.name.replace(/\.pdf$/i,'')||'document')+'-edited.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);status('Edited PDF downloaded.');}catch(e){status(e.message||'Could not export this PDF.');}});
  if(el.applyTextEdit)el.applyTextEdit.addEventListener('click',()=>{if(!selectedText)return;const value=el.inspectorText.value;if(!value.trim()){status('Enter replacement text first.');return;}remember();const view=selectedText.viewport,topLeft=view.convertToPdfPoint(selectedText.left,selectedText.top),bottomRight=view.convertToPdfPoint(selectedText.left+selectedText.width,selectedText.top+selectedText.height);const x=Math.min(topLeft[0],bottomRight[0]),y=Math.min(topLeft[1],bottomRight[1]),pdfWidth=Math.abs(bottomRight[0]-topLeft[0]),pdfHeight=Math.abs(bottomRight[1]-topLeft[1]);textEdits=textEdits.filter(e=>!(e.pageIndex===selectedText.pageIndex&&e.original===selectedText.original));textEdits.push({pageIndex:selectedText.pageIndex,original:selectedText.original,text:value,x,y,pdfWidth,pdfHeight,fontSize:Number(el.inspectorFontSize.value)||12,bold:!!el.inspectorBold.checked,align:el.inspectorAlignment.value||'left',fontFamily:el.inspectorFontFamily.value||'Helvetica',color:el.inspectorFontColor.value||'#17233c',opacity:Math.max(0,Math.min(100,Number(el.inspectorOpacity.value)||100))});selectedText.span.textContent=value;selectedText.span.style.fontSize=(Number(el.inspectorFontSize.value)||12)+'px';selectedText.span.style.fontWeight=el.inspectorBold.checked?'700':'400';selectedText.span.style.fontFamily=el.inspectorFontFamily.value==='TimesRoman'?'serif':el.inspectorFontFamily.value==='Courier'?'monospace':'Arial, sans-serif';selectedText.span.style.color=el.inspectorFontColor.value||'#17233c';selectedText.span.style.opacity=String(Math.max(0,Math.min(100,Number(el.inspectorOpacity.value)||100))/100);selectedText.span.style.textAlign=el.inspectorAlignment.value||'left';selectedText.span.classList.add('edited');selectedText.span.classList.remove('selected');selectedText=null;el.applyTextEdit.disabled=true;status('Text edit applied to preview. Export PDF to save it.');});
+ const cancelTextEdit=document.getElementById('cancelTextEdit');
+ if(cancelTextEdit)cancelTextEdit.addEventListener('click',()=>{
+  awaitingNewText=false;pendingText='';
+  if(selectedText){selectedText.span.textContent=selectedText.displayText;selectedText.span.classList.remove('selected');selectedText=null;}
+  if(el.inspectorText){el.inspectorText.value='';el.inspectorText.placeholder='Text लिखें; फिर PDF पर जगह चुनें';el.inspectorText.disabled=!pdfDoc;}
+  if(el.applyTextEdit)el.applyTextEdit.disabled=true;
+  cancelTextEdit.disabled=!pdfDoc;setTool('select');status('Text edit cancelled. PDF content was not changed.');
+ });
+ window.addEventListener('pagehide',()=>mobileInspectorCleanup?.(),{once:true});
  if(el.downloadEditedPdfBottom)el.downloadEditedPdfBottom.addEventListener('click',()=>el.downloadEditedPdf.click());
  window.KAGZIPdfEditorOpenFile=loadPdf;
  const saveSessionButton=document.getElementById('saveSharedSession'),restoreSessionButton=document.getElementById('restoreSharedSession');
