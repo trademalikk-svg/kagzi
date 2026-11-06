@@ -321,18 +321,6 @@ img,video,canvas,iframe{max-width:100%}
   let sourceFile=null,cutoutBlob=null,outputBlob=null,previewUrl=null,faceBox=null,processVersion=0,faceDetectionMessage="";
   async function detectFace(image){
    try{
-    say('Detecting face position…');
-    const vision=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm');
-    const fileset=await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
-    const detector=await vision.FaceDetector.createFromOptions(fileset,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',delegate:'CPU'},runningMode:'IMAGE',minDetectionConfidence:0.45});
-    const result=detector.detect(image);detector.close();
-    const box=result.detections&&result.detections[0]&&result.detections[0].boundingBox;
-    if(!box)return null;
-    return {x:box.originX,y:box.originY,w:box.width,h:box.height};
-   }catch(e){return null;}
-  }
-  async function detectFace(image){
-   try{
     say("Detecting face position…");
     const vision=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm");
     const fileset=await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
@@ -392,8 +380,8 @@ img,video,canvas,iframe{max-width:100%}
    if(!f.type.startsWith("image/")&&!/\\.(jpe?g|png|webp)$/i.test(f.name)){say("Choose a JPG, PNG or WebP photo.");return;}
    process(f,token);
   },true);
-  if(bg)bg.addEventListener('change',()=>{if(cutoutBlob)renderOutput().catch(e=>say('Could not apply background: '+e.message));});
-  if(preset)preset.addEventListener('change',()=>{if(cutoutBlob)renderOutput().catch(e=>say('Could not apply photo size: '+e.message));});
+  if(bg)bg.addEventListener('change',()=>{if(cutoutBlob)renderOutput(processVersion).catch(e=>say('Could not apply background: '+e.message));});
+  if(preset)preset.addEventListener('change',()=>{if(cutoutBlob)renderOutput(processVersion).catch(e=>say('Could not apply photo size: '+e.message));});
   if(document.getElementById("passportQuality"))document.getElementById("passportQuality").addEventListener("input",function(){const label=document.getElementById("passportQualityLabel");if(label)label.textContent=this.value+"%";});
   download.addEventListener('click',function(e){
    e.preventDefault();e.stopImmediatePropagation();
