@@ -94,7 +94,7 @@ test('mobile workspace exposes accessible page and properties panel toggles', as
   const css = await readFile(new URL('../pdf-editor-workspace.css', import.meta.url), 'utf8');
   assert.match(css, /\.page-rail\.is-collapsed \.page-thumbnails/);
   assert.match(css, /#pdfSelectionProperties\.is-collapsed/);
-  assert.match(css, /@media\s*\(max-width:\s*650px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*1150px\)/);
 });
 
 test('workspace panel toggles update collapsed state and accessible labels', async () => {
