@@ -7,7 +7,6 @@ SOURCE = ROOT / "current-affairs-book-source.html"
 OUT = {
     "daily": ROOT / "current-affairs/day/KAGZI-Daily-Current-Affairs-2026-11-06.pdf",
     "weekly": ROOT / "current-affairs/weekly/KAGZI-Weekly-Current-Affairs-2026-11.pdf",
-    "monthly": ROOT / "current-affairs/monthly/KAGZI-Monthly-Current-Affairs-2026-11.pdf",
 }
 
 PRINT_CSS = """
