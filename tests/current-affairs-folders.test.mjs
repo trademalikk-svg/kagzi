@@ -51,9 +51,9 @@ test('yearly PDF is paid-only with no free sample and no fake purchase link', ()
 
 test('legacy Current Affairs book page is now a folder landing page, not the full long book', () => {
   const legacy = read('current-affairs-book.html');
-  assert.ok(legacy.includes('PDF Library'));
-  assert.ok(legacy.includes('current-affairs/day/'));
-  assert.ok(!legacy.includes('UPSC सिविल सेवा मुख्य परीक्षा 2026 का लिखित परिणाम'));
+  assert.ok(legacy.includes('location.replace(\'current-affairs/\')'));
+  assert.ok(legacy.includes('http-equiv=\"refresh\"'));
+  assert.ok(read('current-affairs-book-source.html').includes('UPSC सिविल सेवा मुख्य परीक्षा 2026 का लिखित परिणाम'));
 });
 
 test('PDF generator and workflow publish files only into Daily, Weekly and Monthly folders', () => {
