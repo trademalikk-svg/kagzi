@@ -207,3 +207,38 @@ test('a first camera scan does not create an invalid null-byte undo snapshot', a
   assert.equal(snapshots, 1, 'an existing document must still be undoable before adding a scan');
   assert.match(source, /rememberBeforeAppendScan\(workingBytes,\s*remember\)/);
 });
+
+
+test('Unicode text renderer shapes Hindi and Urdu with browser canvas before PDF embedding', async () => {
+  const source = await readFile(new URL('../pdf-unicode-text.js', import.meta.url), 'utf8');
+  const calls = [];
+  const context = {
+    font: '', direction: 'ltr', textAlign: 'left', textBaseline: 'top', fillStyle: '',
+    measureText: text => ({ width: [...text].length * 12 }),
+    fillText: (text, x, y) => calls.push({ text, x, y, direction: context.direction })
+  };
+  const canvas = { width: 0, height: 0, getContext: () => context, toBlob: callback => callback({ arrayBuffer: async () => new Uint8Array([1,2,3]).buffer }) };
+  const sandbox = {
+    window: {},
+    document: { createElement: name => { assert.equal(name, 'canvas'); return canvas; }, fonts: { ready: Promise.resolve() } },
+    Uint8Array, Math, String, Promise
+  };
+  vm.runInNewContext(source, sandbox);
+  const draws = [];
+  const pdf = { embedPng: async bytes => { assert.deepEqual([...bytes], [1,2,3]); return 'embedded-image'; } };
+  const page = { drawImage: (image, options) => draws.push({ image, options }) };
+  const hindi = await sandbox.window.KAGZIPdfUnicodeText.draw(pdf, page, 'हिन्दी पाठ', { x: 10, y: 20, width: 180, fontSize: 18, color: '#17233c' });
+  const urdu = await sandbox.window.KAGZIPdfUnicodeText.draw(pdf, page, 'اردو متن', { x: 10, y: 20, width: 180, fontSize: 18, color: '#17233c' });
+  assert.equal(hindi, true);
+  assert.equal(urdu, true);
+  assert.equal(draws.length, 2);
+  assert.ok(calls.some(call => call.direction === 'ltr' && call.text.includes('हिन्दी')));
+  assert.ok(calls.some(call => call.direction === 'rtl' && call.text.includes('اردو')));
+});
+
+test('Unicode text renderer declines Latin text so native searchable PDF text remains available', async () => {
+  const source = await readFile(new URL('../pdf-unicode-text.js', import.meta.url), 'utf8');
+  const sandbox = { window: {}, document: { createElement() { throw new Error('canvas should not be used for Latin'); } } };
+  vm.runInNewContext(source, sandbox);
+  assert.equal(await sandbox.window.KAGZIPdfUnicodeText.draw({}, {}, 'English text', {}), false);
+});
