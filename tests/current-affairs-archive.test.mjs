@@ -4,23 +4,25 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../current-affairs-book.html', import.meta.url), 'utf8');
 
-test('monthly current affairs are generated from complete daily news entries by subject', () => {
-  assert.match(html, /FULL MONTHLY COMPILATION/);
-  assert.match(html, /monthlySubjects/);
-  assert.match(html, /subjectFor\(article\)/);
-  assert.match(html, /article\.cloneNode\(true\)/);
-  assert.match(html, /माह अभी जारी है/);
+test('monthly archive exposes all twelve selectable months', () => {
+  assert.match(html, /मासिक करंट अफेयर्स — 2026/);
+  assert.match(html, /const mNav=monthButtons\('monthly',10\)/);
+  assert.match(html, /function showMonthly\(index\)/);
+  assert.match(html, /mNav\.addEventListener\('click'/);
+  assert.match(html, /जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर/);
 });
 
-test('annual current affairs contains a January-to-December month archive', () => {
-  assert.match(html, /const months = \['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर'\]/);
-  assert.match(html, /year-2026-/);
-  assert.match(html, /नवम्बर का प्रारंभिक भाग/);
-  assert.match(html, /पूर्ण, स्रोत-जाँची गई सामग्री अभी/);
+test('yearly archive exposes all twelve selectable months', () => {
+  assert.match(html, /वार्षिक करंट अफेयर्स — 2026/);
+  assert.match(html, /const yNav=monthButtons\('yearly',10\)/);
+  assert.match(html, /function showYearly\(index\)/);
+  assert.match(html, /yNav\.addEventListener\('click'/);
 });
 
-test('monthly and annual archives retain original source links and do not invent missing-month data', () => {
-  assert.match(html, /PIB —/);
-  assert.match(html, /अपुष्ट घटना नहीं जोड़ी गई है/);
-  assert.match(html, /कोई तथ्य या आँकड़ा नहीं गढ़ा गया है/);
+test('every month opens a distinct panel and only verified November content is shown as populated', () => {
+  assert.match(html, /id='monthlyMonthPanel'/);
+  assert.match(html, /id='yearlyMonthPanel'/);
+  assert.match(html, /if\(index===10\) mPanel\.append\(makeNovemberContent\(\)\)/);
+  assert.match(html, /if\(index===10\) yPanel\.append\(makeNovemberContent\(\)\)/);
+  assert.match(html, /पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई/);
 });
