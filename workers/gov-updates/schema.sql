@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS sources (
  terms_url TEXT NOT NULL, permission_evidence TEXT NOT NULL,
  permission_status TEXT NOT NULL CHECK(permission_status IN ('pending','approved','revoked')),
  allow_fetch INTEGER NOT NULL DEFAULT 0, allow_republish INTEGER NOT NULL DEFAULT 0,
- allow_translate INTEGER NOT NULL DEFAULT 0, attribution TEXT NOT NULL,
+ allow_translate INTEGER NOT NULL DEFAULT 0, allow_cache INTEGER NOT NULL DEFAULT 0, attribution TEXT NOT NULL,
  min_interval_minutes INTEGER NOT NULL DEFAULT 1440, last_checked_at TEXT,
  review_due_at TEXT, enabled INTEGER NOT NULL DEFAULT 0
 );
