@@ -2,6 +2,23 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+test('mobile PDF inspector is inside the document flow directly before the page canvas', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const docTools = html.indexOf('class="document-tools"');
+  const inspector = html.indexOf('id="pdfInspector"');
+  const pageStage = html.indexOf('class="page-stage"');
+  assert.ok(docTools < inspector && inspector < pageStage, 'inspector must sit between document tools and the PDF page');
+  const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
+  assert.match(css, /\.pdf-inspector\\{position:sticky;top:0/);
+  assert.doesNotMatch(css, /\.pdf-inspector\\{grid-column:auto/);
+});
+
+test('text tool clicks pass through selectable text spans to place new text', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /span\.style\.pointerEvents=t==='select'\?'auto':'none'/);
+  assert.match(js, /awaitingNewText=false/);
+});
+
 test('PDF editor exposes document-first workspace regions and accessible file/export controls', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
   for (const id of ['pdfPageRail', 'pdfCanvasHost', 'pdfInspector', 'pdfSelectionProperties', 'pdfFileInput', 'downloadEditedPdf']) {
