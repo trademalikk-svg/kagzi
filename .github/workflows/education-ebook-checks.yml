@@ -15,4 +15,4 @@ jobs:
       - name: Check education module syntax
         run: node --check education-data.mjs
       - name: Test eBook access and reader safeguards
-        run: node --test tests/ebook-access.test.mjs tests/education-library-audit.mjs tests/education-reader-audit.mjs tests/current-affairs-archive.test.mjs
+        run: node --test tests/ebook-access.test.mjs tests/education-library-audit.mjs tests/education-reader-audit.mjs tests/study-books-library-audit.mjs tests/study-books-content-audit.mjs tests/current-affairs-archive.test.mjs
