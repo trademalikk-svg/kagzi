@@ -60,3 +60,20 @@
   .document-area>.page-stage{order:2}
   .pdf-text-span{min-height:30px;touch-action:manipulation}
 }
+
+
+/* Text hit boxes must follow one PDF text run exactly; oversized mobile targets overlap adjacent lines. */
+.pdf-text-layer{pointer-events:none;user-select:none;-webkit-user-select:none}
+.pdf-text-span{box-sizing:border-box;min-height:0!important;max-height:none;overflow:hidden;pointer-events:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.pdf-text-span::selection{background:transparent}
+.pdf-text-span.selected{outline:2px solid #2563eb!important;background:#2563eb20!important}
+@media(max-width:650px){
+  .document-area>#pdfInspector .inspector-section{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .document-area>#pdfInspector .inspector-section>label[for="inspectorText"],
+  .document-area>#pdfInspector #inspectorText,
+  .document-area>#pdfInspector #applyTextEdit{grid-column:1/-1!important}
+  .document-area>#pdfInspector #inspectorText{height:58px;min-height:58px}
+  .document-area>#pdfInspector .inspector-empty,
+  .document-area>#pdfInspector .inspector-note{display:none!important}
+  .document-area>#pdfInspector .inspector-head{flex-direction:row;align-items:center;justify-content:space-between}
+}
