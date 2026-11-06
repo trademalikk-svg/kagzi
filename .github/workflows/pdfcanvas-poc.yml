@@ -227,12 +227,33 @@ jobs:
           assert.ok(allText.includes('Third operator'));
           const mixedRun = runs.find(r => r.text.includes('Mixed') || r.text.includes('BOLD'));
           assert.ok(mixedRun, 'mixed-style line content should be discoverable');
+          const operatorRun = runs.find(r => r.text.includes('First operator'));
+          assert.ok(operatorRun?.editable, 'same-style multi-operator line should be editable');
+          const edited = opEngine.applyEdits([{
+            ...operatorRun,
+            newText: 'Replacement operator line',
+            originalText: operatorRun.text,
+            background: '#ffffff'
+          }]);
+          assert.equal(edited.failed.length, 0, 'multi-operator replacement should not fail');
+          opEngine.destroy();
+          const verifyEngine = await PdfiumTextEngine.create(wasm, edited.bytes);
+          const verifyRuns = verifyEngine.readPage(0, 0);
+          const verifyText = verifyRuns.map(r => r.text).join(' ');
+          assert.ok(verifyText.includes('Replacement operator line'), 'multi-operator replacement should round-trip');
+          assert.ok(!verifyText.includes('First operator'), 'old multi-operator text should be absent');
+          const verifyMixed = verifyRuns.find(r => r.text.includes('Mixed') || r.text.includes('BOLD'));
+          assert.ok(verifyMixed?.mixed === true && verifyMixed.editable === false, 'mixed-style run must remain non-editable');
+          verifyEngine.destroy();
+
           console.log(JSON.stringify({
             fixture: 'multiple text operators and mixed regular/bold style',
             runCount: runs.length,
             textRuns: runs.map(r => ({ text: r.text, editable: r.editable, mixed: r.mixed, canStyle: r.canStyle })),
             mixedStyleReported: mixedRun.mixed === true,
-            classification: mixedRun.mixed === true ? 'requires conservative rejection or explicit style policy' : 'style boundary not represented as mixed; inspect run segmentation before editing'
+            classification: mixedRun.mixed === true ? 'mixed-style correctly non-editable' : 'style boundary not represented as mixed; inspect run segmentation before editing',
+            multiOperatorReplacement: 'round-trip passed; original text absent',
+            mixedStyleReplacement: 'blocked by editable=false'
           }, null, 2));
           opEngine.destroy();
 
