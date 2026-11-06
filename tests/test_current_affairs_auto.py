@@ -10,7 +10,7 @@ SPEC.loader.exec_module(MODULE)
 
 class CurrentAffairsParserTests(unittest.TestCase):
     def test_parses_hindi_pib_rss_and_keeps_official_source(self):
-        xml = b"""<?xml version="1.0"?>
+        xml = """<?xml version="1.0"?>
         <rss><channel>
           <item>
             <title>उत्तर प्रदेश सरकार की नई योजना</title>
@@ -30,7 +30,7 @@ class CurrentAffairsParserTests(unittest.TestCase):
             <description>इसे नहीं लेना चाहिए</description>
             <pubDate>Fri, 06 Nov 2026 11:00:00 GMT</pubDate>
           </item>
-        </channel></rss>"""
+        </channel></rss>""".encode("utf-8")
         items = MODULE.parse_feed(xml)
         self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["date"], "2026-11-06")
@@ -39,11 +39,11 @@ class CurrentAffairsParserTests(unittest.TestCase):
         self.assertTrue(items[0]["url"].startswith("https://www.pib.gov.in/"))
 
     def test_rejects_items_without_a_valid_publication_date(self):
-        xml = b"""<rss><channel><item>
+        xml = """<rss><channel><item>
         <title>तारीख के बिना</title>
         <link>https://www.pib.gov.in/PressReleasePage.aspx?PRID=1</link>
         <description>विवरण</description>
-        </item></channel></rss>"""
+        </item></channel></rss>""".encode("utf-8")
         self.assertEqual(MODULE.parse_feed(xml), [])
 
     def test_category_classifier_is_explicitly_rule_based(self):
