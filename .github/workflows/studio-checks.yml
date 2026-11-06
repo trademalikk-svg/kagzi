@@ -1,7 +1,7 @@
 name: KAGZI studio checks
 on:
   push:
-    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, feature/kagzi-government-documents-100, feature/kagzi-ebook-learning-hub, fix/kagzi-menu-activation]
+    branches: [feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, feature/kagzi-government-documents-100, feature/kagzi-ebook-learning-hub, fix/kagzi-menu-activation, feat/passport-photo-auto-mode]
   pull_request:
     branches: [fix/kagzi-dashboard-repair, feature/kagzi-photo-pdf-studio, feature/kagzi-government-documents, main]
 jobs:
@@ -18,5 +18,6 @@ jobs:
       - run: node --test tests/dashboard-audit.mjs
       - run: node --test tests/navigation-menu-audit.mjs
       - run: node --test tests/studio-ui-audit.mjs
+      - run: node --test tests/passport-photo-auto-mode.test.mjs
       - run: node --test tests/ocr-auto-edit-audit.mjs
       - run: node --test tests/gov-directory-audit.mjs
