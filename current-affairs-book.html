@@ -149,6 +149,32 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     }
     return wrap;
   }
+  function makeFebruaryContent() {
+    const wrap=document.createElement('div');
+    const note=document.createElement('div'); note.className='archive-status';
+    note.textContent='फरवरी 2026 का प्रारंभिक विषयवार संकलन PRS India की मासिक नीति समीक्षा और भारत सरकार के बजट दस्तावेजों पर आधारित है। विस्तृत दिनांकवार कवरेज आगे जोड़ी जाएगी।';
+    wrap.append(note);
+    const items=[
+      {tag:'अर्थव्यवस्था · केंद्रीय बजट',title:'केंद्रीय बजट 2026-27 प्रस्तुत',date:'1 फरवरी 2026',body:'केंद्रीय बजट 2026-27 में केंद्र सरकार का कुल व्यय ₹53,47,315 करोड़ प्रस्तावित किया गया। राजकोषीय घाटा GDP का 4.3% अनुमानित है, जबकि 2025-26 के संशोधित अनुमान में यह 4.4% था। सार्वजनिक पूँजीगत व्यय (Public Capex) ₹12.2 लाख करोड़ प्रस्तावित किया गया। पूँजीगत व्यय से सड़क, रेल, ऊर्जा और अन्य परिसंपत्तियों जैसी दीर्घकालिक सुविधाओं में निवेश होता है।',exam:'बजट अनुमान बनाम संशोधित अनुमान, राजकोषीय घाटा, पूँजीगत व्यय और GDP।'},
+      {tag:'अर्थव्यवस्था · राष्ट्रीय आय',title:'GDP की नई श्रृंखला जारी, आधार वर्ष 2022-23',date:'फरवरी 2026',body:'MoSPI की नई राष्ट्रीय आय श्रृंखला में आधार वर्ष 2011-12 के स्थान पर 2022-23 किया गया। नई श्रृंखला के अनुसार वित्त वर्ष 2025-26 में स्थिर कीमतों पर वास्तविक GDP वृद्धि 7.6% अनुमानित की गई और चालू कीमतों पर GDP लगभग ₹345 लाख करोड़ आँकी गई। आधार वर्ष बदलने का उद्देश्य अर्थव्यवस्था की बदलती संरचना और नई उपलब्ध आँकड़ा-सूचनाओं को बेहतर ढंग से शामिल करना है। ये अनुमान हैं; आगे संशोधन संभव है।',exam:'राष्ट्रीय आय मापन, स्थिर एवं चालू कीमतें, आधार वर्ष और GDP।'},
+      {tag:'बैंकिंग एवं मौद्रिक नीति',title:'RBI ने रेपो दर 5.25% पर अपरिवर्तित रखी',date:'फरवरी 2026',body:'भारतीय रिजर्व बैंक की मौद्रिक नीति समिति (MPC) ने फरवरी की समीक्षा में रेपो दर 5.25% पर बनाए रखने का निर्णय लिया। PRS India के अनुसार Standing Deposit Facility (SDF), Marginal Standing Facility (MSF) और बैंक दर भी अपरिवर्तित रखी गईं। रेपो दर वह दर है जिस पर RBI पात्र प्रतिभूतियों के बदले बैंकों को अल्पकालिक धन उपलब्ध कराता है; इसमें बदलाव का असर ऋण और मांग की स्थितियों पर पड़ सकता है।',exam:'RBI की MPC, रेपो दर, SDF, MSF और मौद्रिक नीति।'},
+      {tag:'विज्ञान एवं अंतरराष्ट्रीय सहयोग',title:'AI Impact Summit 2026 में New Delhi Declaration अपनाई गई',date:'फरवरी 2026',body:'नई दिल्ली में आयोजित AI Impact Summit 2026 के समापन पर New Delhi Declaration अपनाई गई। PRS India की समीक्षा के अनुसार 91 देशों ने इस घोषणा का समर्थन किया। इसका उद्देश्य स्वैच्छिक और गैर-बाध्यकारी पहलों के माध्यम से कृत्रिम बुद्धिमत्ता के क्षेत्र में अंतरराष्ट्रीय सहयोग को मजबूत करना है। घोषणा को बाध्यकारी अंतरराष्ट्रीय संधि नहीं समझना चाहिए।',exam:'कृत्रिम बुद्धिमत्ता का सुशासन, वैश्विक सहयोग और स्वैच्छिक घोषणाएँ।'},
+      {tag:'उद्यमिता एवं नवाचार',title:'Startup India Fund of Funds 2.0 को ₹10,000 करोड़ का कोष',date:'फरवरी 2026',body:'केंद्रीय मंत्रिमंडल ने Startup India Fund of Funds 2.0 को ₹10,000 करोड़ के कोष के साथ मंजूरी दी। इसका उद्देश्य उद्यम पूँजी (Venture Capital) जुटाने में सहायता, डीप-टेक और उन्नत तकनीक वाले स्टार्टअप को दीर्घकालिक पूँजी उपलब्ध कराना तथा बड़े महानगरों से बाहर निवेश को प्रोत्साहित करना है। यह कोष स्टार्टअप पारिस्थितिकी तंत्र में निवेश को बढ़ावा देने का साधन है; इसे हर स्टार्टअप को सीधे मिलने वाला अनुदान न समझें।',exam:'स्टार्टअप पारिस्थितिकी तंत्र, उद्यम पूँजी, डीप-टेक और Fund of Funds।'},
+      {tag:'शहरी विकास एवं शासन',title:'Urban Challenge Fund को मंजूरी',date:'फरवरी 2026',body:'केंद्र सरकार ने Urban Challenge Fund को मंजूरी दी। इसके अंतर्गत शहरी स्थानीय निकायों को चुनिंदा क्षेत्रों में अवसंरचना परियोजनाओं के लिए केंद्रीय सहायता देने का प्रावधान है। प्राथमिक क्षेत्रों में एकीकृत स्थानिक एवं परिवहन योजना, शहरी गतिशीलता, जलवायु सहनशीलता, जलापूर्ति और स्वच्छता शामिल हैं। इसका संबंध शहरों में परियोजना-आधारित निवेश और शहरी सेवाओं की गुणवत्ता से है।',exam:'74वाँ संविधान संशोधन, शहरी स्थानीय निकाय, शहरी अवसंरचना और जलवायु सहनशीलता।'}
+    ];
+    for(const item of items){
+      const card=document.createElement('article'); card.className='news';
+      const tag=document.createElement('span'); tag.className='tag'; tag.textContent=item.tag; card.append(tag);
+      const h=document.createElement('h3'); h.textContent=item.title; card.append(h);
+      const date=document.createElement('p'); date.innerHTML='<b>तिथि:</b> '+item.date; card.append(date);
+      const body=document.createElement('p'); body.textContent=item.body; card.append(body);
+      const exam=document.createElement('p'); exam.innerHTML='<b>परीक्षा उपयोगिता:</b> '; exam.append(document.createTextNode(item.exam)); card.append(exam);
+      const source=document.createElement('p'); source.className='source';
+      source.innerHTML='स्रोत: <a href="https://prsindia.org/policy/monthly-policy-review/february-2026" target="_blank" rel="noopener">PRS India — February 2026 Monthly Policy Review</a> · <a href="https://www.indiabudget.gov.in/doc/budget_speech.pdf" target="_blank" rel="noopener">Union Budget 2026-27 Speech</a>';
+      card.append(source); wrap.append(card);
+    }
+    return wrap;
+  }
   function makeNovemberContent() {
     const wrap=document.createElement('div');
     const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText('नवम्बर'); wrap.append(note);
@@ -178,7 +204,7 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     mNav.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
     mPanel.replaceChildren();
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — मासिक करंट अफेयर्स'; mPanel.append(title);
-    if(index===0) mPanel.append(makeJanuaryContent());\n    else if(index===10) mPanel.append(makeNovemberContent());
+    if(index===0) mPanel.append(makeJanuaryContent());\n    else if(index===1) mPanel.append(makeFebruaryContent());\n    else if(index===10) mPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); mPanel.append(note); }
   }
   mNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showMonthly(Number(b.dataset.monthIndex));});
@@ -191,7 +217,7 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     yNav.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
     yPanel.replaceChildren();
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — वार्षिक माहवार संग्रह'; yPanel.append(title);
-    if(index===0) yPanel.append(makeJanuaryContent());\n    else if(index===10) yPanel.append(makeNovemberContent());
+    if(index===0) yPanel.append(makeJanuaryContent());\n    else if(index===1) yPanel.append(makeFebruaryContent());\n    else if(index===10) yPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); yPanel.append(note); }
   }
   yNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showYearly(Number(b.dataset.monthIndex));});
