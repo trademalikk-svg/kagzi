@@ -42,6 +42,15 @@ test('January and February contain sourced content in monthly and yearly archive
   assert.ok(html.includes('PRS India — January 2026 Monthly Policy Review'));
   assert.ok(html.includes('PRS India — February 2026 Monthly Policy Review'));
   assert.ok(html.includes('रेपो दर 5.25%'));
+  for (const month of ['May','June','July','August','September','October']) {
+    assert.ok(html.includes(`function make${month}Content()`), `${month} content function exists`);
+  }
+  for (const [index, month] of [[4,'May'],[5,'June'],[6,'July'],[7,'August'],[8,'September'],[9,'October']]) {
+    assert.ok(html.includes(`else if(index===${index}) mPanel.append(make${month}Content());`));
+    assert.ok(html.includes(`else if(index===${index}) yPanel.append(make${month}Content());`));
+  }
+  assert.ok(html.includes('नवम्बर 2026 का यह संग्रह 6 नवम्बर तक'));
+  assert.ok(html.includes('दिसम्बर 2026 अभी भविष्य का महीना है।'));
   assert.ok(html.includes('पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई'));
 });
 
