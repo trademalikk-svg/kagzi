@@ -40,3 +40,23 @@
 .pdf-text-span{pointer-events:auto;touch-action:manipulation}
 
 @media(max-width:650px){.document-area>#pdfInspector{order:0;width:auto;max-width:none;min-width:0;margin:8px!important;border:1px solid #dce2ec!important;border-radius:10px!important;box-sizing:border-box;}.document-area>#pdfInspector .inspector-section{display:grid;grid-template-columns:1fr 1fr;gap:9px;}.document-area>#pdfInspector .inspector-empty,.document-area>#pdfInspector .inspector-note{grid-column:1/-1}.document-area>#pdfInspector #inspectorText{min-height:76px}.document-area>.document-tools{order:1;position:sticky;top:0;z-index:10}.document-area>.page-stage{order:2}}
+
+
+/* Mobile editing controls stay above the document and remain easy to tap. */
+@media(max-width:650px){
+  .document-area>#pdfInspector{position:relative;order:0;z-index:12;margin:6px!important;padding:9px!important;max-height:none;overflow:visible}
+  .document-area>#pdfInspector .inspector-head{padding-bottom:7px}
+  .document-area>#pdfInspector .inspector-section{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;padding-top:7px}
+  .document-area>#pdfInspector .inspector-empty{display:none}
+  .document-area>#pdfInspector .inspector-note{display:none}
+  .document-area>#pdfInspector .inspector-section>label[for="inspectorText"],
+  .document-area>#pdfInspector #inspectorText,
+  .document-area>#pdfInspector #applyTextEdit{grid-column:1/-1}
+  .document-area>#pdfInspector #inspectorText{min-height:58px;height:58px}
+  .document-area>#pdfInspector .inspector-section input,
+  .document-area>#pdfInspector .inspector-section select{min-height:38px;padding:6px;font-size:13px}
+  .document-area>.document-tools{order:1;position:relative;z-index:11;display:flex;flex-wrap:wrap;gap:5px;padding:6px}
+  .document-area>.document-tools button{min-height:40px;padding:8px 9px;font-size:11px;touch-action:manipulation}
+  .document-area>.page-stage{order:2}
+  .pdf-text-span{min-height:30px;touch-action:manipulation}
+}
