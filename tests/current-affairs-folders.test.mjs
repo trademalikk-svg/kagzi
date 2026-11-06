@@ -18,10 +18,10 @@ test('current affairs are separated into four physical folder entry pages', () =
 });
 
 test('folder pages open the correct daily, weekly, monthly and yearly archive sections', () => {
-  assert.ok(read('current-affairs/day/index.html').includes('#daily-6-nov'));
-  assert.ok(read('current-affairs/weekly/index.html').includes('#weekly'));
-  assert.ok(read('current-affairs/monthly/index.html').includes('#monthly'));
-  assert.ok(read('current-affairs/yearly/index.html').includes('#yearly'));
+  assert.ok(read('current-affairs/day/index.html').includes('archive.html?view=daily'));
+  assert.ok(read('current-affairs/weekly/index.html').includes('archive.html?view=weekly'));
+  assert.ok(read('current-affairs/monthly/index.html').includes('archive.html?view=monthly'));
+  assert.ok(read('current-affairs/yearly/index.html').includes('archive.html?view=yearly'));
 });
 
 test('Learning Hub and legacy route point to the folder library', () => {
