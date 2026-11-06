@@ -195,13 +195,14 @@ jobs:
       - name: Test multiple operators, mixed styles, and Hindi font handling
         working-directory: vendor/pdfcanvas
         run: |
-          npm install --no-save --package-lock=false --no-audit --no-fund @pdf-lib/fontkit
+          npm install --no-save --package-lock=false --no-audit --no-fund @pdf-lib/fontkit regenerator-runtime
           mkdir -p test-fonts
           curl -fL --retry 3 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansdevanagari/NotoSansDevanagari%5Bwdth%2Cwght%5D.ttf' -o test-fonts/NotoSansDevanagari.ttf
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
-          import fontkit from '@pdf-lib/fontkit';
+          import 'regenerator-runtime/runtime.js';
+          const { default: fontkit } = await import('@pdf-lib/fontkit');
           import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
           import { PdfiumTextEngine } from './dist/index.js';
 
