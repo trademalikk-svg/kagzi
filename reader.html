@@ -34,13 +34,22 @@ const notice = document.getElementById('notice');
 const viewer = document.getElementById('viewer');
 async function openBook(){
  if(!id){title.textContent='किताब नहीं मिली';byline.textContent='कृपया KAGZI Library से किताब चुनें।';return;}
- const {data:book,error}=await supabase.from('kagzi_library_files')
-  .select('title,author,language,storage_path,is_published')
+ let {data:book,error}=await supabase.from('kagzi_library_files')
+  .select('title,author,language,storage_path,is_published,access_tier,price_inr')
   .eq('id',id).eq('is_published',true).maybeSingle();
+ if(error && /access_tier|price_inr|column/i.test(error.message || '')) {
+  ({data:book,error}=await supabase.from('kagzi_library_files')
+   .select('title,author,language,storage_path,is_published')
+   .eq('id',id).eq('is_published',true).maybeSingle());
+ }
  if(error||!book){title.textContent='किताब उपलब्ध नहीं है';byline.textContent='यह किताब हटाई गई है या अभी प्रकाशित नहीं है।';return;}
  title.textContent=book.title;
  title.dir=book.language==='ur'?'rtl':'auto';
  byline.textContent=book.author+' · '+({hi:'हिंदी',en:'English',ur:'اردو'})[book.language];
+ if(book.access_tier==='paid'){
+  notice.textContent='यह Paid eBook है। इसकी कीमत ₹'+book.price_inr+' है। सुरक्षित payment और account entitlement सुविधा अभी सक्रिय नहीं है, इसलिए PDF access फिलहाल बंद है।';
+  return;
+ }
  const {data,error:signError}=await supabase.storage.from('kagzi-library').createSignedUrl(book.storage_path,3600);
  if(signError||!data?.signedUrl){notice.textContent='इस PDF को अभी खोला नहीं जा सका। कृपया बाद में प्रयास करें।';return;}
  viewer.src=data.signedUrl;
