@@ -42,14 +42,12 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
    for(const item of content.items||[]){
     if(!item.str||!item.str.trim()||!item.transform)continue;
     const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(7,Math.hypot(tx[2],tx[3])),left=tx[4],top=tx[5]-fontHeight,width=Math.max(8,item.width*viewport.scale);
-    const span=document.createElement('span');span.className='pdf-text-span';span.textContent=item.str;span.style.left=left+'px';span.style.top=top+'px';span.style.width=width+'px';span.style.height=(fontHeight*1.35)+'px';span.style.fontSize=fontHeight+'px';span.style.lineHeight='1.15';
-    const selectThisText=event=>{if(event){event.preventDefault();event.stopPropagation();}selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');status('Text selected. Inspector में बदलाव करें और Apply selected text edit दबाएँ।');};
+    const hitWidth=Math.max(28,width+12),hitHeight=Math.max(30,fontHeight*1.8);
+    const span=document.createElement('span');span.className='pdf-text-span';span.textContent=item.str;span.style.left=Math.max(0,left-6)+'px';span.style.top=Math.max(0,top-6)+'px';span.style.width=hitWidth+'px';span.style.height=hitHeight+'px';span.style.fontSize=fontHeight+'px';span.style.lineHeight='1.15';
+    const selectThisText=event=>{if(event){event.preventDefault();event.stopPropagation();}selectedText={pageIndex,original:item.str,span,left,top,width,height:fontHeight*1.35,viewport};el.inspectorText.value=item.str;el.applyTextEdit.disabled=false;layer.querySelectorAll('.selected').forEach(n=>n.classList.remove('selected'));span.classList.add('selected');status('Text selected. ऊपर Inspector में बदलाव करें और Apply selected text edit दबाएँ।');};
     span.setAttribute('role','button');span.setAttribute('tabindex','0');span.setAttribute('aria-label','Select PDF text: '+item.str.slice(0,80));
-    span.addEventListener('pointerdown',selectThisText,{passive:false});
-    span.addEventListener('pointerup',selectThisText,{passive:false});
-    span.addEventListener('touchend',selectThisText,{passive:false});
-    span.addEventListener('click',event=>{selectThisText(event);});
-    span.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selectThisText(event);}});
+    span.addEventListener('click',selectThisText);
+    span.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){selectThisText(event);}});
     layer.append(span);
    }
    for(const edit of textEdits.filter(e=>e.pageIndex===pageIndex)){const spans=[...layer.children];const match=spans.find(s=>s.textContent===edit.original&&!s.dataset.edited);if(match){match.textContent=edit.text;match.dataset.edited='true';match.classList.add('edited');}}
