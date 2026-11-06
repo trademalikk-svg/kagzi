@@ -7,6 +7,10 @@ on:
     paths:
       - 'pdf-studio.html'
       - 'pdf-tools.html'
+      - 'pdf-editor.html'
+      - 'pdf-editor.js'
+      - 'pdf-document-session.js'
+      - 'tests/pdf-editor-workspace.test.mjs'
       - 'tests/pdf-studio-hub.test.mjs'
       - '.github/workflows/pdf-hub-check.yml'
   pull_request:
