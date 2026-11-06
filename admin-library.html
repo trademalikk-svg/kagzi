@@ -52,6 +52,9 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 <div class="grid"><div><label for="paperKind">Paper Category</label><select id="paperKind"><option value="daily-practice">Daily Practice Paper</option><option value="latest-exam">Latest Actual Exam Paper</option></select></div><div><label for="paperDate">Paper / Update Date</label><input id="paperDate" type="date" required></div></div>
 </div>
 <label for="description">Short Description</label><textarea id="description" maxlength="2000"></textarea>
+<label for="accessTier">E-Book Access</label><select id="accessTier"><option value="free">Free · ₹0</option><option value="paid">Paid · price set करें</option></select>
+<div id="priceFields" class="hidden"><label for="priceInr">Price (INR ₹)</label><input id="priceInr" type="number" min="1" max="100000" step="1" inputmode="numeric" placeholder="जैसे 49"></div>
+<p class="muted">Paid किताब का checkout अभी उपलब्ध नहीं है। Paid PDF तब तक reader में locked रहेगी जब तक payment और entitlement system configure न हो।
 <label for="rights">Content Rights</label><select id="rights"><option value="public-domain">Public domain</option><option value="licensed">Licensed</option><option value="permission-granted">Written permission granted</option></select>
 <label for="rightsReference">Rights proof / source details</label><textarea id="rightsReference" minlength="3" maxlength="1000" required placeholder="Example: public-domain edition details, license name, or permission record"></textarea>
 <label for="pdf">Choose PDF</label><input id="pdf" type="file" accept="application/pdf,.pdf" required>
@@ -85,6 +88,10 @@ for(let year=new Date().getFullYear();year>=new Date().getFullYear()-9;year--){c
 const paperDateInput=document.getElementById('paperDate');
 const today=new Date();paperDateInput.value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
 categoryInput.addEventListener('change',()=>previousPaperFields.classList.toggle('hidden',categoryInput.value!=='previous-papers'));
+const accessTierInput=document.getElementById('accessTier');
+const priceFields=document.getElementById('priceFields');
+const priceInput=document.getElementById('priceInr');
+accessTierInput.addEventListener('change',()=>{const paid=accessTierInput.value==='paid';priceFields.classList.toggle('hidden',!paid);priceInput.required=paid;if(!paid)priceInput.value='';});
 
 async function refreshAccess(){
  const {data:{user}}=await supabase.auth.getUser();
@@ -114,6 +121,9 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
  if(!file){uploadStatus.textContent='पहले PDF चुनें।';return;}
  if(file.type!=='application/pdf'||!file.name.toLowerCase().endsWith('.pdf')){uploadStatus.textContent='केवल PDF फाइल स्वीकार है।';return;}
  if(file.size>25*1024*1024){uploadStatus.textContent='PDF 25 MB से बड़ी है।';return;}
+  const accessTier=accessTierInput.value;
+  const priceInr=accessTier==='paid'?Number(priceInput.value):0;
+  if(accessTier==='paid'&&(!Number.isInteger(priceInr)||priceInr<1||priceInr>100000)){uploadStatus.textContent='Paid किताब के लिए ₹1 से ₹1,00,000 तक पूर्णांक कीमत दर्ज करें।';return;}
  const button=document.getElementById('uploadBtn');button.disabled=true;button.textContent='Uploading…';
  const id=crypto.randomUUID();const path='books/'+id+'.pdf';
  try{
@@ -132,6 +142,7 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
    description:document.getElementById('description').value.trim(),
    storage_path:path,file_size_bytes:file.size,
    rights_status:document.getElementById('rights').value,
+   access_tier:accessTier,price_inr:priceInr,
    rights_reference:document.getElementById('rightsReference').value.trim(),
    is_published:document.getElementById('publish').checked,
    created_by:currentUser.id
