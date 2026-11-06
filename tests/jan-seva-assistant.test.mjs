@@ -118,3 +118,25 @@ test("keeps only bounded user and assistant conversation context", async () => {
   assert.deepEqual(messages.slice(1).map(item => item.role), ["user", "assistant", "assistant", "user"]);
   assert.equal(messages.at(-1).content, "कौन से दस्तावेज़ लगेंगे?");
 });
+
+
+test("Jan Seva directory exposes at least 65 service entries with official HTTPS portals", async () => {
+  const pageScript = await readFile(new URL("../jan-seva.js", import.meta.url), "utf8");
+  const original = pageScript.slice(pageScript.indexOf("const services=["), pageScript.indexOf("];"));
+  const extraMatch = pageScript.match(/const extraServices=(\[[\s\S]*?\]);\nservices\.push/);
+  assert.ok(extraMatch, "expanded service catalogue must be present");
+  const originalCount = (original.match(/\{name:/g) || []).length;
+  const extra = JSON.parse(extraMatch[1]);
+  assert.ok(originalCount + extra.length >= 65);
+  assert.ok(extra.every(item => item.url.startsWith("https://") && item.name && item.portal));
+});
+
+test("Jan Seva page includes a searchable FAQ section capped at 100 entries", async () => {
+  const page = await readFile(new URL("../jan-seva.html", import.meta.url), "utf8");
+  const script = await readFile(new URL("../jan-seva.js", import.meta.url), "utf8");
+  assert.match(page, /id="faqSearch"/);
+  assert.match(page, /id="faqList"/);
+  assert.match(script, /const commonFaqs=\[/);
+  assert.match(script, /const faqs=\[\.\.\.serviceFaqs/);
+  assert.match(script, /\.slice\(0,100\)/);
+});
