@@ -24,3 +24,27 @@ test('legacy records without access metadata remain free', () => {
   delete legacy.priceInr;
   assert.deepEqual(filterBooks([legacy], { accessTier: 'free' }).map(book => book.id), ['free-1']);
 });
+
+import { readFileSync } from 'node:fs';
+const education = readFileSync(new URL('../education.html', import.meta.url), 'utf8');
+const reader = readFileSync(new URL('../reader.html', import.meta.url), 'utf8');
+const admin = readFileSync(new URL('../admin-library.html', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../supabase/migrations/20261106_ebook_access_tiers.sql', import.meta.url), 'utf8');
+
+test('library exposes access filters and displays prices without opening paid PDFs', () => {
+  assert.match(education, /data-access="free"/);
+  assert.match(education, /data-access="paid"/);
+  assert.match(education, /book\.accessTier === 'paid'/);
+  assert.match(reader, /if\(book\.access_tier==='paid'\)/);
+  assert.match(reader, /payment और account entitlement सुविधा अभी सक्रिय नहीं है/);
+});
+
+test('admin records the selected tier and validated INR price', () => {
+  assert.match(admin, /access_tier:accessTier,price_inr:priceInr/);
+  assert.match(admin, /Number\.isInteger\(priceInr\)/);
+});
+
+test('database migration constrains free and paid price combinations', () => {
+  assert.match(migration, /access_tier in \('free', 'paid'\)/);
+  assert.match(migration, /access_tier = 'paid' and price_inr > 0/);
+});
