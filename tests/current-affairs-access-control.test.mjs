@@ -14,7 +14,9 @@ test('Current Affairs settings require the explicit KAGZI admin allowlist',()=>{
 });
 
 test('Monthly and Yearly archives are hidden whenever their tier is not explicitly free',()=>{
- assert.match(archive,/\["monthly","yearly"\]\.includes\(view\) && access\[view\]!=="free"/);
+ assert.match(archive,/supabase\.from\("kagzi_current_affairs_access"\)/);
+ assert.match(archive,/params\.get\("view"\)==="monthly" \|\| params\.get\("view"\)==="yearly"/);
+ assert.match(archive,/access\[view\]!=="free"/);
 });
 
 test('default tiers are Daily Free, Weekly Free, Monthly Paid and Yearly Paid',()=>{
