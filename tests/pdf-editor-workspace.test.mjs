@@ -70,7 +70,7 @@ test('PDF editor provides local merge and split handlers', async () => {
 
 test('PDF filename validation and OCR word wrapping use the intended regular expressions', async () => {
   const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
-  assert.ok(js.includes('!/\.pdf$/i'));
+  assert.ok(js.includes('!/\\.pdf$/i'));
   assert.ok(js.includes('paragraph.split(/\\s+/)'));
 });
 
