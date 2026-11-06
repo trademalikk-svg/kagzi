@@ -31,6 +31,20 @@ button{border:0;border-radius:10px;padding:12px 17px;background:var(--blue);colo
 <div class="setting"><div><b>Yearly</b><div class="tier">वार्षिक PDF और archive</div></div><select id="yearly"><option value="free">Free</option><option value="paid">Paid</option></select></div>
 </div>
 <button id="saveBtn">Save Access Settings</button><button id="logoutBtn" class="secondary">Logout</button><div id="saveStatus" class="status" role="status"></div></section>
+
+<section class="card hidden" id="paymentPanel"><div class="muted">MANUAL UPI PAYMENT SETUP</div><h1>Payment Details</h1>
+<p class="muted">यहाँ अपनी UPI जानकारी भरें। इसे तभी चालू करें जब जानकारी जाँच ली हो। भुगतान की पुष्टि आप स्वयं करेंगे।</p>
+<label for="payeeName">Payee / Account Name</label><input id="payeeName" maxlength="120" placeholder="जैसा UPI ऐप में दिखता है">
+<label for="upiId">UPI ID</label><input id="upiId" maxlength="120" placeholder="example@upi">
+<label for="qrUrl">QR Image URL (optional)</label><input id="qrUrl" type="url" maxlength="1000" placeholder="https://...">
+<label for="payInstructions">Customer Instructions</label><input id="payInstructions" maxlength="1000" placeholder="भुगतान के बाद UTR जमा करें">
+<label style="display:flex;gap:10px;align-items:center"><input id="paymentEnabled" type="checkbox" style="width:auto"> Manual UPI payment चालू करें</label>
+<button id="savePaymentBtn">Save Payment Details</button><div id="paymentStatus" class="status" role="status"></div>
+</section>
+<section class="card hidden" id="ordersPanel"><div class="muted">MANUAL PAYMENT REVIEW</div><h1>Payment Requests</h1>
+<p class="muted">हर भुगतान को अपने UPI/बैंक ऐप में जाँचने के बाद ही Approve करें। केवल ग्राहक द्वारा भेजे गए UTR पर भरोसा न करें।</p>
+<button id="refreshOrdersBtn" class="secondary">Refresh Requests</button><div id="ordersList" class="status">अभी लोड नहीं हुआ।</div>
+</section>
 </main>
 <script type="module">
 import { supabase } from "../kagzi-supabase.js";
@@ -41,7 +55,7 @@ async function checkAdmin(){
  if(error||!user){$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
  const {data:admin,error:adminError}=await supabase.from("kagzi_library_admins").select("user_id").eq("user_id",user.id).maybeSingle();
  if(adminError||!admin){$("loginStatus").textContent="इस अकाउंट को Admin अनुमति नहीं है।";await supabase.auth.signOut();$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
- adminUser=user;$("loginPanel").classList.add("hidden");$("settingsPanel").classList.remove("hidden");await loadSettings();
+ adminUser=user;$("loginPanel").classList.add("hidden");$("settingsPanel").classList.remove("hidden");$("paymentPanel").classList.remove("hidden");$("ordersPanel").classList.remove("hidden");await loadSettings();await loadPaymentSettings();await loadOrders();
 }
 async function loadSettings(){
  $("saveStatus").textContent="Settings लोड हो रही हैं…";
@@ -69,4 +83,43 @@ $("saveBtn").addEventListener("click",async()=>{
 });
 $("logoutBtn").addEventListener("click",async()=>{await supabase.auth.signOut();adminUser=null;await checkAdmin();});
 await checkAdmin();
+
+async function loadPaymentSettings(){
+ $("paymentStatus").textContent="Payment settings लोड हो रही हैं…";
+ const {data,error}=await supabase.from("kagzi_manual_payment_settings").select("*").eq("id",true).maybeSingle();
+ if(error){$("paymentStatus").textContent="लोड नहीं हुआ: "+error.message;return;}
+ if(!data){$("paymentStatus").textContent="पहली बार Save Payment Details दबाकर सेटिंग बनाएँ।";return;}
+ $("payeeName").value=data.payee_name||"";$("upiId").value=data.upi_id||"";$("qrUrl").value=data.qr_image_url||"";
+ $("payInstructions").value=data.instructions||"";$("paymentEnabled").checked=!!data.enabled;
+ $("paymentStatus").textContent=data.enabled?"Payment details saved · customer page enabled":"Payment is OFF";
+}
+$("savePaymentBtn").addEventListener("click",async()=>{
+ if(!adminUser)return;
+ const upi=$("upiId").value.trim(), enabled=$("paymentEnabled").checked;
+ if(enabled&&(!/^[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9.-]{2,}$/.test(upi)||!$("payeeName").value.trim())){
+  $("paymentStatus").textContent="चालू करने के लिए सही UPI ID और Payee Name भरें।";return;
+ }
+ $("savePaymentBtn").disabled=true;
+ const payload={id:true,enabled,payee_name:$("payeeName").value.trim(),upi_id:upi,qr_image_url:$("qrUrl").value.trim(),instructions:$("payInstructions").value.trim(),updated_at:new Date().toISOString(),updated_by:adminUser.id};
+ const {error}=await supabase.from("kagzi_manual_payment_settings").upsert(payload,{onConflict:"id"});
+ $("paymentStatus").textContent=error?"सेव नहीं हुआ: "+error.message:"Payment settings सुरक्षित रूप से सेव हो गईं।";
+ $("savePaymentBtn").disabled=false;
+});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function loadOrders(){
+ $("ordersList").textContent="Requests लोड हो रही हैं…";
+ const {data,error}=await supabase.from("kagzi_manual_payment_orders").select("id,user_id,product_code,amount_inr,transaction_ref,status,admin_note,created_at").order("created_at",{ascending:false}).limit(100);
+ if(error){$("ordersList").textContent="लोड नहीं हुआ: "+error.message;return;}
+ if(!data?.length){$("ordersList").textContent="अभी कोई payment request नहीं है।";return;}
+ $("ordersList").innerHTML=data.map(o=>'<article style="border:1px solid #e4e9f2;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(o.product_code)+'</b> · ₹'+o.amount_inr+'<br><small>UTR: '+esc(o.transaction_ref)+'<br>User: '+esc(o.user_id)+'<br>'+esc(new Date(o.created_at).toLocaleString("en-IN"))+'<br>Status: '+esc(o.status)+'</small><br><label>Admin note</label><input id="note-'+o.id+'" maxlength="500" value="'+esc(o.admin_note||"")+'"><button data-order="'+o.id+'" data-status="approved">Approve</button> <button class="secondary" data-order="'+o.id+'" data-status="rejected">Reject</button></article>').join("");
+ $("ordersList").querySelectorAll("button[data-order]").forEach(btn=>btn.addEventListener("click",async()=>{
+   if(!adminUser)return;
+   const orderId=btn.dataset.order,status=btn.dataset.status;
+   btn.disabled=true;
+   const {error}=await supabase.from("kagzi_manual_payment_orders").update({status,admin_note:$("note-"+orderId).value.trim(),reviewed_at:new Date().toISOString(),reviewed_by:adminUser.id}).eq("id",orderId);
+   if(error){alert("Update failed: "+error.message);btn.disabled=false;return;}
+   await loadOrders();
+ }));
+}
+$("refreshOrdersBtn").addEventListener("click",loadOrders);
 </script></body></html>
