@@ -126,6 +126,29 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
       ? '4–6 नवम्बर 2026 की उपलब्ध दैनिक प्रविष्टियाँ शामिल हैं। महीने की बाकी सामग्री अपडेट होने पर जुड़ेगी।'
       : month + ' 2026 की पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई है। इस महीने का अलग अध्याय खुल रहा है; सामग्री सत्यापन के बाद यहाँ प्रकाशित होगी।';
   }
+  function makeJanuaryContent() {
+    const wrap=document.createElement('div');
+    const note=document.createElement('div'); note.className='archive-status';
+    note.textContent='जनवरी 2026 का यह प्रारंभिक संकलन PRS India की मासिक नीति समीक्षा पर आधारित है। आगे आधिकारिक स्रोतों से अन्य विषय और दिनांकवार घटनाएँ जोड़कर इसे विस्तारित किया जाएगा।';
+    wrap.append(note);
+    const items=[
+      {tag:'संसद एवं शासन',title:'संसद का बजट सत्र 28 जनवरी से प्रारम्भ',date:'28 जनवरी 2026',body:'संसद का बजट सत्र 28 जनवरी 2026 को शुरू हुआ। PRS India के अनुसार सत्र में कुल 30 बैठकें निर्धारित थीं। पहला चरण 28 जनवरी से 13 फरवरी और दूसरा चरण 9 मार्च से 2 अप्रैल 2026 तक रखा गया। राष्ट्रपति ने 28 जनवरी को संसद के दोनों सदनों की संयुक्त बैठक को संबोधित किया।',exam:'संसदीय सत्र, राष्ट्रपति का अभिभाषण और विधायी कार्यवाही।'},
+      {tag:'अर्थव्यवस्था',title:'आर्थिक सर्वेक्षण 2025-26 संसद में प्रस्तुत',date:'29 जनवरी 2026',body:'वित्त मंत्री ने 29 जनवरी 2026 को आर्थिक सर्वेक्षण 2025-26 संसद में प्रस्तुत किया। PRS India के सारांश के अनुसार सर्वेक्षण ने वित्त वर्ष 2025-26 के लिए वास्तविक GDP वृद्धि 7.4% अनुमानित की और 2026-27 के लिए 6.8% से 7.2% की वृद्धि सीमा का अनुमान दिया। सर्वेक्षण में घरेलू मांग, सार्वजनिक निवेश और उपभोग को अर्थव्यवस्था के सहायक कारकों में रखा गया।',exam:'GDP, वास्तविक वृद्धि दर, आर्थिक सर्वेक्षण और मुद्रास्फीति लक्ष्य।'},
+      {tag:'अर्थव्यवस्था एवं अंतरराष्ट्रीय संबंध',title:'भारत और यूरोपीय संघ के मुक्त व्यापार समझौते पर वार्ता सम्पन्न',date:'जनवरी 2026',body:'PRS India की जनवरी नीति समीक्षा के अनुसार भारत और यूरोपीय संघ ने मुक्त व्यापार समझौते (FTA) की वार्ता सम्पन्न होने की घोषणा की। समीक्षा में कहा गया कि समझौता व्यापार-मूल्य के आधार पर भारत के 99% निर्यात को EU बाजार तक पहुँच देने का लक्ष्य रखता है। इसमें IT, व्यवसाय और शिक्षा सेवाओं सहित 144 सेवा उप-क्षेत्रों तक पहुँच तथा व्यवसाय और विद्यार्थियों की आवाजाही के लिए सुविधा-ढाँचे का उल्लेख है।',exam:'FTA का अर्थ, शुल्क, बाजार पहुँच और भारत-EU व्यापार संबंध।'},
+      {tag:'राष्ट्रीय आय एवं क्षेत्रीय अर्थव्यवस्था',title:'वित्त वर्ष 2025-26 में GDP वृद्धि 7.4% अनुमानित',date:'जनवरी 2026',body:'MoSPI के प्रथम अग्रिम अनुमानों के आधार पर PRS India ने वित्त वर्ष 2025-26 में स्थिर कीमतों पर GDP वृद्धि 7.4% अनुमानित बताई। समीक्षा में विनिर्माण और निर्माण क्षेत्र की वृद्धि 7% तथा वित्तीय सेवाओं और सार्वजनिक सेवाओं की वृद्धि 9.9% प्रत्येक बताई गई। ये अग्रिम अनुमान हैं; इन्हें अंतिम संशोधित राष्ट्रीय आय आँकड़ा नहीं समझना चाहिए।',exam:'GDP और GVA में अंतर तथा क्षेत्रवार वृद्धि।'}
+    ];
+    for(const item of items){
+      const card=document.createElement('article'); card.className='news';
+      const tag=document.createElement('span'); tag.className='tag'; tag.textContent=item.tag; card.append(tag);
+      const h=document.createElement('h3'); h.textContent=item.title; card.append(h);
+      const date=document.createElement('p'); date.innerHTML='<b>तिथि:</b> '+item.date; card.append(date);
+      const body=document.createElement('p'); body.textContent=item.body; card.append(body);
+      const exam=document.createElement('p'); exam.innerHTML='<b>परीक्षा उपयोगिता:</b> '; exam.append(document.createTextNode(item.exam)); card.append(exam);
+      const source=document.createElement('p'); source.className='source'; source.innerHTML='स्रोत: <a href="https://prsindia.org/policy/monthly-policy-review/january-2026" target="_blank" rel="noopener">PRS India — January 2026 Monthly Policy Review</a>'; card.append(source);
+      wrap.append(card);
+    }
+    return wrap;
+  }
   function makeNovemberContent() {
     const wrap=document.createElement('div');
     const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText('नवम्बर'); wrap.append(note);
@@ -155,7 +178,7 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     mNav.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
     mPanel.replaceChildren();
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — मासिक करंट अफेयर्स'; mPanel.append(title);
-    if(index===10) mPanel.append(makeNovemberContent());
+    if(index===0) mPanel.append(makeJanuaryContent());\n    else if(index===10) mPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); mPanel.append(note); }
   }
   mNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showMonthly(Number(b.dataset.monthIndex));});
@@ -168,7 +191,7 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     yNav.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
     yPanel.replaceChildren();
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — वार्षिक माहवार संग्रह'; yPanel.append(title);
-    if(index===10) yPanel.append(makeNovemberContent());
+    if(index===0) yPanel.append(makeJanuaryContent());\n    else if(index===10) yPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); yPanel.append(note); }
   }
   yNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showYearly(Number(b.dataset.monthIndex));});
