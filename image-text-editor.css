@@ -27,3 +27,15 @@
   .toolbar button,.toolbar select,.primary { flex:1 1 auto; min-width:calc(50% - 6px); }
   .field { grid-template-columns:minmax(0,1fr) 105px; }
 }
+
+
+/* Force a single-column workspace on narrow and tablet-sized phone viewports. */
+@media screen and (max-width: 900px) {
+  .editor-layout { display:grid !important; grid-template-columns:minmax(0,1fr) !important; }
+  .editor-layout > .canvas-area { grid-column:1 !important; grid-row:1 !important; order:-1 !important; width:100% !important; min-width:0 !important; }
+  .editor-layout > .side { grid-column:1 !important; grid-row:2 !important; order:0 !important; width:100% !important; max-height:none !important; overflow:visible !important; }
+  .image-stage { width:100%; max-width:100%; }
+  .image-stage canvas { display:block; width:100%; max-width:100%; height:auto; }
+  .ocr-layer { touch-action:manipulation; }
+  .ocr-box { min-width:8px; min-height:12px; touch-action:manipulation; }
+}
