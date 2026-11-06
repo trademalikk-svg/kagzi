@@ -59,3 +59,15 @@
  .document-tools{position:sticky;top:0;z-index:9}
  .page-stage{min-height:250px;padding:8px 4px}
 }
+
+/* Keep text controls in normal flow above the PDF; the keyboard helper scrolls them into view. */
+.pdf-inspector{position:relative;top:auto;z-index:auto;max-height:none;overflow:visible;box-shadow:none}
+.inspector-actions{display:flex;gap:7px;flex-wrap:wrap;grid-column:2}
+.inspector-section #cancelTextEdit{border:1px solid #d7deea;border-radius:8px;padding:10px;background:#f7f9fc;color:#34435c;font-weight:700}
+.inspector-section #cancelTextEdit:disabled{opacity:.4}
+@media(max-width:650px){
+ .pdf-inspector{position:relative;top:auto;z-index:auto;max-height:34vh;overflow-y:auto;overscroll-behavior:contain;padding:8px}
+ .inspector-actions{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap}
+ #applyTextEdit,#cancelTextEdit{white-space:nowrap}
+ .document-tools{position:relative;top:auto;z-index:auto}
+}
