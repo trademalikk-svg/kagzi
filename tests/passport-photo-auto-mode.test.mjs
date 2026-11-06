@@ -15,6 +15,11 @@ test('passport defaults are automatic and advanced controls start collapsed', ()
   assert.match(html, /id="passportVerticalPosition"/);
 });
 
+test('passport studio navigation link resolves to a real section anchor', () => {
+  assert.match(html, /href="#photoPassport"/);
+  assert.match(html, /id="photoPassport"/);
+});
+
 test('passport processing script parses as JavaScript', () => {
   assert.ok(passportScript.length > 0, 'passport workflow script must exist');
   assert.doesNotThrow(() => new Script(passportScript));
