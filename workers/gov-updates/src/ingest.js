@@ -1,5 +1,5 @@
 export async function getApprovedSources(db, now=new Date()) {
- const {results=[]}=await db.prepare("SELECT * FROM sources WHERE enabled=1 AND permission_status='approved' AND allow_fetch=1 AND allow_republish=1 AND review_due_at>?").bind(now.toISOString()).all();
+ const {results=[]}=await db.prepare("SELECT * FROM sources WHERE enabled=1 AND permission_status='approved' AND allow_fetch=1 AND allow_republish=1 AND allow_cache=1 AND review_due_at>?").bind(now.toISOString()).all();
  return results.filter(s=>s.permission_evidence&&s.terms_url&&s.attribution&&s.min_interval_minutes>=60);
 }
 export async function fetchPermittedSource(source, fetcher=fetch, now=new Date()) {
