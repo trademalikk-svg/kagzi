@@ -129,7 +129,7 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
  try{
   const {error:uploadError}=await supabase.storage.from('kagzi-library').upload(path,file,{contentType:'application/pdf',upsert:false});
   if(uploadError)throw uploadError;
-  const {error:rowError}=await supabase.from('kagzi_library_files').insert({
+  const bookRow={
    title:document.getElementById('title').value.trim(),
    author:document.getElementById('author').value.trim(),
    language:document.getElementById('language').value,
@@ -142,11 +142,15 @@ document.getElementById('uploadForm').addEventListener('submit',async event=>{
    description:document.getElementById('description').value.trim(),
    storage_path:path,file_size_bytes:file.size,
    rights_status:document.getElementById('rights').value,
-   access_tier:accessTier,price_inr:priceInr,
    rights_reference:document.getElementById('rightsReference').value.trim(),
    is_published:document.getElementById('publish').checked,
    created_by:currentUser.id
-  });
+  };
+  let {error:rowError}=await supabase.from('kagzi_library_files').insert({...bookRow,access_tier:accessTier,price_inr:priceInr});
+  if(rowError && accessTier==='free' && /access_tier|price_inr|column/i.test(rowError.message||'')){
+   const fallback=await supabase.from('kagzi_library_files').insert(bookRow);
+   rowError=fallback.error;
+  }
   if(rowError){await supabase.storage.from('kagzi-library').remove([path]);throw rowError;}
   uploadStatus.textContent='Upload सफल। '+(document.getElementById('publish').checked?'किताब KAGZI Library में प्रकाशित हो गई।':'फाइल private रखी गई है; publish नहीं हुई।');
   event.target.reset();
