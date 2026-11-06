@@ -29,7 +29,7 @@ window.KAGZIPdfMobileInspector={
 (function(){
 'use strict';
 const MIN_ZOOM=.5,MAX_ZOOM=2.5,ZOOM_STEP=.15;
-const UNICODE_FONT_URLS={devanagari:'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansdevanagari/NotoSansDevanagari%5Bwdth%2Cwght%5D.ttf'};
+const NotoSansDevanagari='https://raw.githubusercontent.com/google/fonts/main/ofl/notosansdevanagari/NotoSansDevanagari%5Bwdth%2Cwght%5D.ttf';\nconst UNICODE_FONT_URLS={devanagari:NotoSansDevanagari};
 const unicodeFontBytes={};
 async function embedUnicodeFont(pdf,text){
  if(!/[\\u0900-\\u097F]/.test(String(text||'')))return null;
