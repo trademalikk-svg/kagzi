@@ -84,6 +84,46 @@ jobs:
         working-directory: vendor/pdfcanvas
         run: npm run check:text
 
+
+      - name: Run unsupported and image-only fixture classification
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const doc = await PDFDocument.create();
+          const font = await doc.embedFont(StandardFonts.Helvetica);
+          const mixed = doc.addPage([595.2756, 841.8898]);
+          mixed.drawText('Horizontal selectable text', { x: 50, y: 780, size: 14, font });
+          mixed.drawText('Rotated text candidate', { x: 50, y: 720, size: 14, font, rotate: degrees(35) });
+
+          const imageOnly = doc.addPage([595.2756, 841.8898]);
+          const pixel = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lS8AAAAASUVORK5CYII='), c => c.charCodeAt(0));
+          const png = await doc.embedPng(pixel);
+          imageOnly.drawImage(png, { x: 50, y: 700, width: 240, height: 120 });
+
+          const bytes = new Uint8Array(await doc.save({ useObjectStreams: true }));
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const page0 = engine.readPage(0, 0);
+          const page1 = engine.readPage(1, 0);
+          const horizontalFound = page0.some(run => run.text.includes('Horizontal selectable text'));
+          const rotatedFound = page0.some(run => run.text.includes('Rotated text candidate'));
+          assert.ok(horizontalFound, 'horizontal text is discoverable');
+          assert.equal(page1.length, 0, 'image-only page has no native text runs');
+          engine.destroy();
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            horizontalText: horizontalFound ? 'editable candidate discovered' : 'not found',
+            rotatedText: rotatedFound ? 'returned by reader; requires separate rotation support test' : 'not returned by reader; classify unsupported',
+            imageOnlyPage: page1.length === 0 ? 'ocr-required candidate' : 'unexpected text runs',
+            pages: 2
+          }, null, 2));
+          NODE
+
       - name: Run isolated two-page A4 native replacement regression
         working-directory: vendor/pdfcanvas
         run: |
