@@ -100,7 +100,7 @@ window.kagziPhotoInputChanged=function(input){
   setPhotoStatus('Choose a photo to start automatic background editing.');
   return;
  }
- const validType=/^(image\\/(jpeg|png|webp))$/i.test(file.type)||/\\.(jpe?g|png|webp)$/i.test(file.name);
+ const validType=/^(image\/(jpeg|png|webp))$/i.test(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name);
  if(!validType){
   if(passportName)passportName.textContent='Unsupported file. Please choose JPG, PNG or WebP.';
   notify('Choose a JPG, PNG or WebP image.');
