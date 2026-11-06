@@ -232,6 +232,44 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     }
     return wrap;
   }
+  function makeMayContent() {
+    const wrap=document.createElement('div');
+    const note=document.createElement('div'); note.className='archive-status';
+    note.textContent='मई 2026 का यह विषयवार संकलन PRS India की मासिक नीति समीक्षा तथा संबंधित आधिकारिक स्रोतों पर आधारित चयनित प्रमुख घटनाओं का अध्ययन-सार है; इसे दिन-प्रतिदिन की सम्पूर्ण समाचार सूची न समझें।';
+    wrap.append(note);
+    const items=[{"tag":"अर्थव्यवस्था · औद्योगिक उत्पादन","title":"चौथी तिमाही में औद्योगिक उत्पादन सूचकांक 4.8% बढ़ा","date":"जनवरी–मार्च 2026","body":"वित्त वर्ष 2025-26 की चौथी तिमाही में IIP में साल-दर-साल 4.8% वृद्धि हुई। विनिर्माण में 5.1%, खनन में 4.3% और बिजली में 2.7% वृद्धि दर्ज हुई। IIP औद्योगिक उत्पादन की गति का प्रमुख संकेतक है।","exam":"IIP, विनिर्माण, खनन, बिजली और औद्योगिक विकास।"},{"tag":"न्यायपालिका","title":"सर्वोच्च न्यायालय में न्यायाधीशों की संख्या बढ़ाने का अध्यादेश","date":"16 मई 2026","body":"राष्ट्रपति ने Supreme Court (Number of Judges) Amendment Ordinance, 2026 जारी किया। इसके तहत भारत के मुख्य न्यायाधीश को छोड़कर सर्वोच्च न्यायालय के न्यायाधीशों की स्वीकृत संख्या 33 से बढ़ाकर 37 की गई। अध्यादेश संसद के कानून बनने तक अस्थायी विधायी व्यवस्था है।","exam":"अनुच्छेद 123, अध्यादेश, सर्वोच्च न्यायालय की संरचना।"},{"tag":"श्रम एवं रोजगार","title":"चार श्रम संहिताओं के अंतर्गत नियम अधिसूचित","date":"मई 2026","body":"श्रम मंत्रालय ने Code on Wages, Industrial Relations Code, Code on Social Security तथा Occupational Safety, Health and Working Conditions Code के अंतर्गत नियम अधिसूचित किए। नियमों में कार्य-स्थितियाँ, सामाजिक सुरक्षा, न्यूनतम वेतन निर्धारण और ट्रेड यूनियन मान्यता की प्रक्रियाएँ शामिल हैं।","exam":"चार श्रम संहिताएँ, न्यूनतम वेतन, सामाजिक सुरक्षा और औद्योगिक संबंध।"},{"tag":"बीमा एवं निवेश","title":"बीमा क्षेत्र में 100% FDI को स्वचालित मार्ग से अनुमति","date":"मई 2026","body":"बीमा क्षेत्र के विदेशी प्रत्यक्ष निवेश नियमों में संशोधन कर स्वचालित मार्ग के तहत 100% FDI की अनुमति दी गई। कंपनी प्रबंधन में निवासी भारतीय व्यक्तियों की अनिवार्यता से जुड़े कुछ प्रावधान भी शिथिल किए गए। निवेश की वास्तविक शर्तें लागू नियमों और नियामकीय अनुपालन के अधीन हैं।","exam":"FDI, स्वचालित मार्ग, बीमा नियमन और निवेश नीति।"},{"tag":"कृषि · MSP","title":"खरीफ फसलों के न्यूनतम समर्थन मूल्य में वृद्धि","date":"मई 2026","body":"केंद्रीय मंत्रिमंडल ने खरीफ फसलों के MSP को मंजूरी दी। PRS समीक्षा के अनुसार धान का MSP 3% बढ़ा; ज्वार में 9%, सूरजमुखी में 8%, सोयाबीन में 7% और कपास में 7% वृद्धि अपेक्षाकृत अधिक रही। MSP किसानों को घोषित खरीद मूल्य का संकेत देता है; वास्तविक खरीद व्यवस्था अलग विषय है।","exam":"MSP, खरीफ फसलें, कृषि लागत और CACP की भूमिका।"},{"tag":"सूक्ष्म, लघु एवं मध्यम उद्यम","title":"Emergency Credit Line Guarantee Scheme 5.0 को मंजूरी","date":"मई 2026","body":"केंद्र ने ECLGS 5.0 को मंजूरी दी। योजना मार्च 2026 तक मौजूदा कार्यशील पूँजी सीमा वाले MSME और गैर-MSME उद्यमों तथा पात्र यात्री विमानन कंपनियों को अतिरिक्त ऋण पर गारंटी कवरेज देने के लिए बनाई गई। यह प्रत्यक्ष नकद अनुदान नहीं, बल्कि ऋण गारंटी व्यवस्था है।","exam":"MSME वित्त, ऋण गारंटी, कार्यशील पूँजी और सरकारी वित्तीय सहायता।"},{"tag":"ऊर्जा · कोयला","title":"Surface Coal Gasification को बढ़ावा देने की योजना","date":"मई 2026","body":"सरकार ने Surface Coal Gasification परियोजनाओं को प्रोत्साहित करने की योजना को मंजूरी दी। नई परियोजनाओं में संयंत्र और मशीनरी की लागत के अधिकतम 20% तक वित्तीय प्रोत्साहन का प्रावधान है; परियोजनाओं का चयन प्रतिस्पर्धी बोली से होगा।","exam":"कोयला गैसीकरण, ऊर्जा सुरक्षा, स्वच्छ कोयला तकनीक और औद्योगिक ईंधन।"},{"tag":"खेल · डोपिंग-रोधी नीति","title":"राष्ट्रीय डोपिंग-रोधी कानून में संशोधन का मसौदा","date":"मई 2026","body":"National Anti-Doping Act, 2022 में प्रस्तावित संशोधनों का उद्देश्य खेलों में प्रतिबंधित पदार्थों और तरीकों की तस्करी या प्रशासन पर दंडात्मक प्रावधान मजबूत करना है। यह मसौदा प्रस्ताव था; इसे अंतिम कानून न माना जाए।","exam":"WADA, NADA, खेल नैतिकता और डोपिंग-रोधी व्यवस्था।"}];
+    for(const item of items){
+      const card=document.createElement('article'); card.className='news';
+      const tag=document.createElement('span'); tag.className='tag'; tag.textContent=item.tag; card.append(tag);
+      const h=document.createElement('h3'); h.textContent=item.title; card.append(h);
+      const date=document.createElement('p'); date.innerHTML='<b>तिथि/अवधि:</b> '+item.date; card.append(date);
+      const body=document.createElement('p'); body.textContent=item.body; card.append(body);
+      const exam=document.createElement('p'); exam.innerHTML='<b>परीक्षा उपयोगिता:</b> '; exam.append(document.createTextNode(item.exam)); card.append(exam);
+      const source=document.createElement('p'); source.className='source';
+      source.innerHTML='स्रोत: <a href="https://prsindia.org/policy/monthly-policy-review/may-2026" target="_blank" rel="noopener">PRS India — मई 2026 Monthly Policy Review</a>';
+      card.append(source); wrap.append(card);
+    }
+    return wrap;
+  }
+  function makeJuneContent() {
+    const wrap=document.createElement('div');
+    const note=document.createElement('div'); note.className='archive-status';
+    note.textContent='जून 2026 का यह विषयवार संकलन PRS India की मासिक नीति समीक्षा तथा संबंधित आधिकारिक स्रोतों पर आधारित चयनित प्रमुख घटनाओं का अध्ययन-सार है; इसे दिन-प्रतिदिन की सम्पूर्ण समाचार सूची न समझें।';
+    wrap.append(note);
+    const items=[{"tag":"अर्थव्यवस्था · GDP","title":"वित्त वर्ष 2025-26 में GDP वृद्धि 7.7% अनुमानित","date":"जून 2026 में जारी अनुमान","body":"स्थिर 2022-23 कीमतों पर भारत की GDP वृद्धि 2025-26 में 7.7% अनुमानित की गई, जो 2024-25 के 7.1% से अधिक है। जनवरी–मार्च 2026 की चौथी तिमाही में वृद्धि 7.8% आँकी गई। ये राष्ट्रीय आय के अनुमान हैं और आगे संशोधित हो सकते हैं।","exam":"GDP, स्थिर कीमतें, आधार वर्ष और क्षेत्रवार GVA।"},{"tag":"बैंकिंग एवं मौद्रिक नीति","title":"RBI ने रेपो दर 5.25% पर बरकरार रखी","date":"5 जून 2026","body":"RBI की MPC ने रेपो दर 5.25% पर बनाए रखी और तटस्थ रुख जारी रखा। SDF दर 5% तथा MSF और बैंक दर 5.5% पर अपरिवर्तित रहीं।","exam":"MPC, रेपो, SDF, MSF और मौद्रिक नीति का रुख।"},{"tag":"बाह्य क्षेत्र · भुगतान संतुलन","title":"चौथी तिमाही में चालू खाते का अधिशेष GDP का 0.7%","date":"जनवरी–मार्च 2026","body":"भारत ने 2025-26 की चौथी तिमाही में 7.1 अरब अमेरिकी डॉलर का चालू खाता अधिशेष दर्ज किया, जो GDP का 0.7% था। इसी अवधि में पूँजी खाते में 1.1 अरब डॉलर का शुद्ध बहिर्वाह हुआ और विदेशी मुद्रा भंडार 7.2 अरब डॉलर बढ़ा।","exam":"Balance of Payments, चालू खाता, पूँजी खाता और विदेशी मुद्रा भंडार।"},{"tag":"वित्तीय नियमन · उपभोक्ता संरक्षण","title":"RBI ने वित्तीय सेवाओं में dark patterns और जबरन bundling पर रोक संबंधी निर्देश बदले","date":"जून 2026","body":"RBI के संशोधित निर्देशों में विनियमित संस्थाओं को वित्तीय उत्पाद बेचने से पहले ग्राहक की स्पष्ट सहमति लेने, अनिवार्य bundling से बचने और भ्रामक dark patterns का उपयोग न करने को कहा गया। कुछ धोखाधड़ी वाले इलेक्ट्रॉनिक लेनदेन में ग्राहक दायित्व और बैंक की जिम्मेदारी भी स्पष्ट की गई।","exam":"डिजिटल उपभोक्ता संरक्षण, RBI नियमन, सहमति और वित्तीय धोखाधड़ी।"},{"tag":"विमानन · ऊर्जा कीमत","title":"भारतीय एयरलाइंस के लिए ₹10,000 करोड़ का ईंधन मूल्य स्थिरीकरण कोष","date":"जून 2026","body":"केंद्रीय मंत्रिमंडल ने विमानन टरबाइन ईंधन (ATF) की कीमतों में अस्थिरता के बीच भारतीय एयरलाइंस को सहायता देने के लिए ₹10,000 करोड़ का कोष मंजूर किया। व्यवस्था के तहत पात्र तेल विपणन कंपनियों को ब्याज-मुक्त अग्रिम सहायता दी जानी है, ताकि निर्धारित मानक से ऊपर अंतरराष्ट्रीय कीमतों के प्रभाव को संतुलित किया जा सके।","exam":"ATF, तेल विपणन कंपनियाँ, विमानन अर्थव्यवस्था और ऊर्जा मूल्य जोखिम।"},{"tag":"खाद्य सुरक्षा · सार्वजनिक वितरण","title":"अंत्योदय अन्न योजना के अनाज अधिकार में बदलाव का मसौदा","date":"जून 2026","body":"राष्ट्रीय खाद्य सुरक्षा अधिनियम में प्रस्तावित संशोधन पर सुझाव आमंत्रित किए गए। मसौदे में AAY परिवारों के लिए 35 किलोग्राम मासिक खाद्यान्न अधिकार को प्रति व्यक्ति 7 किलोग्राम प्रतिमाह के रूप में निर्धारित करने का प्रस्ताव था, साथ ही परिवार के लिए अधिकतम 35 किलोग्राम की सीमा रखी गई। यह मसौदा था, लागू संशोधन नहीं।","exam":"NFSA, AAY, सार्वजनिक वितरण प्रणाली और खाद्य सुरक्षा।"},{"tag":"कोयला · बाजार सुधार","title":"Coal Exchange Rules, 2026 अधिसूचित","date":"जून 2026","body":"Coal Exchange Rules, 2026 ने कोयले के खरीदारों और विक्रेताओं के लिए इलेक्ट्रॉनिक ट्रेडिंग प्लेटफॉर्म के संचालन का ढाँचा उपलब्ध कराया। इसका उद्देश्य कोयला व्यापार में पारदर्शिता और व्यवस्थित बाजार व्यवस्था को बढ़ावा देना है।","exam":"कोयला क्षेत्र, बाजार विनियमन, ई-नीलामी और ऊर्जा आपूर्ति।"},{"tag":"स्वास्थ्य · आपातकालीन सेवाएँ","title":"राष्ट्रीय एम्बुलेंस सेवाओं के लिए परिचालन दिशानिर्देश","date":"जून 2026","body":"स्वास्थ्य मंत्रालय ने राष्ट्रीय एम्बुलेंस सेवाओं के मानकीकरण के लिए दिशानिर्देश जारी किए। इनमें एम्बुलेंस वर्गीकरण, स्टाफ प्रशिक्षण, उपकरण, गुणवत्ता आश्वासन, GPS ट्रैकिंग, डिजिटल डिस्पैच और 112 हेल्पलाइन से एकीकरण शामिल है।","exam":"सार्वजनिक स्वास्थ्य, आपातकालीन प्रतिक्रिया, 112 और स्वास्थ्य सेवा वितरण।"}];
+    for(const item of items){
+      const card=document.createElement('article'); card.className='news';
+      const tag=document.createElement('span'); tag.className='tag'; tag.textContent=item.tag; card.append(tag);
+      const h=document.createElement('h3'); h.textContent=item.title; card.append(h);
+      const date=document.createElement('p'); date.innerHTML='<b>तिथि/अवधि:</b> '+item.date; card.append(date);
+      const body=document.createElement('p'); body.textContent=item.body; card.append(body);
+      const exam=document.createElement('p'); exam.innerHTML='<b>परीक्षा उपयोगिता:</b> '; exam.append(document.createTextNode(item.exam)); card.append(exam);
+      const source=document.createElement('p'); source.className='source';
+      source.innerHTML='स्रोत: <a href="https://prsindia.org/policy/monthly-policy-review/june-2026" target="_blank" rel="noopener">PRS India — जून 2026 Monthly Policy Review</a>';
+      card.append(source); wrap.append(card);
+    }
+    return wrap;
+  }
   function makeNovemberContent() {
     const wrap=document.createElement('div');
     const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText('नवम्बर'); wrap.append(note);
@@ -263,7 +301,9 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — मासिक करंट अफेयर्स'; mPanel.append(title);
     if(index===0) mPanel.append(makeJanuaryContent());\n    else if(index===1) mPanel.append(makeFebruaryContent());
     else if(index===2) mPanel.append(makeMarchContent());
-    else if(index===3) mPanel.append(makeAprilContent());\n    else if(index===10) mPanel.append(makeNovemberContent());
+    else if(index===3) mPanel.append(makeAprilContent());
+    else if(index===4) mPanel.append(makeMayContent());
+    else if(index===5) mPanel.append(makeJuneContent());\n    else if(index===10) mPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); mPanel.append(note); }
   }
   mNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showMonthly(Number(b.dataset.monthIndex));});
@@ -278,7 +318,9 @@ header{background:#111a35;color:#fff;padding:15px 0}.nav{display:flex;justify-co
     const title=document.createElement('h3'); title.textContent=months[index]+' 2026 — वार्षिक माहवार संग्रह'; yPanel.append(title);
     if(index===0) yPanel.append(makeJanuaryContent());\n    else if(index===1) yPanel.append(makeFebruaryContent());
     else if(index===2) yPanel.append(makeMarchContent());
-    else if(index===3) yPanel.append(makeAprilContent());\n    else if(index===10) yPanel.append(makeNovemberContent());
+    else if(index===3) yPanel.append(makeAprilContent());
+    else if(index===4) yPanel.append(makeMayContent());
+    else if(index===5) yPanel.append(makeJuneContent());\n    else if(index===10) yPanel.append(makeNovemberContent());
     else { const note=document.createElement('div'); note.className='archive-status'; note.textContent=statusText(months[index]); yPanel.append(note); }
   }
   yNav.addEventListener('click',event=>{const b=event.target.closest('button[data-month-index]');if(b)showYearly(Number(b.dataset.monthIndex));});
