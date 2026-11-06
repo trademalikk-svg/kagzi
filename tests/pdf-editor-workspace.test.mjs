@@ -213,7 +213,8 @@ test('Unicode text renderer shapes Hindi and Urdu with browser canvas before PDF
   const source = await readFile(new URL('../pdf-unicode-text.js', import.meta.url), 'utf8');
   const calls = [];
   const context = {
-    font: '', direction: 'ltr', textAlign: 'left', textBaseline: 'top', fillStyle: '',
+    font: '', direction: 'ltr', textAlign: 'left', textBaseline: 'top', fillStyle: '', globalAlpha: 1,
+    scale() {}, clearRect() {},
     measureText: text => ({ width: [...text].length * 12 }),
     fillText: (text, x, y) => calls.push({ text, x, y, direction: context.direction })
   };
