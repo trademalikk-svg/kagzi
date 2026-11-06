@@ -75,7 +75,7 @@ class KagziLegalPagesTests(unittest.TestCase):
         body = page.content
         for topic in ("cookies", "analytics", "advertising", "affiliate links"):
             self.assertIn(topic, body)
-        for preserved in ("processed locally in your browser", "ai provider",
+        for preserved in ("process selected files locally in your browser", "ai provider",
                           "hello@kagzi.in", "third-party"):
             self.assertIn(preserved, body)
         self.assertIn("no active affiliate network", body)
