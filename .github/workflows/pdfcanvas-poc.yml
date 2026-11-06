@@ -80,6 +80,53 @@ jobs:
           }, null, 2));
           NODE
 
+      - name: Inventory PDFium package license and bundled notice files
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { createRequire } from 'node:module';
+
+          const require = createRequire(import.meta.url);
+          const entry = require.resolve('@embedpdf/pdfium');
+          let dir = path.dirname(entry);
+          while (!fs.existsSync(path.join(dir, 'package.json'))) {
+            const parent = path.dirname(dir);
+            if (parent === dir) throw new Error('Cannot locate @embedpdf/pdfium package root');
+            dir = parent;
+          }
+          const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+          const files = [];
+          function walk(current, depth = 0) {
+            if (depth > 3) return;
+            for (const item of fs.readdirSync(current, { withFileTypes: true })) {
+              const full = path.join(current, item.name);
+              if (item.isDirectory()) walk(full, depth + 1);
+              else if (/^(LICENSE|NOTICE|COPYING|THIRD_PARTY_NOTICES)(\\.|$)/i.test(item.name)) files.push(path.relative(dir, full));
+            }
+          }
+          walk(dir);
+          const wasm = [];
+          function findWasm(current) {
+            for (const item of fs.readdirSync(current, { withFileTypes: true })) {
+              const full = path.join(current, item.name);
+              if (item.isDirectory()) findWasm(full);
+              else if (item.name.endsWith('.wasm')) wasm.push(path.relative(dir, full));
+            }
+          }
+          findWasm(dir);
+          console.log(JSON.stringify({
+            package: '@embedpdf/pdfium',
+            version: pkg.version,
+            packageLicenseMetadata: pkg.license ?? null,
+            licenseAndNoticeFiles: files,
+            wasmFiles: wasm,
+            reviewStatus: 'inventory only; verify every bundled PDFium third-party notice before redistribution'
+          }, null, 2));
+          if (wasm.length === 0) throw new Error('Expected bundled PDFium WASM was not found');
+          NODE
+
       - name: Run upstream original-text smoke check
         working-directory: vendor/pdfcanvas
         run: npm run check:text
