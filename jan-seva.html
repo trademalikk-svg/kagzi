@@ -28,10 +28,18 @@
     <select id="regionFilter" aria-label="सरकार चुनें"><option value="all">सभी सरकारें</option><option value="central">केंद्र सरकार</option><option value="up">उत्तर प्रदेश</option></select>
     <select id="categoryFilter" aria-label="श्रेणी चुनें"><option value="all">सभी श्रेणियाँ</option><option value="cert">प्रमाणपत्र</option><option value="family">परिवार और राशन</option><option value="education">शिक्षा</option><option value="welfare">पेंशन और कल्याण</option><option value="farmer">किसान</option><option value="land">भूमि</option><option value="work">रोजगार</option><option value="identity">पहचान</option></select>
   </div>
+  <section class="finder-panel" aria-labelledby="finderTitle">
+    <div><span class="eyebrow">SMART SERVICE FINDER</span><h3 id="finderTitle">आपको कौन-सा सरकारी काम करना है?</h3><p>अपनी जरूरत सामान्य भाषा में लिखें — जैसे “बेटी की पढ़ाई के लिए मदद” या “नया राशन कार्ड”।</p></div>
+    <div class="finder-row"><input id="smartFinderInput" type="search" placeholder="अपना काम लिखें…" aria-label="सरकारी सेवा खोजें"><button id="smartFinderButton" type="button">सेवा खोजें</button></div>
+    <p id="finderStatus" class="tool-status" role="status">आपके शब्दों के आधार पर संबंधित सेवाएँ ऊपर दिखेंगी।</p>
+  </section>
+  <div class="directory-toolbar"><button id="showAllServices" type="button">सभी सेवाएँ</button><button id="showFavourites" type="button">★ मेरी पसंद</button><span id="favouriteCount" class="tool-status">0 पसंदीदा</span></div>
   <div id="serviceGrid" class="service-grid" aria-live="polite"></div>
+  <section id="documentChecklist" class="tool-panel" hidden><div class="tool-panel-head"><div><span class="eyebrow">MY DOCUMENT CHECKLIST</span><h3 id="checklistTitle">दस्तावेज़ चेकलिस्ट</h3><p>तैयारी के लिए सूची। अंतिम दस्तावेज़ आधिकारिक पोर्टल पर जाँचें।</p></div><button id="closeChecklist" type="button" aria-label="चेकलिस्ट बंद करें">✕</button></div><div id="checklistItems"></div><p id="checklistProgress" class="tool-status"></p></section>
   <p class="source-note">आवेदन से पहले संबंधित सरकारी पोर्टल पर वर्तमान पात्रता, शुल्क, दस्तावेज़ और समयसीमा जाँचें। नियम बदल सकते हैं।</p>
 </section>
 
+<section class="section tool-panel" id="feedbackPanel"><div class="eyebrow">HELP US IMPROVE</div><h2>Feedback और गलत लिंक रिपोर्ट करें</h2><p>गलत जानकारी या काम न करने वाला लिंक मिले तो सेवा का नाम और समस्या लिखें। यह रिपोर्ट आपके फोन में तैयार होगी; इसे KAGZI Contact पेज पर भेजें।</p><form id="serviceFeedbackForm"><label for="feedbackService">सेवा का नाम</label><input id="feedbackService" maxlength="100" placeholder="जैसे आय प्रमाणपत्र" required><label for="feedbackType">समस्या</label><select id="feedbackType"><option>गलत / बंद लिंक</option><option>दस्तावेज़ जानकारी गलत</option><option>पात्रता जानकारी गलत</option><option>अन्य सुझाव</option></select><label for="feedbackDetails">विवरण</label><textarea id="feedbackDetails" maxlength="1000" rows="3" placeholder="समस्या संक्षेप में लिखें…" required></textarea><button type="submit">रिपोर्ट तैयार करें</button><p id="feedbackStatus" class="tool-status" role="status"></p></form></section>
 <section class="section faq-section" id="faq">
   <div class="section-head"><div><div class="eyebrow">HELP CENTRE</div><h2>100 सामान्य सवाल-जवाब</h2><p>सेवा से जुड़े सवाल खोजें; अंतिम नियम आधिकारिक पोर्टल पर जाँचें।</p></div><span id="faqCount" class="count">100 सवाल</span></div>
   <input id="faqSearch" type="search" placeholder="FAQ खोजें — जैसे दस्तावेज़, आवेदन, स्थिति" aria-label="FAQ खोजें">
@@ -51,4 +59,5 @@
 </main>
 <footer><span>© 2026 KAGZI AI</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a> <a href="content-policy.html">Content Policy</a><a href="contact.html">Contact</a><a href="index.html">Home</a></footer>
 <script src="jan-seva.js"></script>
+<script src="jan-seva-enhancements.js"></script>
 </body></html>
