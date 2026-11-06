@@ -82,12 +82,45 @@ $('#closePhotoStudio').addEventListener('click',()=>{photoStudio.hidden=true;});
 const photoInput=$('#photoInput'),photoPreview=$('#photoPreview'),photoWidth=$('#photoWidth'),photoHeight=$('#photoHeight'),photoKeepRatio=$('#photoKeepRatio'),downloadPhotoBtn=$('#downloadPhotoBtn');
 let photoObjectUrl='',photoOriginalWidth=0,photoOriginalHeight=0;
 photoInput.addEventListener('change',()=>{
- const file=photoInput.files[0];downloadPhotoBtn.disabled=!file;photoPreview.style.display='none';photoOriginalWidth=photoOriginalHeight=0;
- if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);
- if(!file){$('#photoName').textContent='No image selected';$('#photoDimensions').textContent='Choose an image to view its dimensions.';return;}
- if(!file.type.startsWith('image/')){notify('Choose a JPG, PNG or WebP image.');photoInput.value='';downloadPhotoBtn.disabled=true;return;}
- photoObjectUrl=URL.createObjectURL(file);$('#photoName').textContent=file.name;
- const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';photoPreview.src=photoObjectUrl;photoPreview.style.display='block';};image.onerror=()=>{notify('This image could not be opened.');downloadPhotoBtn.disabled=true;};image.src=photoObjectUrl;
+ const file=photoInput.files&&photoInput.files[0];
+ downloadPhotoBtn.disabled=!file;
+ photoPreview.style.display='none';
+ $('#photoPreviewEmpty').hidden=false;
+ photoOriginalWidth=photoOriginalHeight=0;
+ if(photoObjectUrl){URL.revokeObjectURL(photoObjectUrl);photoObjectUrl='';}
+ if(!file){
+  $('#photoName').textContent='No image selected';
+  $('#photoDimensions').textContent='Choose an image to view its dimensions.';
+  return;
+ }
+ if(!file.type.startsWith('image/')){
+  notify('Choose a JPG, PNG or WebP image.');
+  photoInput.value='';
+  downloadPhotoBtn.disabled=true;
+  return;
+ }
+ photoObjectUrl=URL.createObjectURL(file);
+ $('#photoName').textContent=file.name;
+ photoPreview.onload=()=>{
+  photoOriginalWidth=photoPreview.naturalWidth;
+  photoOriginalHeight=photoPreview.naturalHeight;
+  if(!photoOriginalWidth||!photoOriginalHeight){photoPreview.style.display='none';return;}
+  photoWidth.value=photoOriginalWidth;
+  photoHeight.value=photoOriginalHeight;
+  $('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';
+  photoPreview.style.display='block';
+  photoPreview.hidden=false;
+  $('#photoPreviewEmpty').hidden=true;
+  downloadPhotoBtn.disabled=false;
+ };
+ photoPreview.onerror=()=>{
+  photoPreview.style.display='none';
+  $('#photoPreviewEmpty').hidden=false;
+  $('#photoDimensions').textContent='Preview could not load. Try another JPG or PNG image.';
+  notify('This image could not be previewed. Try another image.');
+  downloadPhotoBtn.disabled=true;
+ };
+ photoPreview.src=photoObjectUrl;
 });
 photoWidth.addEventListener('input',()=>{if(photoKeepRatio.checked&&photoOriginalWidth&&photoWidth.value){photoHeight.value=Math.max(1,Math.round(Number(photoWidth.value)*photoOriginalHeight/photoOriginalWidth));}});
 photoHeight.addEventListener('input',()=>{if(photoKeepRatio.checked&&photoOriginalHeight&&photoHeight.value){photoWidth.value=Math.max(1,Math.round(Number(photoHeight.value)*photoOriginalWidth/photoOriginalHeight));}});
