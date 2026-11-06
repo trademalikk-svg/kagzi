@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KAGZI · Manual Payment</title><style>
+:root{--ink:#172033;--muted:#68748a;--line:#e4e9f2;--bg:#f4f6fb;--blue:#315efb;--green:#087443}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,"Noto Sans Devanagari",sans-serif}.wrap{width:min(700px,calc(100% - 28px));margin:25px auto}header{background:#111a35;color:white;padding:15px}header a{color:#d7dcff;text-decoration:none}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}h1{font-size:27px;margin:5px 0}.muted{color:var(--muted);font-size:13px}label{display:block;font-weight:800;font-size:13px;margin:12px 0 5px}input{width:100%;padding:12px;border:1px solid #dce2ee;border-radius:10px;font:inherit}button,.btn{display:inline-block;border:0;border-radius:10px;padding:12px 16px;background:var(--blue);color:white;font-weight:850;text-decoration:none;margin-top:14px;cursor:pointer}.secondary{background:#edf1fa;color:var(--ink)}.price{font-size:30px;font-weight:950;color:var(--green)}.old{text-decoration:line-through;color:#8490a3;font-size:16px}.notice{background:#edf2ff;border-left:4px solid var(--blue);padding:12px;border-radius:9px;font-size:13px}.status{white-space:pre-wrap;font-size:13px;margin-top:12px}.hidden{display:none!important}#qr{max-width:220px;max-height:220px;object-fit:contain;display:block;margin:10px 0}.paybox{background:#f8faff;border:1px dashed #aebce0;border-radius:12px;padding:14px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style></head><body><header><div class="wrap" style="margin:0 auto"><b>KAGZI · MANUAL PAYMENT</b>　<a href="./">← Current Affairs</a></div></header>
+<main class="wrap">
+<section class="card"><div class="muted">SECURE MANUAL UPI SUBMISSION</div><h1>Payment Request</h1><p id="productLabel">Edition loading…</p><div class="price" id="price"></div><div class="muted" id="discount"></div></section>
+<section class="card" id="authCard"><h2>Sign in / Create account</h2><p class="muted">Payment request submit karne ke liye KAGZI account se sign in karein.</p>
+<label>Email</label><input id="email" type="email" autocomplete="username">
+<label>Password</label><input id="password" type="password" autocomplete="current-password">
+<div class="row"><button id="signIn">Sign In</button><button id="signUp" class="secondary">Create Account</button></div><div id="authStatus" class="status"></div></section>
+<section class="card hidden" id="paymentCard"><h2>UPI Payment Details</h2><p id="payee" class="muted"></p><div class="paybox"><img id="qr" class="hidden" alt="UPI payment QR"><p><b>UPI ID:</b> <span id="upi"></span></p><p id="instructions" class="muted"></p><a id="upiLink" class="btn" href="#">Open UPI App</a><button id="copyUpi" class="secondary">Copy UPI ID</button></div>
+<label for="utr">Transaction ID / UTR</label><input id="utr" maxlength="100" placeholder="Payment ke baad UTR enter karein">
+<p class="notice">UPI app mein payment karne ke baad UTR yahan submit karein. Request Pending rahegi jab tak Admin apne payment account mein receipt verify nahi karta. Sirf screenshot/UTR se payment verified nahi hota.</p>
+<button id="submitOrder">Submit Payment Reference</button><div id="orderStatus" class="status"></div></section>
+<section class="card"><p class="muted">Note: Payment account/UPI details site owner ke parent ya guardian ke supervision mein configure hone chahiye. KAGZI kabhi bhi aapse UPI PIN, OTP ya password nahi maangega.</p></section>
+</main>
+<script type="module">
+import { supabase } from "../kagzi-supabase.js";
+const $=id=>document.getElementById(id);
+const months=["january","february","march","april","may","june","july","august","september","october","november","december"];
+const params=new URLSearchParams(location.search), product=params.get("product")||"";
+const month=product.startsWith("monthly-")?product.slice(8):"";
+const valid=product==="yearly"||months.includes(month);
+if(!valid){$("productLabel").textContent="Invalid edition selected";$("authCard").classList.add("hidden");}
+const amount=product==="yearly"?70:30, original=product==="yearly"?150:100, off=product==="yearly"?"53.33%":"70%";
+$("productLabel").textContent=product==="yearly"?"Yearly Complete Edition":"Monthly Edition · "+(month?month[0].toUpperCase()+month.slice(1):"");
+$("price").innerHTML='<span class="old">₹'+original+'</span>　₹'+amount;
+$("discount").textContent=off+" discount";
+let currentUser=null;
+async function refreshAuth(){
+ const {data:{user}}=await supabase.auth.getUser();currentUser=user;
+ $("authCard").classList.toggle("hidden",!!user);
+ if(user) await loadPayment();
+}
+async function loadPayment(){
+ const {data,error}=await supabase.from("kagzi_manual_payment_settings").select("enabled,payee_name,upi_id,qr_image_url,instructions").eq("id",true).maybeSingle();
+ if(error||!data||!data.enabled||!data.upi_id){$("paymentCard").classList.remove("hidden");$("paymentCard").innerHTML="<h2>Payment setup pending</h2><p class='muted'>KAGZI Admin ne abhi manual payment details activate nahi ki hain. Abhi payment na karein.</p>";return;}
+ $("paymentCard").classList.remove("hidden");$("payee").textContent="Payee: "+data.payee_name;$("upi").textContent=data.upi_id;$("instructions").textContent=data.instructions||"UPI payment karein aur UTR submit karein.";
+ if(data.qr_image_url){$("qr").src=data.qr_image_url;$("qr").classList.remove("hidden");}
+ const link="upi://pay?pa="+encodeURIComponent(data.upi_id)+"&pn="+encodeURIComponent(data.payee_name)+"&am="+amount+"&cu=INR&tn="+encodeURIComponent("KAGZI "+product);
+ $("upiLink").href=link;
+}
+$("signIn").addEventListener("click",async()=>{const {error}=await supabase.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("authStatus").textContent=error?error.message:"Signed in.";if(!error)await refreshAuth();});
+$("signUp").addEventListener("click",async()=>{const {data,error}=await supabase.auth.signUp({email:$("email").value.trim(),password:$("password").value});$("authStatus").textContent=error?error.message:(data.session?"Account created.":"Account created. Email confirmation check karein.");if(data.session)await refreshAuth();});
+$("copyUpi").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("upi").textContent);$("orderStatus").textContent="UPI ID copied.";}catch{$("orderStatus").textContent="UPI ID ko manually copy karein.";}});
+$("submitOrder").addEventListener("click",async()=>{
+ if(!currentUser){$("orderStatus").textContent="Please sign in first.";return;}
+ const ref=$("utr").value.trim();
+ if(ref.length<8){$("orderStatus").textContent="Valid Transaction ID / UTR enter karein (कम से कम 8 अक्षर).";return;}
+ $("submitOrder").disabled=true;
+ const {error}=await supabase.from("kagzi_manual_payment_orders").insert({user_id:currentUser.id,product_code:product,transaction_ref:ref});
+ $("orderStatus").textContent=error?("Request submit nahi hui: "+error.message):"Payment reference submitted. Status: Pending verification. Admin verify karega; approval ke baad bhi PDF access tabhi milega jab paid content delivery activate ho.";
+ $("submitOrder").disabled=false;
+});
+await refreshAuth();
+</script></body></html>
