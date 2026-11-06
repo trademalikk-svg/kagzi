@@ -1,0 +1,18 @@
+name: KAGZI Education and eBook checks
+on:
+  push:
+    branches: [feat/education-ebook-access-tiers]
+  pull_request:
+    branches: [main]
+jobs:
+  education:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check education module syntax
+        run: node --check education-data.mjs
+      - name: Test eBook access and reader safeguards
+        run: node --test tests/ebook-access.test.mjs tests/education-library-audit.mjs tests/education-reader-audit.mjs
