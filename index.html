@@ -377,7 +377,7 @@ img,video,canvas,iframe{max-width:100%}
   input.addEventListener("change",function(e){
    e.stopImmediatePropagation();const token=++processVersion;sourceFile=null;cutoutBlob=null;outputBlob=null;faceBox=null;download.disabled=true;
    const f=input.files&&input.files[0];if(!f){say("Choose a JPG, PNG or WebP photo.");return;}
-   if(!f.type.startsWith("image/")&&!/\\.(jpe?g|png|webp)$/i.test(f.name)){say("Choose a JPG, PNG or WebP photo.");return;}
+   if(!f.type.startsWith("image/")&&!/\.(jpe?g|png|webp)$/i.test(f.name)){say("Choose a JPG, PNG or WebP photo.");return;}
    process(f,token);
   },true);
   if(bg)bg.addEventListener('change',()=>{if(cutoutBlob)renderOutput(processVersion).catch(e=>say('Could not apply background: '+e.message));});
