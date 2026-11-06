@@ -32,3 +32,9 @@
 .pdf-text-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;user-select:text}.pdf-text-span{position:absolute;display:block;overflow:hidden;white-space:pre;transform-origin:0 0;color:transparent;-webkit-text-fill-color:transparent;pointer-events:auto;cursor:text;outline:1px solid transparent}.pdf-text-span:hover{outline:1px dashed #3974ed;background:#3974ed12}.pdf-text-span.selected{outline:2px solid #3974ed;background:#3974ed22}.pdf-text-span.edited{background:#fff;color:#10234a;-webkit-text-fill-color:#10234a;outline:1px solid #8aa8f2}.inspector-bold{display:flex;align-items:center;gap:8px;font-size:11px;color:#65738a}.inspector-section #applyTextEdit{border:0;border-radius:8px;padding:10px;background:#0b2450;color:#fff;font-weight:800}.inspector-section #applyTextEdit:disabled{opacity:.4}
 
 .image-selection-layer{position:absolute;inset:0;pointer-events:none;z-index:4}.placed-image-handle{position:absolute;display:block;padding:0;border:1px dashed transparent;background:transparent;pointer-events:auto;cursor:pointer;min-width:8px;min-height:8px}.placed-image-handle:hover,.placed-image-handle.selected{border:2px solid #3974ed;background:#3974ed12;box-shadow:0 0 0 2px #fff8}.placed-image-handle.selected:after{content:'Selected image';position:absolute;left:0;top:-22px;padding:3px 6px;border-radius:4px;background:#1749a2;color:#fff;font:700 9px/1.2 system-ui;white-space:nowrap}
+
+/* Keep selectable PDF text spans above the placement surface; empty areas still pass clicks through. */
+.canvas-wrap{isolation:isolate}
+.editor-overlay{z-index:1}
+.pdf-text-layer{z-index:2}
+.pdf-text-span{pointer-events:auto;touch-action:manipulation}
