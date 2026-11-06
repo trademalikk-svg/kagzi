@@ -35,6 +35,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install playwright
           playwright install --with-deps chromium
+      - name: Run study-book catalogue and PDF build audits
+        run: node --test tests/study-book-pdf-build.test.mjs tests/study-books-library-audit.mjs tests/study-books-content-audit.mjs
       - name: Generate and validate nine A4 study-book PDFs
         run: python scripts/build_study_book_pdfs.py
       - name: Upload generated PDFs for review
