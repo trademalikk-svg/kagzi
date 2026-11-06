@@ -1,0 +1,57 @@
+name: Build KAGZI Study Book PDFs
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*-book.html'
+      - 'study-material.html'
+      - 'scripts/build_study_book_pdfs.py'
+      - '.github/workflows/study-book-pdfs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '*-book.html'
+      - 'study-material.html'
+      - 'scripts/build_study_book_pdfs.py'
+      - '.github/workflows/study-book-pdfs.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: study-book-pdf-build
+  cancel-in-progress: false
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Hindi fonts and Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Generate and validate nine A4 study-book PDFs
+        run: python scripts/build_study_book_pdfs.py
+      - name: Upload generated PDFs for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: kagzi-study-book-pdfs
+          path: study-material/pdf/*.pdf
+          if-no-files-found: error
+      - name: Commit PDFs on main after successful build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add study-material/pdf/*.pdf
+          if git diff --cached --quiet; then
+            echo "No study-book PDF changes"
+          else
+            git commit -m "Publish nine KAGZI study book PDFs"
+            git push origin main
+          fi
