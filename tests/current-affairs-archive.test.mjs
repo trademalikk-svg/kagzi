@@ -22,7 +22,7 @@ test('yearly archive exposes all twelve selectable months', () => {
 test('January and November show sourced content while other months remain clearly marked pending', () => {
   assert.match(html, /id='monthlyMonthPanel'/);
   assert.match(html, /id='yearlyMonthPanel'/);
-  assert.match(html, /if\(index===10\) mPanel\.append\(makeNovemberContent\(\)\)/);
-  assert.match(html, /if\(index===10\) yPanel\.append\(makeNovemberContent\(\)\)/);
+  assert.match(html, /if\(index===0\) mPanel\.append\(makeJanuaryContent\(\)\)/);\n  assert.match(html, /else if\(index===10\) mPanel\.append\(makeNovemberContent\(\)\)/);\n  assert.match(html, /function makeJanuaryContent\(\)/);
+  assert.match(html, /if\(index===0\) yPanel\.append\(makeJanuaryContent\(\)\)/);\n  assert.match(html, /else if\(index===10\) yPanel\.append\(makeNovemberContent\(\)\)/);\n  assert.match(html, /PRS India — January 2026 Monthly Policy Review/);
   assert.match(html, /पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई/);
 });
