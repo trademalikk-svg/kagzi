@@ -309,7 +309,115 @@ img,video,canvas,iframe{max-width:100%}
     <p class="assistant-footnote">AI replies can be wrong. Do not share passwords, OTPs or sensitive document numbers.</p>
   </section>
 </div>
-<div class="toast" id="toast" role="status"></div><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script><script src="script.js?v=photo-fix-20261106-3"></script><script src="support.js"></script><script>
+<div class="toast" id="toast" role="status"></div><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth-guard.js"></script>
+<script id="kagzi-photo-standalone-fix">
+(function(){
+ function init(){
+  const input=document.getElementById('photoInput');
+  const preview=document.getElementById('photoPreview');
+  const empty=document.getElementById('photoPreviewEmpty');
+  const status=document.getElementById('photoStatus');
+  const passportStatus=document.getElementById('passportBgStatus');
+  const selectedName=document.getElementById('passportPhotoName');
+  const bg=document.getElementById('passportBgColor');
+  const download=document.getElementById('downloadPassportPhoto');
+  const dimensions=document.getElementById('photoDimensions');
+  if(!input||!preview||!download)return;
+  let sourceFile=null,editedBlob=null,previewUrl=null,working=false;
+  function say(message){if(status)status.textContent=message;if(passportStatus)passportStatus.textContent=message;}
+  function showImage(blob){
+   if(previewUrl)URL.revokeObjectURL(previewUrl);
+   previewUrl=URL.createObjectURL(blob);
+   preview.onload=function(){
+    preview.hidden=false;preview.style.display='block';
+    if(empty)empty.hidden=true;
+    if(dimensions)dimensions.textContent=preview.naturalWidth+' × '+preview.naturalHeight+' pixels';
+   };
+   preview.onerror=function(){say('Image preview could not be displayed. Please choose another photo.');};
+   preview.src=previewUrl;
+  }
+  async function process(file){
+   sourceFile=file;editedBlob=null;download.disabled=true;working=true;
+   if(selectedName)selectedName.textContent='Selected: '+file.name+' · Loading…';
+   say('Photo selected. Loading preview…');
+   const initialUrl=URL.createObjectURL(file);
+   const probe=new Image();
+   probe.onload=async function(){
+    if(sourceFile!==file)return;
+    if(previewUrl)URL.revokeObjectURL(previewUrl);
+    previewUrl=initialUrl;preview.src=previewUrl;preview.hidden=false;preview.style.display='block';
+    if(empty)empty.hidden=true;
+    if(dimensions)dimensions.textContent=probe.naturalWidth+' × '+probe.naturalHeight+' pixels';
+    const w=document.getElementById('photoWidth'),h=document.getElementById('photoHeight');
+    const cw=document.getElementById('photoCropW'),ch=document.getElementById('photoCropH');
+    if(w)w.value=probe.naturalWidth;if(h)h.value=probe.naturalHeight;
+    if(cw)cw.value=probe.naturalWidth;if(ch)ch.value=probe.naturalHeight;
+    if(selectedName)selectedName.textContent='Selected: '+file.name+' · Preview ready';
+    say('Photo preview ready. AI is removing the old background…');
+    try{
+     const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+     const cutout=await mod.removeBackground(file);
+     if(sourceFile!==file)return;
+     const cutUrl=URL.createObjectURL(cutout),cutImg=new Image();
+     await new Promise((resolve,reject)=>{cutImg.onload=resolve;cutImg.onerror=reject;cutImg.src=cutUrl;});
+     const canvas=document.createElement('canvas');canvas.width=cutImg.naturalWidth;canvas.height=cutImg.naturalHeight;
+     const ctx=canvas.getContext('2d');ctx.fillStyle=bg?bg.value:'#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(cutImg,0,0);
+     editedBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+     URL.revokeObjectURL(cutUrl);
+     if(!editedBlob)throw new Error('Could not prepare edited image.');
+     showImage(editedBlob);download.disabled=false;
+     if(selectedName)selectedName.textContent='Edited: '+file.name+' · Ready to download';
+     say('Background removed and new colour applied. Preview and download are ready.');
+    }catch(err){
+     editedBlob=file;showImage(file);download.disabled=false;
+     if(selectedName)selectedName.textContent='Photo loaded: '+file.name+' · Original ready';
+     say('Preview is ready. Automatic background removal failed ('+(err&&err.message?err.message:'network/model error')+'). You can still download the selected photo.');
+    }finally{working=false;}
+   };
+   probe.onerror=function(){URL.revokeObjectURL(initialUrl);working=false;say('This file could not be opened as an image. Try a JPG or PNG photo.');};
+   probe.src=initialUrl;
+  }
+  input.addEventListener('change',function(){const f=input.files&&input.files[0];if(f)process(f);});
+  if(bg)bg.addEventListener('change',async function(){
+   if(!sourceFile)return;
+   if(!editedBlob){say('Choose a photo first.');return;}
+   if(editedBlob===sourceFile){say('Background removal is not ready yet. Original photo remains available.');return;}
+   try{
+    const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+    const cutout=await mod.removeBackground(sourceFile);
+    const u=URL.createObjectURL(cutout),im=new Image();await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
+    const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
+    const x=c.getContext('2d');x.fillStyle=bg.value;x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0);
+    editedBlob=await new Promise(res=>c.toBlob(res,'image/png'));URL.revokeObjectURL(u);
+    showImage(editedBlob);say('Background colour updated. Preview is ready.');
+   }catch(e){say('Could not update background colour: '+(e.message||'please try again.'));}
+  });
+  download.addEventListener('click',async function(){
+   try{
+    if(!editedBlob)throw new Error('Choose a photo and wait for preview.');
+    const preset=document.getElementById('passportPreset');
+    let width=Number(document.getElementById('photoWidth')?.value)||preview.naturalWidth;
+    let height=Number(document.getElementById('photoHeight')?.value)||preview.naturalHeight;
+    if(preset&&preset.value&&preset.value!=='custom'){const parts=preset.value.split('x').map(Number);width=parts[0];height=parts[1];}
+    if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1||width>12000||height>12000)throw new Error('Please select valid photo dimensions.');
+    download.disabled=true;download.textContent='Preparing download…';
+    const im=new Image(),u=URL.createObjectURL(editedBlob);
+    await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
+    const c=document.createElement('canvas');c.width=width;c.height=height;
+    const x=c.getContext('2d');x.fillStyle=bg?bg.value:'#ffffff';x.fillRect(0,0,width,height);x.drawImage(im,0,0,width,height);
+    const out=await new Promise(res=>c.toBlob(res,'image/jpeg',.92));URL.revokeObjectURL(u);
+    if(!out)throw new Error('Image export failed.');
+    const link=document.createElement('a'),url=URL.createObjectURL(out);
+    link.href=url;link.download='kagzi-passport-photo.jpg';document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);say('Download started. Check your Downloads folder.');
+   }catch(err){say(err.message||'Could not download photo.');}
+   finally{download.disabled=!editedBlob;download.textContent='Download edited passport photo';}
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+<script src="script.js?v=photo-fix-20261106-3"></script><script src="support.js"></script><script>
 (function(){
  const input=document.getElementById('photoInput');
  if(!input)return;
