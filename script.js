@@ -114,15 +114,16 @@ downloadPhotoBtn.addEventListener('click',async()=>{
 
 // Automatic passport background workflow. Image processing stays in the browser.
 const photoBgBlobState={cutout:null,processing:false};
+const photoStatusEl=$('#photoStatus');
 const passportBgSelect=$('#passportBgColor');
 const passportBgStatus=$('#passportBgStatus');
 const passportDownload=$('#downloadPassportPhoto');
 function setPhotoStatus(message){if(photoStatusEl)photoStatusEl.textContent=message;if(passportBgStatus)passportBgStatus.textContent=message;}
-function setPhotoSource(blob){if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';downloadPhotoBtn.disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
+function setPhotoSource(blob,preserveDimensions=false){const wantedWidth=Number(photoWidth.value),wantedHeight=Number(photoHeight.value);if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;if(!preserveDimensions||!wantedWidth||!wantedHeight){photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;}$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';downloadPhotoBtn.disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
 async function applySelectedPassportBackground(){
  if(!photoBgBlobState.cutout)return;
  const image=new Image(),url=URL.createObjectURL(photoBgBlobState.cutout);
- try{image.src=url;await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext('2d');ctx.fillStyle=passportBgSelect.value;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('Could not create the edited photo.');setPhotoSource(blob);passportDownload.disabled=false;setPhotoStatus('Background updated automatically. Preview is ready; download when satisfied.');}
+ try{image.src=url;await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext('2d');ctx.fillStyle=passportBgSelect.value;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('Could not create the edited photo.');setPhotoSource(blob,true);passportDownload.disabled=false;setPhotoStatus('Background updated automatically. Preview is ready; download when satisfied.');}
  finally{URL.revokeObjectURL(url);}
 }
 async function autoRemovePassportBackground(){
