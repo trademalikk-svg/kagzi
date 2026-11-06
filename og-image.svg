@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0b3d89"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0bd"/><stop offset="1" stop-color="#ffc928"/></linearGradient></defs>
+<rect width="1200" height="630" fill="url(#bg)"/><circle cx="1010" cy="90" r="250" fill="#1b5cc2" opacity=".22"/><circle cx="100" cy="620" r="280" fill="#e8b83f" opacity=".08"/>
+<rect x="78" y="90" width="110" height="110" rx="24" fill="url(#gold)"/><path d="M153 112h-34c-20 0-32 15-32 33s12 33 32 33h34v-19h-32c-8 0-13-5-13-14s5-14 13-14h32z" fill="#061947"/><path d="M139 130h25v48h-25z" fill="#fff"/><path d="M145 140h13m-13 9h13m-13 9h10" stroke="#0753c7" stroke-width="3" stroke-linecap="round"/>
+<text x="220" y="168" fill="#fff" font-family="Arial,sans-serif" font-size="68" font-weight="800" letter-spacing="3">KAGZI</text>
+<text x="82" y="330" fill="#ffcf39" font-family="Arial,sans-serif" font-size="62" font-weight="800">Everyday document</text><text x="82" y="405" fill="#ffcf39" font-family="Arial,sans-serif" font-size="62" font-weight="800">tools, made simple.</text>
+<text x="84" y="478" fill="#eef4ff" font-family="Arial,sans-serif" font-size="30">PDF tools · Photo tools · Document guides</text><text x="84" y="530" fill="#c8d8f5" font-family="Arial,sans-serif" font-size="25">Hindi + English support for India</text>
+<rect x="850" y="430" width="260" height="76" rx="38" fill="url(#gold)"/><text x="980" y="479" text-anchor="middle" fill="#061947" font-family="Arial,sans-serif" font-size="28" font-weight="700">kagzi-8cy.pages.dev</text></svg>
