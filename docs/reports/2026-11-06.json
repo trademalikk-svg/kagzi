@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-11-06T09:07:11.819Z",
+  "site": "https://kagzi-8cy.pages.dev",
+  "summary": {
+    "pagesChecked": 4,
+    "reachablePages": 4,
+    "pagesWithTitle": 4,
+    "pagesWithDescription": 4,
+    "pagesWithH1": 4,
+    "sitemapReachable": true,
+    "competitorSitesChecked": 5,
+    "competitorSitesReachable": 2
+  },
+  "ownPages": [
+    {
+      "path": "/",
+      "status": 200,
+      "ok": true,
+      "title": "Free PDF Tools & Photo Size Reducer Online in India | KAGZI",
+      "description": "Free online PDF merge, split and compress tools, JPG to PDF converter, passport size photo maker, photo resize and image size reducer. Hindi and English tools for India.",
+      "h1": "KAGZI AI",
+      "finalUrl": "https://kagzi-8cy.pages.dev/",
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasH1": true
+    },
+    {
+      "path": "/jan-seva.html",
+      "status": 200,
+      "ok": true,
+      "title": "Free PDF Tools & Photo Size Reducer Online in India | KAGZI",
+      "description": "Free online PDF merge, split and compress tools, JPG to PDF converter, passport size photo maker, photo resize and image size reducer. Hindi and English tools for India.",
+      "h1": "KAGZI AI",
+      "finalUrl": "https://kagzi-8cy.pages.dev/jan-seva.html",
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasH1": true
+    },
+    {
+      "path": "/gov-documents.html",
+      "status": 200,
+      "ok": true,
+      "title": "KAGZI — Government Documents & Official Service Guides",
+      "description": "सरकारी दस्तावेज़ों की जानकारी, तैयारी चेकलिस्ट और आधिकारिक पोर्टल लिंक खोजें। KAGZI केंद्र और उत्तर प्रदेश की सेवाओं के लिए informational guides देता है।",
+      "h1": "सरकारी दस्तावेज़ एक ही जगह खोजें",
+      "finalUrl": "https://kagzi-8cy.pages.dev/gov-documents",
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasH1": true
+    },
+    {
+      "path": "/content-policy.html",
+      "status": 200,
+      "ok": true,
+      "title": "Free PDF Tools & Photo Size Reducer Online in India | KAGZI",
+      "description": "Free online PDF merge, split and compress tools, JPG to PDF converter, passport size photo maker, photo resize and image size reducer. Hindi and English tools for India.",
+      "h1": "KAGZI AI",
+      "finalUrl": "https://kagzi-8cy.pages.dev/content-policy.html",
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasH1": true
+    }
+  ],
+  "sitemap": {
+    "ok": true,
+    "status": 200
+  },
+  "competitorResearch": [
+    {
+      "name": "National Government Services Portal",
+      "url": "https://services.india.gov.in/",
+      "status": 0,
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "name": "UP e-District",
+      "url": "https://edistrict.up.gov.in/",
+      "status": 0,
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "name": "myScheme",
+      "url": "https://www.myscheme.gov.in/",
+      "status": 200,
+      "ok": true,
+      "title": "myScheme",
+      "description": "myScheme is a National Platform that aims to offer one-stop search and discovery of the Government schemes.",
+      "h1": "",
+      "finalUrl": "https://www.myscheme.gov.in/"
+    },
+    {
+      "name": "UMANG",
+      "url": "https://web.umang.gov.in/",
+      "status": 200,
+      "ok": true,
+      "title": "UMANG",
+      "description": "UMANG provides a single platform for all Indian Citizens to access pan India e-Gov services ranging from Central to Local Government bodies.",
+      "h1": "",
+      "finalUrl": "https://web.umang.gov.in/"
+    },
+    {
+      "name": "India.gov.in",
+      "url": "https://www.india.gov.in/",
+      "status": 403,
+      "ok": false,
+      "title": "Access Denied",
+      "description": "",
+      "h1": "Access Denied",
+      "finalUrl": "https://www.india.gov.in/"
+    }
+  ],
+  "keywordOpportunities": [
+    {
+      "keyword": "UP e-District services",
+      "intent": "official service guidance",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "आय प्रमाणपत्र ऑनलाइन उत्तर प्रदेश",
+      "intent": "certificate guidance",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "जाति प्रमाणपत्र कैसे बनवाएं",
+      "intent": "certificate guidance",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "निवास प्रमाणपत्र ऑनलाइन UP",
+      "intent": "certificate guidance",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "सरकारी दस्तावेज़ चेकलिस्ट",
+      "intent": "document preparation",
+      "page": "/gov-documents.html"
+    },
+    {
+      "keyword": "उत्तर प्रदेश सरकारी योजनाएँ",
+      "intent": "scheme discovery",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "UP pension application information",
+      "intent": "welfare guidance",
+      "page": "/jan-seva.html"
+    },
+    {
+      "keyword": "UP Bhulekh khatauni",
+      "intent": "official land-record navigation",
+      "page": "/jan-seva.html"
+    }
+  ],
+  "limitations": [
+    "This is a technical SEO and public-page metadata watch, not a Google ranking or search-volume report.",
+    "Competitor pages are checked for public title, description, H1 and reachability only; no private data or ranking positions are collected.",
+    "Connect Google Search Console and provide query data to add impressions, clicks, CTR and average-position trends."
+  ]
+}
