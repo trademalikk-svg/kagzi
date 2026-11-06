@@ -19,6 +19,12 @@ class CurrentAffairsParserTests(unittest.TestCase):
             <pubDate>Fri, 06 Nov 2026 10:00:00 GMT</pubDate>
           </item>
           <item>
+            <title>एक अन्य आधिकारिक विज्ञप्ति</title>
+            <link>https://www.pib.gov.in/PressReleasePage.aspx?PRID=12346</link>
+            <description>दूसरी आधिकारिक सूचना।</description>
+            <pubDate>Fri, 06 Nov 2026 12:00:00 GMT</pubDate>
+          </item>
+          <item>
             <title>अनधिकृत लिंक</title>
             <link>https://example.com/news</link>
             <description>इसे नहीं लेना चाहिए</description>
@@ -26,7 +32,7 @@ class CurrentAffairsParserTests(unittest.TestCase):
           </item>
         </channel></rss>"""
         items = MODULE.parse_feed(xml)
-        self.assertEqual(len(items), 1)
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["date"], "2026-11-06")
         self.assertEqual(items[0]["source"], "पत्र सूचना कार्यालय (PIB)")
         self.assertIn("परीक्षा के लिए", items[0]["description"])
