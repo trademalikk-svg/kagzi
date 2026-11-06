@@ -9,8 +9,8 @@ test('mobile PDF inspector is inside the document flow directly before the page 
   const pageStage = html.indexOf('class="page-stage"');
   assert.ok(docTools < inspector && inspector < pageStage, 'inspector must sit between document tools and the PDF page');
   const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
-  assert.match(css, /\\.pdf-inspector\\{position:relative;top:auto/);
-  assert.doesNotMatch(css, /\.pdf-inspector\\{grid-column:auto/);
+  assert.match(css, /\.pdf-inspector\{position:relative;top:auto/);
+  assert.doesNotMatch(css, /\.pdf-inspector\{grid-column:auto/);
 });
 
 test('text tool clicks pass through selectable text spans to place new text', async () => {
@@ -70,7 +70,7 @@ test('PDF editor provides local merge and split handlers', async () => {
 
 test('PDF filename validation and OCR word wrapping use the intended regular expressions', async () => {
   const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
-  assert.ok(js.includes('!/\\.pdf$/i'));
+  assert.ok(js.includes('!/\.pdf$/i'));
   assert.ok(js.includes('paragraph.split(/\\s+/)'));
 });
 
