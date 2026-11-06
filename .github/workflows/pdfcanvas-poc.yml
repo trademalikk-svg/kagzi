@@ -389,6 +389,68 @@ jobs:
           if (!latinReplacementRoundTrip) throw new Error('Embedded Latin font replacement did not pass exact round-trip and sentinel preservation');
           NODE
 
+      - name: Test Latin font sizes and standard style variants
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const cases = [
+            { label: 'regular-10pt', fontName: StandardFonts.Helvetica, size: 10, source: 'Regular ten point source', replacement: 'Regular ten point revised' },
+            { label: 'bold-16pt', fontName: StandardFonts.HelveticaBold, size: 16, source: 'Bold sixteen point source', replacement: 'Bold sixteen point revised' },
+            { label: 'oblique-24pt', fontName: StandardFonts.HelveticaOblique, size: 24, source: 'Oblique twenty four point source', replacement: 'Oblique twenty four point revised' }
+          ];
+
+          const results = [];
+          for (const fixture of cases) {
+            const doc = await PDFDocument.create();
+            const font = await doc.embedFont(fixture.fontName);
+            const page = doc.addPage([595.2756, 841.8898]);
+            page.drawText(fixture.source, { x: 50, y: 780, size: fixture.size, font });
+            page.drawText('Unrelated style-matrix sentinel', { x: 50, y: 720, size: 11, font });
+            const input = new Uint8Array(await doc.save({ useObjectStreams: true }));
+
+            const engine = await PdfiumTextEngine.create(wasm, input);
+            const target = engine.readPage(0, 0).find(run => run.text.includes(fixture.source));
+            assert.ok(target, fixture.label + ': source text must be discoverable');
+            assert.equal(target.editable, true, fixture.label + ': run must be marked editable');
+
+            const output = engine.applyEdits([{
+              ...target,
+              newText: fixture.replacement,
+              originalText: target.text,
+              background: '#ffffff'
+            }]);
+            assert.equal(output.failed.length, 0, fixture.label + ': edit must not report failure');
+            engine.destroy();
+
+            const reopened = await PdfiumTextEngine.create(wasm, output.bytes);
+            const actual = reopened.readPage(0, 0).map(run => run.text).join(' ');
+            assert.ok(actual.includes(fixture.replacement), fixture.label + ': replacement must round-trip');
+            assert.ok(!actual.includes(fixture.source), fixture.label + ': old text must be absent');
+            assert.ok(actual.includes('Unrelated style-matrix sentinel'), fixture.label + ': unrelated text must remain');
+            reopened.destroy();
+
+            results.push({
+              fixture: fixture.label,
+              requestedPointSize: fixture.size,
+              sourceFont: fixture.fontName,
+              replacementRoundTrip: 'PASS',
+              unrelatedTextPreserved: true
+            });
+          }
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            scope: 'separate horizontal Latin text runs using PDF standard fonts',
+            cases: results,
+            note: 'This does not establish support for arbitrary embedded fonts, rotated text, mixed-style runs, or non-Latin encodings.'
+          }, null, 2));
+          NODE
+
       - name: Verify fail-closed handling of encrypted and malformed PDFs
         working-directory: vendor/pdfcanvas
         run: |
