@@ -28,9 +28,15 @@ import { supabase } from "../kagzi-supabase.js";
   const params=new URLSearchParams(location.search);
   const view=["daily","weekly","monthly","yearly"].includes(params.get("view"))?params.get("view"):"daily";
   const selectedPeriod=params.get("period")||"";
-  if(params.get("view")==="yearly" || params.get("view")==="monthly"){
-    const paidType=params.get("view")==="yearly"?"Yearly":"Monthly";
-    document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>'+paidType+' Current Affairs · Paid Only</h1><p class="status">'+(paidType==="Monthly"?"मासिक संकलन पूरी तरह Paid होगा। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है।":"वार्षिक संकलन पूरी तरह Paid होगा। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है।")+' भुगतान और निजी PDF delivery तैयार होने तक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="'+(paidType==="Monthly"?"monthly/":"yearly/")+'">'+paidType+' Folder खोलें</a></section>';
+  const {data: accessRows, error: accessError}=await supabase.from("kagzi_current_affairs_access").select("section,access_tier");
+  const access=Object.fromEntries((accessRows||[]).map(row=>[row.section,row.access_tier]));
+  if(accessError){
+    document.querySelector("main").innerHTML='<section class="hero"><h1>Access settings unavailable</h1><p class="status">अभी access settings की पुष्टि नहीं हो सकी। कृपया थोड़ी देर बाद फिर प्रयास करें।</p></section>';
+    return;
+  }
+  if(["monthly","yearly"].includes(view) && access[view]!=="free"){
+    const paidType=view==="yearly"?"Yearly":"Monthly";
+    document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>'+paidType+' Current Affairs · Paid Only</h1><p class="status">यह सेक्शन पूरी तरह Paid Only है। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है। भुगतान और निजी PDF delivery तैयार होने तक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="'+(view==="monthly"?"monthly/":"yearly/")+'">'+paidType+' Folder खोलें</a>　<a href="admin.html">Admin Settings</a></section>';
     return;
   }
   const labels={daily:"Daily · दिनवार समाचार",weekly:"Weekly · सप्ताहवार संग्रह",monthly:"Monthly · महीनेवार संग्रह",yearly:"Yearly · वार्षिक माहवार संग्रह"};
