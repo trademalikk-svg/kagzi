@@ -1,9 +1,9 @@
 import {getApprovedSources,fetchPermittedSource} from "./ingest.js";
 import {publishCandidate} from "./publish.js";
 function decodeXml(s){return s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").trim();}
-function tag(block,name){const m=block.match(new RegExp("<"+name+"[^>]*>([\\s\\S]*?)</"+name+">","i"));return m?decodeXml(m[1]).replace(/<[^>]*>/g," ").replace(/\\s+/g," ").trim():"";}
+function tag(block,name){const m=block.match(new RegExp("<"+name+"[^>]*>([\s\S]*?)</"+name+">","i"));return m?decodeXml(m[1]).replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim():"";}
 export function parseRssItems(xml,source,checkedAt){
- const items=[...xml.matchAll(/<item\\b[^>]*>([\\s\\S]*?)<\\/item>/gi)].map(m=>m[1]);
+ const items=[...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].map(m=>m[1]);
  return items.map(block=>({title:tag(block,"title"),summary:tag(block,"description").slice(0,1200),officialUrl:tag(block,"link"),category:source.category,region:source.region,checkedAt,ambiguous:false})).filter(x=>x.title&&x.summary&&x.officialUrl);
 }
 async function runScan(env){
