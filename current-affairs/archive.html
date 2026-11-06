@@ -22,8 +22,9 @@
 
 </main>
 <footer><div class="wrap">स्रोत: PIB Hindi RSS · समाचार का मूल विवरण और तारीख स्रोत के अनुसार रखे जाते हैं। विषय-श्रेणी स्वचालित कीवर्ड वर्गीकरण है; इसे संपादकीय सत्यापन का विकल्प न समझें। पुराने मासिक अध्याय अलग से संपादित संकलन हैं।</div></footer>
-<script>
-(function(){
+<script type="module">
+import { supabase } from "../kagzi-supabase.js";
+(async function(){
   const params=new URLSearchParams(location.search);
   const view=["daily","weekly","monthly","yearly"].includes(params.get("view"))?params.get("view"):"daily";
   const selectedPeriod=params.get("period")||"";
