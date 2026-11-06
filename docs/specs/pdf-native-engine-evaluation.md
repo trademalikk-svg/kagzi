@@ -106,3 +106,23 @@ Source files inspected:
 - https://github.com/Frenxys/pdfcanvas/blob/main/package.json
 - https://github.com/Frenxys/pdfcanvas/blob/main/src/pdfium.ts
 - https://github.com/Frenxys/pdfcanvas/blob/main/CHANGELOG.md
+
+## Follow-up research: bundled PDFium license diligence (2026-11-07)
+
+The dependency license check for the shortlisted `pdfcanvas@0.9.0` candidate was extended beyond the top-level package:
+
+- `pdfcanvas` declares MIT in its package metadata and includes an MIT license file.
+- Its direct dependency `@embedpdf/pdfium@^2.15.1` declares the JavaScript wrapper as MIT. The published npm package documentation separately states that its bundled PDFium WebAssembly build is Apache-2.0.
+- The upstream PDFium project publishes its own license and bundled third-party notices. The upstream license text includes BSD-3-Clause terms and Apache-2.0 material; individual bundled libraries retain their own notices and conditions.
+- A public third-party-notices disclosure for the same `@embedpdf/pdfium` version lists the wrapper as MIT and PDFium as BSD-3-Clause plus Apache-2.0, with additional notices for FreeType, libjpeg-turbo, OpenJPEG, Little CMS, libpng, zlib, ICU and other bundled components.
+
+References:
+- npm package metadata and license statement: https://www.npmjs.com/package/@embedpdf/pdfium
+- PDFium upstream license: https://pdfium.googlesource.com/pdfium/+/main/LICENSE
+- Example detailed third-party notices for `@embedpdf/pdfium@2.15.1`: https://aequis.idamil.com/legal/third-party-notices
+
+**License conclusion:** the candidate appears to use permissive licenses rather than an AGPL-only engine, but KAGZI must preserve the exact notices shipped with the pinned npm tarballs/WASM assets. The package-level MIT declaration alone is not a sufficient notice audit. Before adoption, inspect the exact lockfile-resolved dependency versions and copy their LICENSE/NOTICE files into KAGZI's third-party notices. This is a technical compliance checklist, not legal advice.
+
+**Version discrepancy:** the package metadata inspected identifies version `0.9.0`, while the README's status banner still says `0.8.x`. Treat the README as stale for versioning; pin an exact tested package version rather than using a floating semver range.
+
+**Decision unchanged:** no dependency has been added, no PDF engine has been integrated, and no runtime code has been modified. A local fixture harness and adversarial PDF tests are still required before adoption.
