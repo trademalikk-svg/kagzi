@@ -24,6 +24,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Run repository tests
+        run: |
+          npm test
+          python -m unittest discover -s tests -p 'test_*.py'
       - name: Collect official PIB Hindi RSS updates
         run: python scripts/update_current_affairs.py
       - name: Commit updated archive
