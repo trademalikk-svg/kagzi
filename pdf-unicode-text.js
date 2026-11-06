@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const COMPLEX_SCRIPT=/[\\u0900-\\u097F\\u0600-\\u06FF]/;
+const COMPLEX_SCRIPT=/[\u0900-\u097F\u0600-\u06FF]/;
 async function draw(pdf,page,text,options){
  const value=String(text||'');
  if(!COMPLEX_SCRIPT.test(value))return false;
@@ -11,10 +11,10 @@ async function draw(pdf,page,text,options){
  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
  ctx.scale(scale,scale);ctx.clearRect(0,0,width,height);ctx.fillStyle=opts.color||'#17233c';ctx.globalAlpha=Math.max(0,Math.min(1,Number(opts.opacity??100)/100));
  ctx.font=(opts.bold?'700 ':'400 ')+fontSize+'px sans-serif';ctx.textBaseline='top';
- const rtl=/[\\u0600-\\u06FF]/.test(value);ctx.direction=rtl?'rtl':'ltr';ctx.textAlign=opts.align==='center'?'center':opts.align==='right'?'end':rtl?'right':'left';
+ const rtl=/[\u0600-\u06FF]/.test(value);ctx.direction=rtl?'rtl':'ltr';ctx.textAlign=opts.align==='center'?'center':opts.align==='right'?'end':rtl?'right':'left';
  const inset=4,available=Math.max(8,width-inset*2),lineHeight=Math.max(fontSize*1.25,8),lines=[];
- for(const paragraph of value.replace(/\\r/g,'').split('\\n')){
-  const words=paragraph.split(/\\s+/).filter(Boolean);if(!words.length){lines.push('');continue;}
+ for(const paragraph of value.replace(/\r/g,'').split('\n')){
+  const words=paragraph.split(/\s+/).filter(Boolean);if(!words.length){lines.push('');continue;}
   let line='';
   for(const word of words){const candidate=line?line+' '+word:word;if(line&&ctx.measureText(candidate).width>available){lines.push(line);line=word;}else line=candidate;}
   if(line)lines.push(line);
