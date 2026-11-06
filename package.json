@@ -1,0 +1,1 @@
+{"name":"kagzi-static-site-checks","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs"}}
