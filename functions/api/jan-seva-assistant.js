@@ -1,7 +1,12 @@
 export async function onRequestPost({request,env}){
   const type=request.headers.get("content-type")||"";
   if(!type.includes("application/json"))return Response.json({error:"JSON request required."},{status:415});
-  let body;try{body=await request.json();}catch{return Response.json({error:"Invalid request."},{status:400});}
+  const declaredLength=Number(request.headers.get("content-length")||0);
+  if(declaredLength>12000)return Response.json({error:"Request बहुत बड़ा है। कृपया छोटा सवाल भेजें।"},{status:413});
+  let raw;try{raw=await request.text();}catch{return Response.json({error:"Invalid request."},{status:400});}
+  if(new TextEncoder().encode(raw).byteLength>12000)return Response.json({error:"Request बहुत बड़ा है। कृपया छोटा सवाल भेजें।"},{status:413});
+  let body;try{body=JSON.parse(raw);}catch{return Response.json({error:"Invalid request."},{status:400});}
+  if(!body||typeof body!=="object"||Array.isArray(body))return Response.json({error:"Invalid request."},{status:400});
   const question=typeof body.question==="string"?body.question.trim():"";
   if(!question||question.length>1500)return Response.json({error:"सवाल 1 से 1500 अक्षरों के बीच लिखें।"},{status:400});
   const history=Array.isArray(body.history)?body.history.slice(-6).filter(item=>
