@@ -87,3 +87,10 @@ test('PDF editor offers a local shared-document session and loads its bridge', a
   assert.match(bridge, /indexedDB\.open/);
   assert.match(bridge, /KAGZIPdfSession/);
 });
+
+
+test('PDF.js receives a copy so its worker cannot detach the editor working buffer', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /getDocument\(\{data:bytes\.slice\(\)\}\)/);
+  assert.match(js, /workingBytes=bytes/);
+});
