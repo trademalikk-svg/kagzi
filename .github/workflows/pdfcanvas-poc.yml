@@ -83,3 +83,70 @@ jobs:
       - name: Run upstream original-text smoke check
         working-directory: vendor/pdfcanvas
         run: npm run check:text
+
+      - name: Run isolated two-page A4 native replacement regression
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const sourceDoc = await PDFDocument.create();
+          const font = await sourceDoc.embedFont(StandardFonts.Helvetica);
+          const page1 = sourceDoc.addPage([595.2756, 841.8898]);
+          page1.drawText('KAGZI PDF Editor Test', { x: 50, y: 780, size: 16, font });
+          page1.drawText('Page one sentinel remains', { x: 50, y: 740, size: 11, font });
+          const page2 = sourceDoc.addPage([595.2756, 841.8898]);
+          page2.drawText('Second Test Page', { x: 50, y: 780, size: 16, font });
+          page2.drawText('Page two must remain unchanged', { x: 50, y: 740, size: 11, font });
+          const sourceBytes = new Uint8Array(await sourceDoc.save({ useObjectStreams: true }));
+
+          const original = await PDFDocument.load(sourceBytes);
+          assert.equal(original.getPageCount(), 2);
+          const originalSize = original.getPage(0).getSize();
+
+          const engine = await PdfiumTextEngine.create(wasm, sourceBytes);
+          const pageOneRuns = engine.readPage(0, 0);
+          const target = pageOneRuns.find(run => run.text.includes('KAGZI PDF Editor Test'));
+          assert.ok(target, 'target text must be found as an editable text run');
+          assert.equal(target.editable, true, 'target run must be editable');
+          const result = engine.applyEdits([{
+            ...target,
+            newText: 'KAGZI Native Edit Test',
+            originalText: target.text,
+            background: '#ffffff'
+          }]);
+          assert.equal(result.failed.length, 0, 'native replacement must not fail');
+          engine.destroy();
+          assert.ok(result.bytes.length > 0);
+          assert.equal(String.fromCharCode(...result.bytes.subarray(0, 5)), '%PDF-');
+
+          const exported = await PDFDocument.load(result.bytes);
+          assert.equal(exported.getPageCount(), 2, 'page count preserved');
+          const exportedSize = exported.getPage(0).getSize();
+          assert.ok(Math.abs(exportedSize.width - originalSize.width) < 0.1, 'page width preserved');
+          assert.ok(Math.abs(exportedSize.height - originalSize.height) < 0.1, 'page height preserved');
+
+          const verify = await PdfiumTextEngine.create(wasm, result.bytes);
+          const afterPage1 = verify.readPage(0, 0).map(run => run.text).join(' ');
+          const afterPage2 = verify.readPage(1, 0).map(run => run.text).join(' ');
+          assert.ok(afterPage1.includes('KAGZI Native Edit Test'), 'replacement text must round-trip');
+          assert.ok(!afterPage1.includes('KAGZI PDF Editor Test'), 'old text must be absent');
+          assert.ok(afterPage1.includes('Page one sentinel remains'), 'unrelated text on edited page preserved');
+          assert.ok(afterPage2.includes('Second Test Page'), 'second-page title preserved');
+          assert.ok(afterPage2.includes('Page two must remain unchanged'), 'second-page body preserved');
+          verify.destroy();
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            fixture: 'synthetic two-page A4; Helvetica; selectable text; compressed object streams',
+            replacement: 'KAGZI PDF Editor Test -> KAGZI Native Edit Test',
+            pageCount: exported.getPageCount(),
+            pageSize: exportedSize,
+            unrelatedTextPreserved: true,
+            secondPagePreserved: true,
+            outputBytes: result.bytes.length
+          }, null, 2));
+          NODE
