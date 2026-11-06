@@ -313,106 +313,104 @@ img,video,canvas,iframe{max-width:100%}
 <script id="kagzi-photo-standalone-fix">
 (function(){
  function init(){
-  const input=document.getElementById('photoInput');
-  const preview=document.getElementById('photoPreview');
-  const empty=document.getElementById('photoPreviewEmpty');
-  const status=document.getElementById('photoStatus');
-  const passportStatus=document.getElementById('passportBgStatus');
-  const selectedName=document.getElementById('passportPhotoName');
-  const bg=document.getElementById('passportBgColor');
-  const download=document.getElementById('downloadPassportPhoto');
+  const input=document.getElementById('photoInput'),preview=document.getElementById('photoPreview');
+  const empty=document.getElementById('photoPreviewEmpty'),status=document.getElementById('passportBgStatus');
+  const selectedName=document.getElementById('passportPhotoName'),bg=document.getElementById('passportBgColor');
+  const download=document.getElementById('downloadPassportPhoto'),preset=document.getElementById('passportPreset');
   const dimensions=document.getElementById('photoDimensions');
   if(!input||!preview||!download)return;
-  let sourceFile=null,editedBlob=null,previewUrl=null,working=false;
-  function say(message){if(status)status.textContent=message;if(passportStatus)passportStatus.textContent=message;}
-  function showImage(blob){
+  let sourceFile=null,cutoutBlob=null,outputBlob=null,previewUrl=null,faceBox=null,working=false;
+  const say=m=>{if(status)status.textContent=m;const s=document.getElementById('photoStatus');if(s)s.textContent=m;};
+  const presetSize=()=>{const v=preset&&preset.value;if(v&&v!=='custom'){const p=v.split('x').map(Number);if(p[0]>0&&p[1]>0)return {w:p[0],h:p[1]};}return {w:413,h:531};};
+  function show(blob){
    if(previewUrl)URL.revokeObjectURL(previewUrl);
-   previewUrl=URL.createObjectURL(blob);
-   preview.onload=function(){
-    preview.hidden=false;preview.style.display='block';
-    if(empty)empty.hidden=true;
-    if(dimensions)dimensions.textContent=preview.naturalWidth+' × '+preview.naturalHeight+' pixels';
-   };
-   preview.onerror=function(){say('Image preview could not be displayed. Please choose another photo.');};
+   previewUrl=URL.createObjectURL(blob);preview.onload=()=>{preview.hidden=false;preview.style.display='block';if(empty)empty.hidden=true;};
    preview.src=previewUrl;
   }
-  async function process(file){
-   sourceFile=file;editedBlob=null;download.disabled=true;working=true;
-   if(selectedName)selectedName.textContent='Selected: '+file.name+' · Loading…';
-   say('Photo selected. Loading preview…');
-   const initialUrl=URL.createObjectURL(file);
-   const probe=new Image();
-   probe.onload=async function(){
-    if(sourceFile!==file)return;
-    if(previewUrl)URL.revokeObjectURL(previewUrl);
-    previewUrl=initialUrl;preview.src=previewUrl;preview.hidden=false;preview.style.display='block';
-    if(empty)empty.hidden=true;
-    if(dimensions)dimensions.textContent=probe.naturalWidth+' × '+probe.naturalHeight+' pixels';
-    const w=document.getElementById('photoWidth'),h=document.getElementById('photoHeight');
-    const cw=document.getElementById('photoCropW'),ch=document.getElementById('photoCropH');
-    if(w)w.value=probe.naturalWidth;if(h)h.value=probe.naturalHeight;
-    if(cw)cw.value=probe.naturalWidth;if(ch)ch.value=probe.naturalHeight;
-    if(selectedName)selectedName.textContent='Selected: '+file.name+' · Preview ready';
-    say('Photo preview ready. AI is removing the old background…');
-    try{
-     const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
-     const cutout=await mod.removeBackground(file);
-     if(sourceFile!==file)return;
-     const cutUrl=URL.createObjectURL(cutout),cutImg=new Image();
-     await new Promise((resolve,reject)=>{cutImg.onload=resolve;cutImg.onerror=reject;cutImg.src=cutUrl;});
-     const canvas=document.createElement('canvas');canvas.width=cutImg.naturalWidth;canvas.height=cutImg.naturalHeight;
-     const ctx=canvas.getContext('2d');ctx.fillStyle=bg?bg.value:'#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(cutImg,0,0);
-     editedBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
-     URL.revokeObjectURL(cutUrl);
-     if(!editedBlob)throw new Error('Could not prepare edited image.');
-     showImage(editedBlob);download.disabled=false;
-     if(selectedName)selectedName.textContent='Edited: '+file.name+' · Ready to download';
-     say('Background removed and new colour applied. Preview and download are ready.');
-    }catch(err){
-     editedBlob=file;showImage(file);download.disabled=false;
-     if(selectedName)selectedName.textContent='Photo loaded: '+file.name+' · Original ready';
-     say('Preview is ready. Automatic background removal failed ('+(err&&err.message?err.message:'network/model error')+'). You can still download the selected photo.');
-    }finally{working=false;}
-   };
-   probe.onerror=function(){URL.revokeObjectURL(initialUrl);working=false;say('This file could not be opened as an image. Try a JPG or PNG photo.');};
-   probe.src=initialUrl;
+  async function detectFace(image){
+   try{
+    say('Detecting face position…');
+    const vision=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm');
+    const fileset=await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+    const detector=await vision.FaceDetector.createFromOptions(fileset,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',delegate:'CPU'},runningMode:'IMAGE',minDetectionConfidence:0.45});
+    const result=detector.detect(image);detector.close();
+    const box=result.detections&&result.detections[0]&&result.detections[0].boundingBox;
+    if(!box)return null;
+    return {x:box.originX,y:box.originY,w:box.width,h:box.height};
+   }catch(e){return null;}
   }
-  input.addEventListener('change',function(e){e.stopImmediatePropagation();const f=input.files&&input.files[0];if(f)process(f);},true);
-  if(bg)bg.addEventListener('change',async function(){
-   if(!sourceFile)return;
-   if(!editedBlob){say('Choose a photo first.');return;}
-   if(editedBlob===sourceFile){say('Background removal is not ready yet. Original photo remains available.');return;}
+  async function renderOutput(){
+   if(!cutoutBlob)return;
+   const im=new Image(),u=URL.createObjectURL(cutoutBlob);
+   await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
+   const {w,h}=presetSize(),ratio=w/h;
+   let sx=0,sy=0,sw=im.naturalWidth,sh=im.naturalHeight;
+   if(faceBox){
+    const f=faceBox;
+    // Include head, shoulders and upper chest while keeping the detected face near the upper third.
+    sh=Math.min(im.naturalHeight,Math.max(f.h*4.4,im.naturalHeight*0.25));
+    sw=sh*ratio;
+    if(sw>im.naturalWidth){sw=im.naturalWidth;sh=sw/ratio;}
+    const cx=f.x+f.w/2;
+    sx=Math.max(0,Math.min(im.naturalWidth-sw,cx-sw/2));
+    sy=Math.max(0,Math.min(im.naturalHeight-sh,f.y-f.h*0.65));
+    if(sy+sh>im.naturalHeight)sy=im.naturalHeight-sh;
+   }else{
+    if(im.naturalWidth/im.naturalHeight>ratio){sh=im.naturalHeight;sw=sh*ratio;sx=(im.naturalWidth-sw)/2;}
+    else{sw=im.naturalWidth;sh=sw/ratio;sy=(im.naturalHeight-sh)/2;}
+   }
+   const c=document.createElement('canvas');c.width=w;c.height=h;
+   const x=c.getContext('2d');x.fillStyle=bg?bg.value:'#ffffff';x.fillRect(0,0,w,h);
+   x.drawImage(im,sx,sy,sw,sh,0,0,w,h);
+   outputBlob=await new Promise(res=>c.toBlob(res,'image/jpeg',0.94));
+   URL.revokeObjectURL(u);
+   if(!outputBlob)throw new Error('Could not create final passport image.');
+   show(outputBlob);download.disabled=false;
+   if(dimensions)dimensions.textContent=w+' × '+h+' pixels · '+(faceBox?'Face detected and centered':'Centered crop; face detection unavailable');
+   say('Passport photo ready: background applied, '+(faceBox?'face detected and positioned':'automatic face detection unavailable; centered crop used')+'. Download is ready.');
+  }
+  async function process(file){
+   sourceFile=file;cutoutBlob=null;outputBlob=null;faceBox=null;download.disabled=true;
+   if(selectedName)selectedName.textContent='Selected: '+file.name+' · Loading…';
+   say('Loading photo preview…');
+   const originalUrl=URL.createObjectURL(file),im=new Image();
+   await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=originalUrl;});
+   if(sourceFile!==file){URL.revokeObjectURL(originalUrl);return;}
+   show(file);
+   if(selectedName)selectedName.textContent='Selected: '+file.name+' · Preview ready';
+   const w=document.getElementById('photoWidth'),h=document.getElementById('photoHeight');
+   if(w)w.value=im.naturalWidth;if(h)h.value=im.naturalHeight;
+   const cw=document.getElementById('photoCropW'),ch=document.getElementById('photoCropH');
+   if(cw)cw.value=im.naturalWidth;if(ch)ch.value=im.naturalHeight;
+   if(dimensions)dimensions.textContent=im.naturalWidth+' × '+im.naturalHeight+' pixels';
+   faceBox=await detectFace(im);
+   if(sourceFile!==file){URL.revokeObjectURL(originalUrl);return;}
+   say('Removing background…');
    try{
     const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
-    const cutout=await mod.removeBackground(sourceFile);
-    const u=URL.createObjectURL(cutout),im=new Image();await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
-    const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
-    const x=c.getContext('2d');x.fillStyle=bg.value;x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0);
-    editedBlob=await new Promise(res=>c.toBlob(res,'image/png'));URL.revokeObjectURL(u);
-    showImage(editedBlob);say('Background colour updated. Preview is ready.');
-   }catch(e){say('Could not update background colour: '+(e.message||'please try again.'));}
-  });
-  download.addEventListener('click',async function(e){e.preventDefault();e.stopImmediatePropagation();
-   try{
-    if(!editedBlob)throw new Error('Choose a photo and wait for preview.');
-    const preset=document.getElementById('passportPreset');
-    let width=Number(document.getElementById('photoWidth')?.value)||preview.naturalWidth;
-    let height=Number(document.getElementById('photoHeight')?.value)||preview.naturalHeight;
-    if(preset&&preset.value&&preset.value!=='custom'){const parts=preset.value.split('x').map(Number);width=parts[0];height=parts[1];}
-    if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1||width>12000||height>12000)throw new Error('Please select valid photo dimensions.');
-    download.disabled=true;download.textContent='Preparing download…';
-    const im=new Image(),u=URL.createObjectURL(editedBlob);
-    await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
-    const c=document.createElement('canvas');c.width=width;c.height=height;
-    const x=c.getContext('2d');x.fillStyle=bg?bg.value:'#ffffff';x.fillRect(0,0,width,height);x.drawImage(im,0,0,width,height);
-    const out=await new Promise(res=>c.toBlob(res,'image/jpeg',.92));URL.revokeObjectURL(u);
-    if(!out)throw new Error('Image export failed.');
-    const link=document.createElement('a'),url=URL.createObjectURL(out);
-    link.href=url;link.download='kagzi-passport-photo.jpg';document.body.appendChild(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),4000);say('Download started. Check your Downloads folder.');
-   }catch(err){say(err.message||'Could not download photo.');}
-   finally{download.disabled=!editedBlob;download.textContent='Download edited passport photo';}
-  });
+    cutoutBlob=await mod.removeBackground(file);
+    if(sourceFile!==file)return;
+    await renderOutput();
+    if(selectedName)selectedName.textContent='Passport photo ready · '+file.name;
+   }catch(e){
+    say('Background removal failed: '+(e.message||'check internet and try again')+'. Original photo preview is available, but edited download is not enabled.');
+    download.disabled=true;
+   }finally{URL.revokeObjectURL(originalUrl);}
+  }
+  input.addEventListener('change',async function(e){
+   e.stopImmediatePropagation();const f=input.files&&input.files[0];if(!f)return;
+   if(!f.type.startsWith('image/')&&!/\.(jpe?g|png|webp)$/i.test(f.name)){say('Choose a JPG, PNG or WebP image.');return;}
+   try{await process(f);}catch(err){say('Could not process this photo: '+(err.message||'unknown error'));}
+  },true);
+  if(bg)bg.addEventListener('change',()=>{if(cutoutBlob)renderOutput().catch(e=>say('Could not apply background: '+e.message));});
+  if(preset)preset.addEventListener('change',()=>{if(cutoutBlob)renderOutput().catch(e=>say('Could not apply photo size: '+e.message));});
+  download.addEventListener('click',function(e){
+   e.preventDefault();e.stopImmediatePropagation();
+   if(!outputBlob){say('Wait until passport photo processing is complete.');return;}
+   const url=URL.createObjectURL(outputBlob),a=document.createElement('a');
+   a.href=url;a.download='kagzi-passport-photo.jpg';document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),10000);say('Download started. Check your phone Downloads folder.');
+  },true);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
