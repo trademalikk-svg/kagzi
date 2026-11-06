@@ -77,7 +77,7 @@ def parse_feed(xml_bytes: bytes) -> list[dict]:
         if not re.match(r"^https://([a-z0-9-]+\.)*pib\.gov\.in/", link, re.I):
             continue
         items.append({
-            "id": link.split("?")[0].rstrip("/"),
+            "id": link,
             "date": date,
             "title": title[:500],
             "description": description[:700],
