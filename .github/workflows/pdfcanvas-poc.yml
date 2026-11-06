@@ -1,0 +1,72 @@
+name: PDFcanvas isolated dependency spike
+
+on:
+  push:
+    branches:
+      - experiment/pdfcanvas-poc
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-smoke:
+    name: Install and audit pinned PDFcanvas candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out isolated experiment branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install exact candidate version
+        run: npm install --no-save --no-package-lock --no-audit --no-fund pdfcanvas@0.9.0
+
+      - name: Verify package metadata and bundled PDFium WASM
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { createRequire } from 'node:module';
+
+          const require = createRequire(import.meta.url);
+          const pdfcanvasPath = require.resolve('pdfcanvas/package.json');
+          const pdfcanvas = JSON.parse(fs.readFileSync(pdfcanvasPath, 'utf8'));
+          const pdfiumPath = path.dirname(require.resolve('@embedpdf/pdfium'));
+
+          if (pdfcanvas.version !== '0.9.0') {
+            throw new Error(`Unexpected pdfcanvas version: ${pdfcanvas.version}`);
+          }
+          if (pdfcanvas.license !== 'MIT') {
+            throw new Error(`Unexpected pdfcanvas license metadata: ${pdfcanvas.license}`);
+          }
+
+          const wasmFiles = [];
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else if (entry.name.endsWith('.wasm')) wasmFiles.push(full);
+            }
+          }
+          walk(pdfiumPath);
+
+          if (wasmFiles.length === 0) {
+            throw new Error('No PDFium WASM binary found in installed @embedpdf/pdfium package.');
+          }
+
+          console.log(JSON.stringify({
+            pdfcanvasVersion: pdfcanvas.version,
+            pdfcanvasLicense: pdfcanvas.license,
+            directDependencies: pdfcanvas.dependencies,
+            pdfiumPackageEntry: require.resolve('@embedpdf/pdfium'),
+            wasmFiles
+          }, null, 2));
+          NODE
+
+      - name: Record dependency tree
+        run: npm ls --all --depth=2
