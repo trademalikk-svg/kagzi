@@ -81,3 +81,28 @@ For every fixture, the engine must report one of: editable, OCR-required, or uns
 ## Decision gate
 
 No engine has been integrated. Owner approval is required before any AGPL or commercial engine is adopted. The existing editor and production deployment remain unchanged.
+
+
+## Follow-up research: PDFium WASM editor candidate
+
+A further candidate was inspected at the source level: [Frenxys/pdfcanvas](https://github.com/Frenxys/pdfcanvas), package version 0.9.0 at the time of review.
+
+- Its package declares MIT licensing, and its source uses `@embedpdf/pdfium` WASM alongside PDF.js and pdf-lib.
+- Unlike the previously reviewed generic PDFium wrappers, its source includes a concrete `PdfiumTextEngine` that reads PDFium text objects and attempts in-place text replacement, deletion, movement, and round-trip text checks.
+- It is therefore the first practical permissive-license prototype candidate found in this review.
+
+Important gaps against KAGZI's approved safety requirements:
+
+1. The candidate groups text objects into line runs and has specialized replacement paths; this is not proof of reliable support for arbitrary PDF content streams, text encodings, glyph maps, vertical/rotated text, clipping, transparency, or complex layouts.
+2. Its current source explicitly skips rotated text runs in the inspected reader path (`displayRotation !== 0`, and non-horizontal text matrices are skipped).
+3. It has automatic fallback-font paths for some replacements. KAGZI requires explicit user approval before any fallback font is used; this behavior must be changed or disabled.
+4. The implementation uses PDFium text-object APIs and regenerates page content. It needs adversarial fixture tests and export-level checks for unrelated content, page count, geometry, and original-byte preservation.
+5. The package's own README labels its editing model/API as subject to change. Its current version and dependency/WASM notices must be pinned and audited before adoption.
+
+**Decision:** shortlist pdfcanvas/PDFium WASM for an isolated proof-of-concept only. Do not integrate it into KAGZI yet. First create a local fixture harness and test the exact pinned package against the approved fixture matrix. Any unsupported or ambiguous case must return `unsupported`; font substitution must pause for explicit approval. This candidate does not change the no-production-change or no-merge decision.
+
+Source files inspected:
+- https://github.com/Frenxys/pdfcanvas/blob/main/README.md
+- https://github.com/Frenxys/pdfcanvas/blob/main/package.json
+- https://github.com/Frenxys/pdfcanvas/blob/main/src/pdfium.ts
+- https://github.com/Frenxys/pdfcanvas/blob/main/CHANGELOG.md
