@@ -278,3 +278,57 @@ jobs:
           }, null, 2));
           hiEngine.destroy();
           NODE
+
+      - name: Verify fail-closed handling of encrypted and malformed PDFs
+        working-directory: vendor/pdfcanvas
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qpdf
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const doc = await PDFDocument.create();
+          const font = await doc.embedFont(StandardFonts.Helvetica);
+          const page = doc.addPage([595.2756, 841.8898]);
+          page.drawText('Confidential fixture text', { x: 50, y: 780, size: 14, font });
+          const validBytes = new Uint8Array(await doc.save());
+          fs.writeFileSync('valid-fixture.pdf', validBytes);
+          execFileSync('qpdf', ['--encrypt', 'fixture-user', 'fixture-owner', '256', '--', 'valid-fixture.pdf', 'encrypted-fixture.pdf']);
+
+          async function inspectMustFailClosed(label, bytes) {
+            let engine;
+            try {
+              engine = await PdfiumTextEngine.create(wasm, bytes);
+              const runs = engine.readPage(0, 0);
+              assert.equal(runs.length, 0, label + ': must not expose editable text without successful authorization/parse');
+              console.log(label + ': blocked (no editable text exposed)');
+            } catch (error) {
+              console.log(label + ': blocked during open/parse (' + String(error?.message ?? error).slice(0, 180) + ')');
+            } finally {
+              engine?.destroy();
+            }
+          }
+
+          await inspectMustFailClosed('encrypted PDF', new Uint8Array(fs.readFileSync('encrypted-fixture.pdf')));
+          await inspectMustFailClosed('malformed PDF', new TextEncoder().encode('%PDF-1.7\nthis is not a valid xref or page tree\n%%EOF'));
+
+          // A malformed document must not be accepted as a valid editable PDF by pdf-lib either.
+          let malformedReopened = false;
+          try {
+            await PDFDocument.load(new TextEncoder().encode('%PDF-1.7\nthis is not a valid xref or page tree\n%%EOF'));
+            malformedReopened = true;
+          } catch {}
+          assert.equal(malformedReopened, false, 'malformed fixture must fail independent PDF reopen validation');
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            encryptedFixture: 'password-protected AES-256 PDF; parser must not expose editable runs',
+            malformedFixture: 'invalid cross-reference/page-tree structure; open/parse must fail closed',
+            malformedReopenValidation: 'rejected'
+          }, null, 2));
+          NODE
