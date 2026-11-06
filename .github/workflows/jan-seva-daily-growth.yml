@@ -1,5 +1,11 @@
 name: KAGZI Jan Seva Daily SEO and Competitor Research
 on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/jan-seva-growth.mjs"
+      - "docs/jan-seva-competitors.json"
+      - ".github/workflows/jan-seva-daily-growth.yml"
   workflow_dispatch:
   schedule:
     - cron: "30 2 * * *"
