@@ -65,3 +65,14 @@
   .page-thumb { flex-basis:68px; width:68px; }
   .scanner-panel,.ocr-panel,.page-tools-extra { margin-left:6px; margin-right:6px; padding:10px; }
 }
+
+
+@media screen and (max-width: 900px) {
+  .editor-workspace { grid-template-columns:minmax(0,1fr) !important; }
+  .page-rail { grid-column:1; grid-row:2; border-right:0; border-top:1px solid var(--ed-line); }
+  .document-area { grid-column:1; grid-row:1; min-width:0; }
+  .pdf-inspector { grid-column:1; grid-row:3; border-left:0; border-top:1px solid var(--ed-line); }
+  .page-thumbnails { flex-direction:row; overflow-x:auto; max-height:none; }
+  .document-tools { flex-wrap:nowrap; overflow-x:auto; }
+  .document-tools button { flex:0 0 auto; min-height:42px; }
+}
