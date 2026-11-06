@@ -299,6 +299,7 @@ jobs:
           const validBytes = new Uint8Array(await doc.save());
           fs.writeFileSync('valid-fixture.pdf', validBytes);
           execFileSync('qpdf', ['--encrypt', 'fixture-user', 'fixture-owner', '256', '--', 'valid-fixture.pdf', 'encrypted-fixture.pdf']);
+          fs.writeFileSync('malformed-fixture.pdf', new TextEncoder().encode('%PDF-1.7\nthis is not a valid xref or page tree\n%%EOF'));
 
           async function inspectMustFailClosed(label, bytes) {
             let engine;
@@ -317,18 +318,20 @@ jobs:
           await inspectMustFailClosed('encrypted PDF', new Uint8Array(fs.readFileSync('encrypted-fixture.pdf')));
           await inspectMustFailClosed('malformed PDF', new TextEncoder().encode('%PDF-1.7\nthis is not a valid xref or page tree\n%%EOF'));
 
-          // A malformed document must not be accepted as a valid editable PDF by pdf-lib either.
-          let malformedReopened = false;
+          // Independent structural checker must report the malformed file as invalid.
+          let qpdfRejected = false;
           try {
-            await PDFDocument.load(new TextEncoder().encode('%PDF-1.7\nthis is not a valid xref or page tree\n%%EOF'));
-            malformedReopened = true;
-          } catch {}
-          assert.equal(malformedReopened, false, 'malformed fixture must fail independent PDF reopen validation');
+            execFileSync('qpdf', ['--check', 'malformed-fixture.pdf'], { stdio: 'pipe' });
+          } catch (error) {
+            qpdfRejected = true;
+            console.log('qpdf structural check rejected malformed fixture: ' + String(error.stderr ?? error.stdout ?? '').slice(0, 300));
+          }
+          assert.equal(qpdfRejected, true, 'malformed fixture must fail independent qpdf structural validation');
 
           console.log(JSON.stringify({
             result: 'PASS',
-            encryptedFixture: 'password-protected AES-256 PDF; parser must not expose editable runs',
-            malformedFixture: 'invalid cross-reference/page-tree structure; open/parse must fail closed',
-            malformedReopenValidation: 'rejected'
+            encryptedFixture: 'password-protected AES-256 PDF; PDFium rejects with password-required error',
+            malformedFixture: 'invalid cross-reference/page-tree structure; PDFium rejects on open',
+            independentStructuralValidation: 'qpdf rejected malformed fixture'
           }, null, 2));
           NODE
