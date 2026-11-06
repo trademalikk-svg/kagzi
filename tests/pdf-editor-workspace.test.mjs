@@ -111,3 +111,19 @@ test('PDF.js receives a copy so its worker cannot detach the editor working buff
   assert.match(js, /getDocument\(\{data:bytes\.slice\(\)\}\)/);
   assert.match(js, /workingBytes=bytes/);
 });
+
+
+test('mobile inspector exposes cancel action and automatic-direction text input', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  assert.match(html, /id="cancelTextEdit"/);
+  assert.match(html, /id="inspectorText"[^>]*dir="auto"|dir="auto"[^>]*id="inspectorText"/);
+  assert.match(html, /aria-label="[^"]*text/i);
+});
+
+test('mobile inspector focus helper handles visual viewport and exposes reveal method', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /window\.KAGZIPdfMobileInspector/);
+  assert.match(js, /revealActiveField/);
+  assert.match(js, /visualViewport/);
+  assert.match(js, /scrollIntoView/);
+});
