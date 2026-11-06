@@ -29,6 +29,13 @@ test('January and February contain sourced content in monthly and yearly archive
   assert.ok(html.includes('else if(index===2) mPanel.append(makeMarchContent());'));
   assert.ok(html.includes('else if(index===2) yPanel.append(makeMarchContent());'));
   assert.ok(html.includes('function makeMarchContent()'));
+  assert.ok(html.includes('else if(index===3) mPanel.append(makeAprilContent());'));
+  assert.ok(html.includes('else if(index===3) yPanel.append(makeAprilContent());'));
+  assert.ok(html.includes('function makeAprilContent()'));
+  assert.ok(html.includes('April 2026'));
+  assert.ok(html.includes('CPI मुद्रास्फीति औसतन 3.12%'));
+  assert.ok(html.includes('भारत और न्यूजीलैंड ने मुक्त व्यापार समझौते पर हस्ताक्षर किए'));
+  assert.ok(html.includes('PRS India — अप्रैल 2026 मासिक नीति समीक्षा'));
   assert.ok(html.includes('March 2026 Monthly Policy Review'));
   assert.ok(html.includes('चालू खाता घाटा GDP का 1.3%'));
   assert.ok(html.includes('Draft Digital Trade Facilitation Bill 2026'));
