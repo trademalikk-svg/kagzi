@@ -41,7 +41,7 @@ def child_text(node: ET.Element, wanted: str) -> str:
 
 def clean_text(value: str) -> str:
     value = re.sub(r"<[^>]*>", " ", value or "")
-    return re.sub(r"\\s+", " ", html.unescape(value)).strip()
+    return re.sub(r"\s+", " ", html.unescape(value)).strip()
 
 def parse_date(value: str) -> str | None:
     if not value:
@@ -74,7 +74,7 @@ def parse_feed(xml_bytes: bytes) -> list[dict]:
         date = parse_date(pub_date)
         if not title or not date or not link.startswith("https://"):
             continue
-        if not re.match(r"^https://([a-z0-9-]+\\.)*pib\\.gov\\.in/", link, re.I):
+        if not re.match(r"^https://([a-z0-9-]+\.)*pib\.gov\.in/", link, re.I):
             continue
         items.append({
             "id": link.split("?")[0].rstrip("/"),
@@ -111,7 +111,7 @@ def main() -> int:
         "source_name": "PIB Hindi RSS",
         "items": all_items,
     }
-    OUTPUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    OUTPUT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Saved {len(all_items)} unique PIB items; fetched {len(incoming)} items.")
     return 0
 
