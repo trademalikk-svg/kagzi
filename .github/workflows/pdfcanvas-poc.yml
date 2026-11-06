@@ -245,6 +245,7 @@ jobs:
           npm install --no-save --package-lock=false --no-audit --no-fund @pdf-lib/fontkit regenerator-runtime
           mkdir -p test-fonts
           curl -fL --retry 3 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansdevanagari/NotoSansDevanagari%5Bwdth%2Cwght%5D.ttf' -o test-fonts/NotoSansDevanagari.ttf
+          curl -fL --retry 3 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf' -o test-fonts/NotoSansLatin.ttf
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
@@ -344,6 +345,48 @@ jobs:
             classification: fullExact ? 'candidate only; native replacement still requires round-trip test' : 'unsupported; full embedding did not resolve text mapping'
           }, null, 2));
           fullHiEngine.destroy();
+
+          // Latin text with a fully embedded open font: verify extraction and replacement.
+          fs.mkdirSync('test-fonts', { recursive: true });
+          const latinFontBytes = fs.readFileSync('test-fonts/NotoSansLatin.ttf');
+          const latinDoc = await PDFDocument.create();
+          latinDoc.registerFontkit(fontkit);
+          const latinFont = await latinDoc.embedFont(latinFontBytes, { subset: false });
+          const latinPage = latinDoc.addPage([595.2756, 841.8898]);
+          latinPage.drawText('KAGZI Latin Embedded Font Test', { x: 50, y: 780, size: 16, font: latinFont });
+          latinPage.drawText('Unrelated Latin sentinel', { x: 50, y: 740, size: 12, font: latinFont });
+          const latinBytes = new Uint8Array(await latinDoc.save({ useObjectStreams: true }));
+          const latinEngine = await PdfiumTextEngine.create(wasm, latinBytes);
+          const latinRuns = latinEngine.readPage(0, 0);
+          const latinTarget = latinRuns.find(run => run.text.includes('KAGZI Latin Embedded Font Test'));
+          const latinExact = Boolean(latinTarget);
+          let latinReplacementRoundTrip = false;
+          if (latinTarget?.editable) {
+            const latinEdited = latinEngine.applyEdits([{
+              ...latinTarget,
+              newText: 'KAGZI Embedded Font Replacement',
+              originalText: latinTarget.text,
+              background: '#ffffff'
+            }]);
+            if (latinEdited.failed.length === 0) {
+              const latinVerify = await PdfiumTextEngine.create(wasm, latinEdited.bytes);
+              const latinAfter = latinVerify.readPage(0, 0).map(run => run.text).join(' ');
+              latinReplacementRoundTrip =
+                latinAfter.includes('KAGZI Embedded Font Replacement') &&
+                !latinAfter.includes('KAGZI Latin Embedded Font Test') &&
+                latinAfter.includes('Unrelated Latin sentinel');
+              latinVerify.destroy();
+            }
+          }
+          latinEngine.destroy();
+          console.log(JSON.stringify({
+            fixture: 'fully embedded Noto Sans Latin',
+            extractedText: latinRuns.map(run => run.text),
+            exactTextDiscovered: latinExact,
+            replacementRoundTripPreservedSentinel: latinReplacementRoundTrip,
+            classification: latinReplacementRoundTrip ? 'candidate; continue broader font/encoding tests' : 'unsupported for native replacement until round-trip passes'
+          }, null, 2));
+          if (!latinReplacementRoundTrip) throw new Error('Embedded Latin font replacement did not pass exact round-trip and sentinel preservation');
           NODE
 
       - name: Verify fail-closed handling of encrypted and malformed PDFs
