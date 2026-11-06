@@ -9,3 +9,5 @@
 @media(max-width:760px){.faq-list{grid-template-columns:1fr}}
 
 .service-card .service-apply-link{display:inline-flex;align-items:center;justify-content:center;margin-top:2px;padding:9px 12px;border-radius:9px;background:#0b3477;color:#fff;text-align:center;font-size:12px;font-weight:800}.service-card .service-apply-link:hover{background:#164b9b}
+
+.service-guide{margin-top:8px;border-top:1px solid var(--line);padding-top:9px}.service-guide>summary{cursor:pointer;color:#123f83;font-size:13px;font-weight:800;list-style-position:inside;padding:8px 4px}.service-guide-section{padding:8px 4px;border-top:1px solid #edf1f7}.service-guide-section strong{display:block;color:var(--navy);font-size:12px;margin-bottom:4px}.service-guide-section p{font-size:12px;line-height:1.7;color:#4d5d75;margin:0;white-space:pre-line}
