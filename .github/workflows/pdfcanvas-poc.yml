@@ -509,6 +509,49 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Classify rotated-page coordinate handling
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, degrees } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const doc = await PDFDocument.create();
+          const font = await doc.embedFont(StandardFonts.Helvetica);
+          const page = doc.addPage([595.2756, 841.8898]);
+          page.drawText('Rotated page coordinate sentinel', { x: 60, y: 720, size: 16, font });
+          page.drawText('Unrotated control sentinel', { x: 60, y: 680, size: 12, font });
+          page.setRotation(degrees(90));
+          const bytes = new Uint8Array(await doc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const zeroRotation = engine.readPage(0, 0);
+          const ninetyRotation = engine.readPage(0, 90);
+          const hasText = runs => runs.some(run => run.text.includes('Rotated page coordinate sentinel'));
+          const zeroFound = hasText(zeroRotation);
+          const ninetyFound = hasText(ninetyRotation);
+
+          assert.ok(zeroFound || ninetyFound, 'text must be discoverable in at least one documented readPage rotation mode');
+
+          const summarize = runs => runs
+            .filter(run => run.text.includes('Rotated page coordinate sentinel') || run.text.includes('Unrotated control sentinel'))
+            .map(run => ({ text: run.text, x: run.x, y: run.y, width: run.w, height: run.h, editable: run.editable }));
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            fixture: 'page-level 90-degree rotation; two horizontal text runs',
+            zeroRotationArgument: { found: zeroFound, runs: summarize(zeroRotation) },
+            ninetyRotationArgument: { found: ninetyFound, runs: summarize(ninetyRotation) },
+            classification: zeroFound && ninetyFound
+              ? 'both modes discover text; coordinate equivalence and visual placement still require browser-level verification'
+              : 'rotation-specific extraction differs; keep rotated-page native replacement unsupported pending coordinate validation',
+            policy: 'No replacement is attempted for this fixture.'
+          }, null, 2));
+          engine.destroy();
+          NODE
+
       - name: Verify fail-closed handling of encrypted and malformed PDFs
         working-directory: vendor/pdfcanvas
         run: |
