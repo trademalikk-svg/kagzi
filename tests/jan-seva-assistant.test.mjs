@@ -24,6 +24,21 @@ test("rejects malformed JSON", async () => {
   assert.equal(response.status, 400);
 });
 
+test("rejects oversized request bodies before AI processing", async () => {
+  let called = false;
+  const response = await onRequestPost({
+    request: makeRequest(JSON.stringify({ question: "x".repeat(13000) })),
+    env: { AI: { run: async () => { called = true; return { response: "unexpected" }; } } }
+  });
+  assert.equal(response.status, 413);
+  assert.equal(called, false);
+});
+
+test("rejects JSON arrays instead of request objects", async () => {
+  const response = await onRequestPost({ request: makeRequest("[]"), env: {} });
+  assert.equal(response.status, 400);
+});
+
 test("rejects missing and oversized questions", async () => {
   const missing = await onRequestPost({ request: makeRequest(JSON.stringify({ question: "  " })), env: {} });
   const oversized = await onRequestPost({ request: makeRequest(JSON.stringify({ question: "x".repeat(1501) })), env: {} });
