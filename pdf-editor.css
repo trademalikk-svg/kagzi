@@ -32,3 +32,47 @@
 .pdf-text-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;user-select:text}.pdf-text-span{position:absolute;display:block;overflow:hidden;white-space:pre;transform-origin:0 0;color:transparent;-webkit-text-fill-color:transparent;pointer-events:auto;cursor:text;outline:1px solid transparent}.pdf-text-span:hover{outline:1px dashed #3974ed;background:#3974ed12}.pdf-text-span.selected{outline:2px solid #3974ed;background:#3974ed22}.pdf-text-span.edited{background:#fff;color:#10234a;-webkit-text-fill-color:#10234a;outline:1px solid #8aa8f2}.inspector-bold{display:flex;align-items:center;gap:8px;font-size:11px;color:#65738a}.inspector-section #applyTextEdit{border:0;border-radius:8px;padding:10px;background:#0b2450;color:#fff;font-weight:800}.inspector-section #applyTextEdit:disabled{opacity:.4}
 
 .image-selection-layer{position:absolute;inset:0;pointer-events:none;z-index:4}.placed-image-handle{position:absolute;display:block;padding:0;border:1px dashed transparent;background:transparent;pointer-events:auto;cursor:pointer;min-width:8px;min-height:8px}.placed-image-handle:hover,.placed-image-handle.selected{border:2px solid #3974ed;background:#3974ed12;box-shadow:0 0 0 2px #fff8}.placed-image-handle.selected:after{content:'Selected image';position:absolute;left:0;top:-22px;padding:3px 6px;border-radius:4px;background:#1749a2;color:#fff;font:700 9px/1.2 system-ui;white-space:nowrap}
+
+/* Phone layout: scrollable tool strip, readable controls and compact navigation. */
+@media (max-width: 650px) {
+  .editor-top { min-height:56px; height:auto; padding:7px 12px; gap:10px; }
+  .editor-top nav { display:flex; gap:6px; min-width:0; overflow-x:auto; scrollbar-width:thin; }
+  .editor-top nav a { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:8px 10px; border-radius:8px; background:#102c5b; font-size:12px; white-space:nowrap; }
+  .editor-brand { min-width:0; gap:7px; font-size:14px; }
+  .editor-brand small { display:none; }
+  .editor-toolbar { align-items:stretch; gap:6px; padding:8px; }
+  .editor-toolbar button,.editor-toolbar .editor-file-btn { min-height:42px; }
+  .document-tools { display:flex; flex-wrap:nowrap; align-items:center; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:thin; white-space:nowrap; }
+  .document-tools button { flex:0 0 auto; min-height:42px; padding:9px 11px; font-size:11px; }
+  .page-rail { min-width:0; }
+  .page-thumbnails { display:flex; flex-direction:row; gap:8px; max-width:100%; min-height:92px; padding:3px 1px 8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; }
+  .page-thumb { flex:0 0 76px; width:76px; min-height:76px; }
+  .page-thumb canvas { width:56px; max-height:68px; object-fit:contain; }
+  .pdf-inspector { min-width:0; padding:12px; }
+  .inspector-section input,.inspector-section select,.inspector-section textarea { min-height:42px; font-size:16px; }
+  .scanner-actions button,.ocr-actions button,.page-tools-extra button,.page-management button { min-height:42px; padding:9px 11px; font-size:11px; }
+  .ocr-actions select { min-height:42px; font-size:16px; }
+  .page-stage { width:100%; min-width:0; overflow:auto; }
+  .canvas-wrap { max-width:100%; }
+}
+@media (max-width: 420px) {
+  .editor-wrap { padding-left:6px; padding-right:6px; }
+  .editor-intro { flex-wrap:wrap; }
+  .editor-toolbar .download-top { margin-left:0; }
+  .editor-toolbar button { flex:1 1 auto; }
+  .editor-toolbar input[type=number] { min-height:40px; }
+  .document-tools { margin:0; }
+  .page-thumb { flex-basis:68px; width:68px; }
+  .scanner-panel,.ocr-panel,.page-tools-extra { margin-left:6px; margin-right:6px; padding:10px; }
+}
+
+
+@media screen and (max-width: 900px) {
+  .editor-workspace { grid-template-columns:minmax(0,1fr) !important; }
+  .page-rail { grid-column:1; grid-row:2; border-right:0; border-top:1px solid var(--ed-line); }
+  .document-area { grid-column:1; grid-row:1; min-width:0; }
+  .pdf-inspector { grid-column:1; grid-row:3; border-left:0; border-top:1px solid var(--ed-line); }
+  .page-thumbnails { flex-direction:row; overflow-x:auto; max-height:none; }
+  .document-tools { flex-wrap:nowrap; overflow-x:auto; }
+  .document-tools button { flex:0 0 auto; min-height:42px; }
+}
