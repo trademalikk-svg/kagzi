@@ -13,3 +13,17 @@
 .service-guide{margin-top:8px;border-top:1px solid var(--line);padding-top:9px}.service-guide>summary{cursor:pointer;color:#123f83;font-size:13px;font-weight:800;list-style-position:inside;padding:8px 4px}.service-guide-section{padding:8px 4px;border-top:1px solid #edf1f7}.service-guide-section strong{display:block;color:var(--navy);font-size:12px;margin-bottom:4px}.service-guide-section p{font-size:12px;line-height:1.7;color:#4d5d75;margin:0;white-space:pre-line}
 
 .service-guide-actions{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0}.service-guide-actions button{border:1px solid #cbd8ec;border-radius:9px;padding:9px 11px;background:#f4f7fc;color:#12366f;font-size:12px;font-weight:800;cursor:pointer}.service-guide-actions .service-guide-ask{background:#0b3477;border-color:#0b3477;color:#fff}.service-guide-actions button:focus-visible{outline:2px solid #0753c7;outline-offset:2px}
+
+/* Citizen-friendly Jan Seva tools */
+.finder-panel,.tool-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:20px 0;box-shadow:0 6px 20px #0b214008}
+.finder-panel h3,.tool-panel h3{margin:7px 0;color:var(--navy);font-size:21px}.finder-panel p,.tool-panel>p{color:var(--muted);font-size:13px;line-height:1.65}
+.finder-row{display:flex;gap:9px;margin-top:14px}.finder-row input,.tool-panel input,.tool-panel select,.tool-panel textarea{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
+.finder-row button,.directory-toolbar button,.service-card .service-tool-btn,.tool-panel button{border:0;border-radius:9px;padding:11px 14px;background:var(--navy2);color:white;font-weight:800;cursor:pointer;white-space:nowrap}
+.directory-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0}.directory-toolbar button:nth-child(2){background:#fff0c7;color:#75520b;border:1px solid #ead49b}
+.service-tool-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.service-card .service-tool-btn{font-size:11px;padding:9px 10px;background:#edf4ff;color:#123f83;border:1px solid #cbd8ec}
+.service-card .service-tool-btn.is-saved{background:#fff0c7;color:#75520b;border-color:#ead49b}
+.tool-panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.tool-panel-head p{font-size:13px;color:var(--muted)}
+#documentChecklist[hidden]{display:none}#checklistItems{display:grid;gap:8px;margin-top:12px}#checklistItems label{display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f5f8fd;border-radius:9px;font-size:13px;line-height:1.5}#checklistItems input{width:auto;margin-top:3px;accent-color:#0b3477}
+.tool-status{font-size:12px;color:var(--muted);line-height:1.5;margin:9px 0 0}
+#serviceFeedbackForm{display:grid;gap:8px;max-width:650px}#serviceFeedbackForm label{font-size:12px;font-weight:800;color:var(--navy);margin-top:6px}
+@media(max-width:520px){.finder-row{flex-direction:column}.finder-row button{width:100%}.finder-panel,.tool-panel{padding:15px}}
