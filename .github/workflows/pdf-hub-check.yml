@@ -1,0 +1,34 @@
+name: PDF Studio hub checks
+
+on:
+  push:
+    branches:
+      - feat/all-in-one-pdf-studio
+    paths:
+      - 'pdf-studio.html'
+      - 'pdf-tools.html'
+      - 'pdf-editor.html'
+      - 'pdf-editor.js'
+      - 'pdf-document-session.js'
+      - 'tests/pdf-editor-workspace.test.mjs'
+      - 'tests/pdf-studio-hub.test.mjs'
+      - '.github/workflows/pdf-hub-check.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'pdf-studio.html'
+      - 'pdf-tools.html'
+      - 'tests/pdf-studio-hub.test.mjs'
+      - '.github/workflows/pdf-hub-check.yml'
+
+jobs:
+  pdf-studio-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test unified PDF tools hub
+        run: node --test tests/pdf-studio-hub.test.mjs tests/pdf-editor-workspace.test.mjs
