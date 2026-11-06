@@ -28,12 +28,12 @@
     bindPanelToggle(doc, 'toggleInspector', 'pdfSelectionProperties', 'Hide properties', 'Show properties', 'Hide properties panel', 'Show properties panel');
     const workspace = doc.querySelector('.editor-workspace');
     const inspector = doc.getElementById('pdfInspector');
-    const documentArea = doc.querySelector('.document-area');
-    const tools = doc.querySelector('.document-tools');
-    if (workspace && inspector && documentArea && tools) {
+    const shell = doc.querySelector('.editor-shell');
+    const toolbar = doc.querySelector('.editor-toolbar');
+    if (workspace && inspector && shell && toolbar) {
       const placeInspector = () => {
         if (window.matchMedia('(max-width: 650px)').matches) {
-          if (inspector.parentElement !== documentArea) documentArea.insertBefore(inspector, tools);
+          if (inspector.parentElement !== shell) shell.insertBefore(inspector, workspace);
         } else if (inspector.parentElement !== workspace) {
           workspace.appendChild(inspector);
         }
