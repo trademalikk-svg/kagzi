@@ -77,3 +77,29 @@
   .document-area>#pdfInspector .inspector-note{display:none!important}
   .document-area>#pdfInspector .inspector-head{flex-direction:row;align-items:center;justify-content:space-between}
 }
+
+
+/* Mobile: keep the text inspector at the top, directly under the main PDF toolbar. */
+@media(max-width:650px){
+  .editor-shell>#pdfInspector{
+    display:block!important;position:relative!important;order:0!important;
+    width:auto!important;max-width:none!important;margin:7px!important;
+    padding:10px!important;border:1px solid #cbd5e1!important;border-radius:10px!important;
+    background:#fff!important;z-index:20!important;box-sizing:border-box;
+  }
+  .editor-shell>#pdfInspector .inspector-head{
+    display:flex!important;flex-direction:row!important;align-items:center!important;
+    justify-content:space-between!important;padding-bottom:8px!important;
+  }
+  .editor-shell>#pdfInspector .inspector-section{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;padding-top:8px!important;
+  }
+  .editor-shell>#pdfInspector .inspector-empty,
+  .editor-shell>#pdfInspector .inspector-note{display:none!important}
+  .editor-shell>#pdfInspector .inspector-section>label[for="inspectorText"],
+  .editor-shell>#pdfInspector #inspectorText,
+  .editor-shell>#pdfInspector #applyTextEdit{grid-column:1/-1!important}
+  .editor-shell>#pdfInspector #inspectorText{height:76px!important;min-height:76px!important}
+  .editor-shell>#pdfInspector #applyTextEdit{min-height:44px!important}
+}
