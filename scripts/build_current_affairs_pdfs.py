@@ -50,17 +50,6 @@ def main():
         page.set_content(make_document("साप्ताहिक समसामयिक सार", [weekly], style), wait_until="load")
         page.pdf(path=str(OUT["weekly"]), format="A4", print_background=True, display_header_footer=False)
 
-        # Monthly section: execute the original month selector for all twelve months.
-        page.goto(SOURCE.as_uri(), wait_until="networkidle")
-        monthly_fragments = []
-        buttons = page.locator("#monthly button.month-link")
-        for i in range(await_count(buttons)):
-            await_click(buttons.nth(i))
-            html = page.locator("#monthlyMonthPanel").evaluate("(el) => el.innerHTML")
-            monthly_fragments.append(f'<section class="chapter"><h2>{i+1:02d} · 2026 मासिक अध्याय</h2>{html}</section>')
-        OUT["monthly"].parent.mkdir(parents=True, exist_ok=True)
-        page.set_content(make_document("मासिक करंट अफेयर्स · 2026", monthly_fragments, style), wait_until="load")
-        page.pdf(path=str(OUT["monthly"]), format="A4", print_background=True, display_header_footer=False)
         browser.close()
 
 def await_count(locator):
