@@ -7,8 +7,13 @@ on:
       - "pdf-scanner.js"
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
+      - "tests/pdf-ocr.test.mjs"
+      - "pdf-export.js"
+      - "tests/pdf-export.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
+      - "pdf-editor-workspace.css"
+      - "pdf-editor-workspace.js"
       - "pdf-server-adapter.js"
       - "image-text-editor.js"
       - "image-text-editor.html"
@@ -45,6 +50,14 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
+      - name: Check workspace controls JavaScript syntax
+        run: node --check pdf-editor-workspace.js
+      - name: Test multilingual OCR worker behavior
+        run: node --test tests/pdf-ocr.test.mjs
+      - name: Test safe PDF export behavior
+        run: node --test tests/pdf-export.test.mjs
+      - name: Check PDF export helper syntax
+        run: node --check pdf-export.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
       - name: Check camera scanner JavaScript syntax
