@@ -18,6 +18,7 @@ test('passport defaults are automatic and advanced controls start collapsed', ()
 test('passport studio navigation link resolves to a real section anchor', () => {
   assert.match(html, /href="#photoPassport"/);
   assert.match(html, /id="photoPassport"/);
+  assert.match(html, /id="removePhotoBackground"/);
 });
 
 test('passport processing script parses as JavaScript', () => {
