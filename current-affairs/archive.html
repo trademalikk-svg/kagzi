@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="KAGZI का अपने आप अपडेट होने वाला Daily, Weekly, Monthly और Yearly Current Affairs archive.">
+<title>KAGZI · Automatic Current Affairs Archive</title>
+<style>
+:root{--ink:#172033;--muted:#68748a;--line:#e4e9f2;--bg:#f4f6fb;--blue:#315efb}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,"Noto Sans Devanagari",sans-serif}.wrap{width:min(980px,calc(100% - 28px));margin:auto}header{background:#111a35;color:white;padding:16px 0}header a{color:#d7dcff;text-decoration:none}.hero{padding:28px 0 16px}.hero h1{font-size:clamp(27px,5vw,40px);margin:5px 0}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.tabs a,.period-link{display:inline-block;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:white;color:#30489b;text-decoration:none;font-weight:800;font-size:13px}.tabs a.active{background:#eaf0ff;border-color:#b9c8ff}.status{padding:12px 14px;border-left:4px solid var(--blue);background:#edf2ff;border-radius:9px;font-size:13px;margin:14px 0}.group{margin:22px 0}.group h2{font-size:21px;margin:8px 0}.news{background:white;border:1px solid var(--line);border-radius:14px;padding:17px;margin:11px 0}.news h3{font-size:18px;line-height:1.5;margin:7px 0}.tag{display:inline-block;background:#edf1ff;color:#3d50a2;padding:4px 9px;border-radius:30px;font-size:11px;font-weight:850}.news p{margin:8px 0}.news a{color:#2452bb;font-weight:800}.periods{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.empty{padding:22px;background:white;border:1px solid var(--line);border-radius:14px;color:var(--muted)}footer{padding:28px 0;color:var(--muted);font-size:13px}@media(max-width:600px){.news{padding:14px}.news h3{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><b>KAGZI · CURRENT AFFAIRS LIBRARY</b>　<a href="./">← Folders</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="muted">OFFICIAL SOURCE ARCHIVE</div><h1>Current Affairs · Auto Archive</h1><p class="muted">PIB की हिंदी आधिकारिक विज्ञप्तियों से स्वचालित संग्रह। एक ही समाचार Daily से Yearly तक सही तारीख के अनुसार व्यवस्थित होता है।</p>
+<nav class="tabs" aria-label="Archive views">
+<a data-view="daily" href="?view=daily">📅 Daily</a><a data-view="weekly" href="?view=weekly">🗂️ Weekly</a><a data-view="monthly" href="?view=monthly">📁 Monthly</a><a data-view="yearly" href="?view=yearly">📚 Yearly</a>
+</nav>
+<p id="status" class="status">संग्रह लोड हो रहा है…</p></section>
+<section id="periods" class="periods" aria-label="समय अवधि"></section>
+<section id="content" aria-live="polite"><div class="empty">कृपया प्रतीक्षा करें…</div></section>
+</main>
+<footer><div class="wrap">स्रोत: PIB Hindi RSS · समाचार का मूल विवरण और तारीख स्रोत के अनुसार रखे जाते हैं। विषय-श्रेणी स्वचालित कीवर्ड वर्गीकरण है; इसे संपादकीय सत्यापन का विकल्प न समझें।</div></footer>
+<script>
+(function(){
+  const params=new URLSearchParams(location.search);
+  const view=["daily","weekly","monthly","yearly"].includes(params.get("view"))?params.get("view"):"daily";
+  const selectedPeriod=params.get("period")||"";
+  const labels={daily:"Daily · दिनवार समाचार",weekly:"Weekly · सप्ताहवार संग्रह",monthly:"Monthly · महीनेवार संग्रह",yearly:"Yearly · वार्षिक माहवार संग्रह"};
+  document.querySelectorAll("[data-view]").forEach(a=>{if(a.dataset.view===view)a.classList.add("active")});
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const dateLabel=s=>{const d=new Date(s+"T12:00:00+05:30");return new Intl.DateTimeFormat("hi-IN",{day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(d)};
+  const monthLabel=s=>{const [y,m]=s.split("-").map(Number);return new Intl.DateTimeFormat("hi-IN",{month:"long",year:"numeric"}).format(new Date(y,m-1,1))};
+  const groupBy=(items,keyFn)=>{const m=new Map();items.forEach(x=>{const k=keyFn(x);if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort((a,b)=>b[0].localeCompare(a[0]))};
+  const weekKey=s=>{const d=new Date(s+"T12:00:00Z");const day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day+3);const y=d.getUTCFullYear();const first=new Date(Date.UTC(y,0,4));const firstDay=(first.getUTCDay()+6)%7;first.setUTCDate(first.getUTCDate()-firstDay+3);const w=1+Math.round((d-first)/604800000);return y+"-W"+String(w).padStart(2,"0")};
+  const card=x=>'<article class="news"><span class="tag">'+esc(x.category||"राष्ट्रीय घटनाक्रम")+' · '+esc(dateLabel(x.date))+'</span><h3>'+esc(x.title)+'</h3>'+(x.description?'<p>'+esc(x.description)+'</p>':'')+'<p><a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">मूल PIB विज्ञप्ति पढ़ें ↗</a></p></article>';
+  const showGroup=(title,items)=>'<section class="group"><h2>'+esc(title)+' <span class="muted">('+items.length+')</span></h2>'+items.map(card).join("")+'</section>';
+  fetch("data/items.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Archive file not available");return r.json()}).then(data=>{
+    const items=(data.items||[]).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.date||"")&&x.title&&x.url).sort((a,b)=>b.date.localeCompare(a.date));
+    document.getElementById("status").textContent="अंतिम सफल अपडेट: "+(data.updated_at||"तारीख उपलब्ध नहीं")+" · "+items.length+" आधिकारिक रिकॉर्ड · समय क्षेत्र IST";
+    const periods=document.getElementById("periods"),content=document.getElementById("content");
+    let groups=[];
+    if(view==="daily"){
+      groups=groupBy(items,x=>x.date).slice(0,60);
+      content.innerHTML=groups.length?groups.map(([k,v])=>showGroup(dateLabel(k),v)).join(""):'<div class="empty">अभी दैनिक रिकॉर्ड उपलब्ध नहीं हैं। अगला स्वचालित अपडेट होने पर यहाँ दिखाई देंगे।</div>';
+    }else if(view==="weekly"){
+      groups=groupBy(items,x=>weekKey(x.date));
+      content.innerHTML=groups.length?groups.map(([k,v])=>showGroup("सप्ताह "+k,v)).join(""):'<div class="empty">अभी साप्ताहिक रिकॉर्ड उपलब्ध नहीं हैं।</div>';
+    }else if(view==="monthly"){
+      groups=groupBy(items,x=>x.date.slice(0,7));
+      periods.innerHTML=groups.map(([k,v])=>'<a class="period-link" href="?view=monthly&period='+encodeURIComponent(k)+'">'+esc(monthLabel(k))+' · '+v.length+'</a>').join("");
+      const chosen=selectedPeriod||((groups[0]||[])[0]||"");
+      const chosenItems=items.filter(x=>x.date.slice(0,7)===chosen);
+      content.innerHTML=chosen?showGroup(monthLabel(chosen),chosenItems):'<div class="empty">अभी कोई मासिक रिकॉर्ड उपलब्ध नहीं है।</div>';
+    }else{
+      groups=groupBy(items,x=>x.date.slice(0,4));
+      periods.innerHTML=groups.map(([k,v])=>'<a class="period-link" href="?view=yearly&period='+encodeURIComponent(k)+'">'+esc(k)+' · '+v.length+'</a>').join("");
+      const chosen=selectedPeriod||((groups[0]||[])[0]||"");
+      const yearItems=items.filter(x=>x.date.slice(0,4)===chosen);
+      const months=Array.from({length:12},(_,i)=>chosen+"-"+String(i+1).padStart(2,"0"));
+      content.innerHTML=chosen?months.map(m=>{const rows=yearItems.filter(x=>x.date.slice(0,7)===m);return '<section class="group"><h2>'+esc(monthLabel(m))+' <span class="muted">('+rows.length+')</span></h2>'+(rows.length?rows.map(card).join(""):'<div class="empty">इस महीने का रिकॉर्ड अभी संग्रह में नहीं है।</div>')+'</section>'}).join(""):'<div class="empty">अभी वार्षिक रिकॉर्ड उपलब्ध नहीं हैं।</div>';
+    }
+    if(view==="monthly"&&selectedPeriod)periods.insertAdjacentHTML("afterbegin",'<a class="period-link" href="?view=monthly">सभी महीने</a>');
+    if(view==="yearly"&&selectedPeriod)periods.insertAdjacentHTML("afterbegin",'<a class="period-link" href="?view=yearly">सभी वर्ष</a>');
+    if(!items.length)content.innerHTML='<div class="empty">पहला स्वचालित संग्रह अभी तैयार नहीं हुआ है।</div>';
+    if(data.source)document.getElementById("status").insertAdjacentHTML("beforeend",' · <a href="'+esc(data.source)+'" target="_blank" rel="noopener noreferrer">PIB RSS स्रोत</a>');
+  }).catch(err=>{document.getElementById("status").textContent="स्वचालित संग्रह अभी लोड नहीं हो पाया: "+err.message;document.getElementById("content").innerHTML='<div class="empty">कृपया बाद में फिर प्रयास करें।</div>'});
+})();
+</script>
+</body></html>
