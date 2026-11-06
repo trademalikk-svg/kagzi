@@ -27,8 +27,8 @@
   const params=new URLSearchParams(location.search);
   const view=["daily","weekly","monthly","yearly"].includes(params.get("view"))?params.get("view"):"daily";
   const selectedPeriod=params.get("period")||"";
-  if(params.get("view")==="yearly"){
-    document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>Yearly Current Affairs · Paid Only</h1><p class="status">वार्षिक संकलन पूरी तरह Paid होगा। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है। भुगतान और निजी PDF delivery तैयार होने तक वार्षिक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="yearly/">Yearly Folder खोलें</a></section>';
+  if(params.get("view")==="yearly" || params.get("view")==="monthly"){\n    const paidType=params.get("view")==="yearly"?"Yearly":"Monthly";
+    document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>'+paidType+' Current Affairs · Paid Only</h1><p class="status">'+(paidType==="Monthly"?"मासिक संकलन पूरी तरह Paid होगा। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है।":"वार्षिक संकलन पूरी तरह Paid होगा। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है।")+' भुगतान और निजी PDF delivery तैयार होने तक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="'+(paidType==="Monthly"?"monthly/":"yearly/")+'">'+paidType+' Folder खोलें</a></section>';
     return;
   }
   const labels={daily:"Daily · दिनवार समाचार",weekly:"Weekly · सप्ताहवार संग्रह",monthly:"Monthly · महीनेवार संग्रह",yearly:"Yearly · वार्षिक माहवार संग्रह"};
