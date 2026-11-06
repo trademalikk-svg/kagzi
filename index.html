@@ -343,6 +343,7 @@ img,video,canvas,iframe{max-width:100%}
    const im=new Image(),u=URL.createObjectURL(cutoutBlob);
    await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u;});
    const {w,h}=presetSize(),ratio=w/h;
+   const probe=document.createElement('canvas');probe.width=64;probe.height=64;const pc=probe.getContext('2d',{willReadFrequently:true});pc.drawImage(im,0,0,64,64);const pixels=pc.getImageData(0,0,64,64).data;let transparent=0;for(let k=3;k<pixels.length;k+=4){if(pixels[k]<245)transparent++;}if(transparent<3)throw new Error('AI did not separate the background in this photo. Try again with a clear, well-lit photo; no colour will be painted over the full image.');
    let sx=0,sy=0,sw=im.naturalWidth,sh=im.naturalHeight;
    if(faceBox){
     const f=faceBox;
