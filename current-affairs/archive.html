@@ -34,7 +34,7 @@ import { supabase } from "../kagzi-supabase.js";
     document.querySelector("main").innerHTML='<section class="hero"><h1>Access settings unavailable</h1><p class="status">अभी access settings की पुष्टि नहीं हो सकी। कृपया थोड़ी देर बाद फिर प्रयास करें।</p></section>';
     return;
   }
-  if(["monthly","yearly"].includes(view) && access[view]!=="free"){
+  if((params.get("view")==="monthly" || params.get("view")==="yearly") && access[view]!=="free"){
     const paidType=view==="yearly"?"Yearly":"Monthly";
     document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>'+paidType+' Current Affairs · Paid Only</h1><p class="status">यह सेक्शन पूरी तरह Paid Only है। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है। भुगतान और निजी PDF delivery तैयार होने तक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="'+(view==="monthly"?"monthly/":"yearly/")+'">'+paidType+' Folder खोलें</a>　<a href="admin.html">Admin Settings</a></section>';
     return;
