@@ -19,6 +19,7 @@ test('passport studio navigation link resolves to a real section anchor', () => 
   assert.match(html, /href="#photoPassport"/);
   assert.match(html, /id="photoPassport"/);
   assert.match(html, /id="removePhotoBackground"/);
+  assert.match(html, /id="applyPhotoBackground"/);
 });
 
 test('passport processing script parses as JavaScript', () => {
