@@ -20,7 +20,7 @@ test('current affairs are separated into four physical folder entry pages', () =
 test('folder pages open the correct daily, weekly, monthly and yearly archive views', () => {
   assert.ok(read('current-affairs/day/index.html').includes('../archive.html?view=daily'));
   assert.ok(read('current-affairs/weekly/index.html').includes('../archive.html?view=weekly'));
-  assert.ok(read('current-affairs/monthly/index.html').includes('../archive.html?view=monthly'));
+  assert.ok(read('current-affairs/monthly/index.html').includes('MONTHLY · PAID ONLY'));
   assert.ok(read('current-affairs/yearly/index.html').includes('Paid Only'));
 });
 
@@ -35,7 +35,6 @@ test('Learning Hub and legacy route point to the folder library', () => {
 test('archive navigation is clearly labeled as online reading, not a PDF download', () => {
   for (const [path, label] of [
     ['current-affairs/weekly/index.html', 'ऑनलाइन संग्रह देखें'],
-    ['current-affairs/monthly/index.html', 'ऑनलाइन संग्रह देखें'],
     ['current-affairs/yearly/index.html', 'ऑनलाइन संग्रह देखें']
   ]) if (path.includes('yearly')) assert.ok(read(path).includes('Paid Only')); else assert.ok(read(path).includes(label), path + ' labels archive as online');
 });
@@ -56,10 +55,11 @@ test('legacy Current Affairs book page is now a folder landing page, not the ful
   assert.ok(read('current-affairs-book-source.html').includes('UPSC सिविल सेवा मुख्य परीक्षा 2026 का लिखित परिणाम'));
 });
 
-test('PDF generator and workflow publish files only into Daily, Weekly and Monthly folders', () => {
+test('PDF generator and workflow publish only free Daily and Weekly PDFs', () => {
   const generator = read('scripts/build_current_affairs_pdfs.py');
   const workflow = read('.github/workflows/current-affairs-pdfs.yml');
-  for (const folder of ['current-affairs/day/', 'current-affairs/weekly/', 'current-affairs/monthly/']) assert.ok(generator.includes(folder));
+  for (const folder of ['current-affairs/day/', 'current-affairs/weekly/']) assert.ok(generator.includes(folder));
+  assert.ok(!generator.includes('current-affairs/monthly/'));
   assert.ok(workflow.includes('Build Current Affairs PDFs'));
   assert.ok(!generator.includes('current-affairs/yearly/'));
   assert.ok(read('current-affairs/archive.html').includes('Paid Only'));
