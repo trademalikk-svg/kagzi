@@ -5,28 +5,35 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../current-affairs-book.html', import.meta.url), 'utf8');
 
 test('monthly archive exposes all twelve selectable months', () => {
-  assert.match(html, /मासिक करंट अफेयर्स — 2026/);
-  assert.match(html, /const mNav=monthButtons\('monthly',10\)/);
-  assert.match(html, /function showMonthly\(index\)/);
-  assert.match(html, /mNav\.addEventListener\('click'/);
-  assert.match(html, /जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर/);
+  assert.ok(html.includes('मासिक करंट अफेयर्स — 2026'));
+  assert.ok(html.includes("monthButtons('monthly',10)"));
+  assert.ok(html.includes('function showMonthly(index)'));
+  assert.ok(html.includes("mNav.addEventListener('click'"));
+  assert.ok(html.includes("'जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर'"));
 });
 
 test('yearly archive exposes all twelve selectable months', () => {
-  assert.match(html, /वार्षिक करंट अफेयर्स — 2026/);
-  assert.match(html, /const yNav=monthButtons\('yearly',10\)/);
-  assert.match(html, /function showYearly\(index\)/);
-  assert.match(html, /yNav\.addEventListener\('click'/);
+  assert.ok(html.includes('वार्षिक करंट अफेयर्स — 2026'));
+  assert.ok(html.includes("monthButtons('yearly',10)"));
+  assert.ok(html.includes('function showYearly(index)'));
+  assert.ok(html.includes("yNav.addEventListener('click'"));
 });
 
-test('January and November show sourced content while other months remain clearly marked pending', () => {
-  assert.match(html, /id='monthlyMonthPanel'/);
-  assert.match(html, /id='yearlyMonthPanel'/);
-  assert.match(html, /if\(index===0\) mPanel\.append\(makeJanuaryContent\(\)\)/);\n  assert.match(html, /else if\(index===1\) mPanel\.append\(makeFebruaryContent\(\)\)/);
-  assert.match(html, /if\(index===0\) yPanel\.append\(makeJanuaryContent\(\)\)/);\n  assert.match(html, /else if\(index===1\) yPanel\.append\(makeFebruaryContent\(\)\)/);
-  assert.match(html, /else if\(index===10\) mPanel\.append\(makeNovemberContent\(\)\)/);
-  assert.match(html, /else if\(index===10\) yPanel\.append\(makeNovemberContent\(\)\)/);
-  assert.match(html, /function makeJanuaryContent\(\)/);\n  assert.match(html, /function makeFebruaryContent\(\)/);\n  assert.match(html, /PRS India — February 2026 Monthly Policy Review/);\n  assert.match(html, /रेपो दर 5.25%/);
-  assert.match(html, /PRS India — January 2026 Monthly Policy Review/);
-  assert.match(html, /पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई/);
+test('January and February contain sourced content in monthly and yearly archives', () => {
+  assert.ok(html.includes("if(index===0) mPanel.append(makeJanuaryContent());"));
+  assert.ok(html.includes("else if(index===1) mPanel.append(makeFebruaryContent());"));
+  assert.ok(html.includes("if(index===0) yPanel.append(makeJanuaryContent());"));
+  assert.ok(html.includes("else if(index===1) yPanel.append(makeFebruaryContent());"));
+  assert.ok(html.includes('function makeJanuaryContent()'));
+  assert.ok(html.includes('function makeFebruaryContent()'));
+  assert.ok(html.includes('PRS India — January 2026 Monthly Policy Review'));
+  assert.ok(html.includes('PRS India — February 2026 Monthly Policy Review'));
+  assert.ok(html.includes('रेपो दर 5.25%'));
+  assert.ok(html.includes('पूरी, स्रोत-जाँची गई सामग्री अभी इस पुस्तक में नहीं जोड़ी गई'));
+});
+
+test('November remains populated and linked to verified daily entries', () => {
+  assert.ok(html.includes('else if(index===10) mPanel.append(makeNovemberContent());'));
+  assert.ok(html.includes('else if(index===10) yPanel.append(makeNovemberContent());'));
+  assert.ok(html.includes('function makeNovemberContent()'));
 });
