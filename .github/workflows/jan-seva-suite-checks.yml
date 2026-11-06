@@ -1,0 +1,23 @@
+name: Jan Seva suite verification
+on:
+  push:
+    branches: [feature/jan-seva-automation-suite]
+  pull_request:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax checks
+        run: |
+          node --check jan-seva.js
+          node --check functions/api/jan-seva-assistant.js
+          node --check scripts/jan-seva-growth.mjs
+      - name: Jan Seva AI endpoint tests
+        run: node --test tests/jan-seva-assistant.test.mjs
+      - name: Validate competitor configuration
+        run: node -e "const x=require('./docs/jan-seva-competitors.json'); if(!Array.isArray(x)||x.length<3||x.some(v=>!/^https:\/\//.test(v.url))) process.exit(1)"

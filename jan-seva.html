@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#061947">
+<title>KAGZI AI Jan Seva | सरकारी सेवा सहायता</title>
+<meta name="description" content="केंद्र सरकार और उत्तर प्रदेश की सरकारी सेवाओं की जानकारी, दस्तावेज़ चेकलिस्ट, आधिकारिक पोर्टल और हिंदी-अंग्रेज़ी AI सहायता।">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/jan-seva.html">
+<link rel="stylesheet" href="jan-seva.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="mark">K</span><span><b>KAGZI AI</b><small>JAN SEVA ASSISTANT</small></span></a>
+  <nav><a href="index.html">Home</a><a class="active" href="jan-seva.html">Jan Seva</a><a href="gov-documents.html">Document Directory</a><a href="jan-seva-reports.html">Reports</a></nav>
+</header>
+<main>
+<section class="hero">
+  <div class="eyebrow">CITIZEN SERVICE DESK · HINDI + ENGLISH</div>
+  <h1>सरकारी सेवाएँ,<br><em>अब समझना आसान</em></h1>
+  <p>सरकारी योजनाओं और सेवाओं की जानकारी खोजें, जरूरी दस्तावेज़ समझें और आधिकारिक पोर्टल तक पहुँचें।</p>
+  <div class="hero-actions"><a class="primary" href="#services">सेवाएँ खोजें</a><a class="secondary" href="#assistant">AI से पूछें</a></div>
+  <p class="disclaimer">KAGZI सरकारी विभाग नहीं है। यह जानकारी और आधिकारिक लिंक उपलब्ध कराता है; प्रमाणपत्र जारी या स्वीकृत नहीं करता।</p>
+</section>
+<section class="section" id="services">
+  <div class="section-head"><div><div class="eyebrow">SERVICE DIRECTORY</div><h2>सरकारी सेवा खोजें</h2><p>केंद्र और उत्तर प्रदेश की चुनिंदा सेवाएँ</p></div><span id="resultCount" class="count">0 सेवाएँ</span></div>
+  <div class="filters">
+    <input id="serviceSearch" type="search" placeholder="सेवा खोजें — जैसे आय प्रमाणपत्र, पेंशन" aria-label="सेवा खोजें">
+    <select id="regionFilter" aria-label="सरकार चुनें"><option value="all">सभी सरकारें</option><option value="central">केंद्र सरकार</option><option value="up">उत्तर प्रदेश</option></select>
+    <select id="categoryFilter" aria-label="श्रेणी चुनें"><option value="all">सभी श्रेणियाँ</option><option value="cert">प्रमाणपत्र</option><option value="family">परिवार और राशन</option><option value="education">शिक्षा</option><option value="welfare">पेंशन और कल्याण</option><option value="farmer">किसान</option><option value="land">भूमि</option><option value="work">रोजगार</option><option value="identity">पहचान</option></select>
+  </div>
+  <div id="serviceGrid" class="service-grid" aria-live="polite"></div>
+  <p class="source-note">आवेदन से पहले संबंधित सरकारी पोर्टल पर वर्तमान पात्रता, शुल्क, दस्तावेज़ और समयसीमा जाँचें। नियम बदल सकते हैं।</p>
+</section>
+<section class="assistant-section" id="assistant">
+  <div class="assistant-copy"><div class="eyebrow">KAGZI AI · HINDI + ENGLISH</div><h2>अपना सवाल पूछें</h2><p>किसी सरकारी सेवा की सामान्य प्रक्रिया, दस्तावेज़ों की तैयारी या सही आधिकारिक पोर्टल समझने में मदद लें।</p><ul><li>सरल हिंदी और English में जवाब</li><li>आधिकारिक पोर्टल की ओर मार्गदर्शन</li><li>व्यक्तिगत संवेदनशील जानकारी साझा करने की जरूरत नहीं</li></ul></div>
+  <div class="chat-card"><div class="chat-title"><span class="status-dot"></span><div><b>KAGZI Jan Seva AI</b><small>AI सहायता उपलब्धता खाते की सीमा पर निर्भर</small></div></div>
+    <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="bubble bot">नमस्ते! सरकारी सेवा के बारे में अपना सवाल लिखें। OTP, पासवर्ड या पूरा पहचान नंबर साझा न करें।</div></div>
+    <form id="chatForm"><textarea id="chatInput" rows="2" maxlength="1500" placeholder="अपना सवाल लिखें…" required></textarea><button id="sendButton" type="submit">भेजें</button></form>
+    <div class="voice-controls"><button id="voiceInputButton" type="button" class="voice-button">🎙 बोलकर लिखें</button><button id="readAnswerButton" type="button" class="voice-button" disabled>🔊 जवाब सुनें</button><label class="voice-language-label" for="voiceLanguage">भाषा</label><select id="voiceLanguage" aria-label="बोलने की भाषा"><option value="hi-IN">हिंदी</option><option value="en-IN">English</option></select><label class="voice-auto-label"><input id="autoSpeak" type="checkbox"> जवाब अपने-आप सुनें</label></div>
+    <p id="voiceStatus" class="chat-status" role="status">माइक और आवाज़ की सुविधा आपके ब्राउज़र पर निर्भर करती है।</p>
+    <p id="chatStatus" class="chat-status" role="status">AI सेवा उपलब्ध न होने पर भी ऊपर की सेवा डायरेक्टरी काम करेगी।</p>
+  </div>
+</section>
+<section class="help-strip"><b>अधिक सरकारी दस्तावेज़ देखें</b><p>मौजूदा KAGZI Government Documents Directory भी उपलब्ध है।</p><a href="gov-documents.html">पुरानी डायरेक्टरी खोलें ↗</a></section>
+</main>
+<footer><span>© 2026 KAGZI AI</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a> <a href="content-policy.html">Content Policy</a><a href="contact.html">Contact</a><a href="index.html">Home</a></footer>
+<script src="jan-seva.js"></script>
+</body></html>
