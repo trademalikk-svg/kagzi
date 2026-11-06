@@ -19,7 +19,7 @@ test('yearly archive exposes all twelve selectable months', () => {
   assert.match(html, /yNav\.addEventListener\('click'/);
 });
 
-test('every month opens a distinct panel and only verified November content is shown as populated', () => {
+test('January and November show sourced content while other months remain clearly marked pending', () => {
   assert.match(html, /id='monthlyMonthPanel'/);
   assert.match(html, /id='yearlyMonthPanel'/);
   assert.match(html, /if\(index===10\) mPanel\.append\(makeNovemberContent\(\)\)/);
