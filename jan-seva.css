@@ -7,3 +7,5 @@
 .faq-item summary{font-weight:800;cursor:pointer;line-height:1.55}
 .faq-item p{font-size:13px;line-height:1.7;color:var(--muted);margin:10px 0 0;overflow-wrap:anywhere}
 @media(max-width:760px){.faq-list{grid-template-columns:1fr}}
+
+.service-card .service-apply-link{display:inline-flex;align-items:center;justify-content:center;margin-top:2px;padding:9px 12px;border-radius:9px;background:#0b3477;color:#fff;text-align:center;font-size:12px;font-weight:800}.service-card .service-apply-link:hover{background:#164b9b}
