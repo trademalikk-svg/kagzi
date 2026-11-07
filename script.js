@@ -121,6 +121,7 @@ window.kagziPhotoInputChanged=function(input){
   $('#photoCropW').value=photoOriginalWidth;
   $('#photoCropH').value=photoOriginalHeight;
   $('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';
+  updatePhotoPreviewEffects();
   photoPreview.hidden=false;
   photoPreview.style.display='block';
   $('#photoPreviewEmpty').hidden=true;
@@ -170,6 +171,29 @@ downloadPhotoBtn.addEventListener('click',async()=>{
 // Automatic passport background workflow. Image processing stays in the browser.
 const photoBgBlobState={cutout:null,processing:false};
 const photoStatusEl=$('#photoStatus');
+const photoTextPreview=$('#photoTextPreview');
+const photoFilterIds=['photoBrightness','photoContrast','photoSaturation','photoGrayscale','photoBlur'];
+function photoFilterCss(){return 'brightness('+Number($('#photoBrightness').value||100)+'%) contrast('+Number($('#photoContrast').value||100)+'%) saturate('+Number($('#photoSaturation').value||100)+'%) grayscale('+Number($('#photoGrayscale').value||0)+'%) blur('+Number($('#photoBlur').value||0)+'px)';}
+function updatePhotoPreviewEffects(){
+ if(photoPreview)photoPreview.style.filter=photoFilterCss();
+ const text=$('#photoText').value.trim();
+ if(photoTextPreview){
+  photoTextPreview.textContent=text;
+  photoTextPreview.style.display=text&&photoPreview.naturalWidth?'block':'none';
+  const scale=photoPreview.clientWidth/(photoOriginalWidth||photoPreview.naturalWidth||1);
+  photoTextPreview.style.left=Math.max(0,Math.min(100,Number($('#photoTextX').value)||0))+'%';
+  photoTextPreview.style.top=Math.max(0,Math.min(100,Number($('#photoTextY').value)||0))+'%';
+  photoTextPreview.style.color=$('#photoTextColor').value;
+  photoTextPreview.style.fontFamily=$('#photoTextFont').value;
+  photoTextPreview.style.fontSize=Math.max(8,Number($('#photoTextSize').value)||36)*scale+'px';
+ }
+}
+photoFilterIds.forEach(id=>$('#'+id).addEventListener('input',()=>{
+ const label=$('#'+id+'Label');if(label)label.textContent=$('#'+id).value+(id==='photoBlur'?' px':'%');
+ updatePhotoPreviewEffects();
+}));
+['photoText','photoTextSize','photoTextColor','photoTextFont','photoTextX','photoTextY'].forEach(id=>$('#'+id).addEventListener('input',updatePhotoPreviewEffects));
+
 const passportBgSelect=$('#passportBgColor');
 const passportBgStatus=$('#passportBgStatus');
 const passportDownload=$('#downloadPassportPhoto');
@@ -209,8 +233,16 @@ async function buildPhotoBlob(mime,quality){
  if(width<1||height<1)throw new Error('Enter valid output dimensions.');
  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');
  if(mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);}
- ctx.save();ctx.translate(width/2,height/2);ctx.rotate(rad);const drawW=(angle===90||angle===270)?height:width,drawH=(angle===90||angle===270)?width:height;
- ctx.drawImage(image,sx,sy,sw,sh,-drawW/2,-drawH/2,drawW,drawH);ctx.restore();
+ ctx.save();ctx.filter=photoFilterCss();ctx.translate(width/2,height/2);ctx.rotate(rad);const drawW=(angle===90||angle===270)?height:width,drawH=(angle===90||angle===270)?width:height;
+ ctx.drawImage(image,sx,sy,sw,sh,-drawW/2,-drawH/2,drawW,drawH);ctx.restore();ctx.filter='none';
+ const overlayText=$('#photoText').value.trim();
+ if(overlayText){
+  const fontSize=Math.max(8,Math.min(240,Number($('#photoTextSize').value)||36));
+  const x=Math.max(0,Math.min(100,Number($('#photoTextX').value)||0))*width/100;
+  const y=Math.max(0,Math.min(100,Number($('#photoTextY').value)||0))*height/100;
+  ctx.font=fontSize+'px '+$('#photoTextFont').value;ctx.fillStyle=$('#photoTextColor').value;ctx.textAlign='left';ctx.textBaseline='top';
+  const lineHeight=fontSize*1.2;overlayText.split(/\\r?\\n/).forEach((line,index)=>ctx.fillText(line,x,y+index*lineHeight,Math.max(1,width-x)));
+ }
  const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,quality));canvas.width=canvas.height=1;if(!blob)throw new Error('Image export failed.');return blob;
 }
 function downloadPhotoBlob(blob,suffix){const mime=blob.type||'image/png',ext=mime.includes('jpeg')?'jpg':mime.includes('webp')?'webp':'png';const base=(photoInput.files[0]?.name||'kagzi-photo').replace(/\.[^.]+$/,'').replace(/[^a-z0-9_-]/gi,'-');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=base+suffix+'.'+ext;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
