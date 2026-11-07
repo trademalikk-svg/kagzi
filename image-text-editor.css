@@ -4,3 +4,7 @@
 
 /* Live text-edit workspace: controls stay reachable on phones. */
 .side details:first-child{border-color:#d6e0ef}.side details:first-child[open]{box-shadow:0 3px 12px #10264b0a}.side textarea:focus,.side input:focus,.side select:focus{outline:2px solid #d5a63e;outline-offset:1px}
+
+/* Keep OCR hit areas clickable, but show an outline only for the active selection. */
+.ocr-box{border:1px solid transparent!important;background:transparent!important;}
+.ocr-box.selected{border:2px solid #e49b12!important;background:#f3c65a22!important;}
