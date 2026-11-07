@@ -1,0 +1,268 @@
+{
+  "updatedAt": "2026-11-07",
+  "source": "UPPSC official State Public Service Commissions directory",
+  "items": [],
+  "portals": [
+    {
+      "regionSlug": "andhra-pradesh",
+      "regionName": "Andhra Pradesh",
+      "name": "Andhra Pradesh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://psc.ap.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "arunachal-pradesh",
+      "regionName": "Arunachal Pradesh",
+      "name": "Arunachal Pradesh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://www.appsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "assam",
+      "regionName": "Assam",
+      "name": "Assam Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://apsc.nic.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "bihar",
+      "regionName": "Bihar",
+      "name": "Bihar Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://bpsc.bihar.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "chhattisgarh",
+      "regionName": "Chhattisgarh",
+      "name": "Chhattisgarh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://psc.cg.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "goa",
+      "regionName": "Goa",
+      "name": "Goa Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://gpsc.goa.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "gujarat",
+      "regionName": "Gujarat",
+      "name": "Gujarat Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://gpsc.gujarat.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "haryana",
+      "regionName": "Haryana",
+      "name": "Haryana Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://hpsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "himachal-pradesh",
+      "regionName": "Himachal Pradesh",
+      "name": "Himachal Pradesh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://hppsc.hp.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "jammu-kashmir",
+      "regionName": "Jammu and Kashmir",
+      "name": "Jammu and Kashmir Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://jkpsc.nic.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "jharkhand",
+      "regionName": "Jharkhand",
+      "name": "Jharkhand Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://jpsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "karnataka",
+      "regionName": "Karnataka",
+      "name": "Karnataka Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://kpsc.kar.nic.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "kerala",
+      "regionName": "Kerala",
+      "name": "Kerala Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://keralapsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "madhya-pradesh",
+      "regionName": "Madhya Pradesh",
+      "name": "Madhya Pradesh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://mppsc.mp.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "maharashtra",
+      "regionName": "Maharashtra",
+      "name": "Maharashtra Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://mpsc.gov.in/home",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "manipur",
+      "regionName": "Manipur",
+      "name": "Manipur Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://mpscmanipur.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "meghalaya",
+      "regionName": "Meghalaya",
+      "name": "Meghalaya Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://mpsc.meghalaya.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "mizoram",
+      "regionName": "Mizoram",
+      "name": "Mizoram Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://mpsc.mizoram.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "nagaland",
+      "regionName": "Nagaland",
+      "name": "Nagaland Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://npsc.nagaland.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "odisha",
+      "regionName": "Odisha",
+      "name": "Odisha Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://opsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "punjab",
+      "regionName": "Punjab",
+      "name": "Punjab Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://www.ppsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "rajasthan",
+      "regionName": "Rajasthan",
+      "name": "Rajasthan Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://rpsc.rajasthan.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "sikkim",
+      "regionName": "Sikkim",
+      "name": "Sikkim Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://spsc.sikkim.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "tamil-nadu",
+      "regionName": "Tamil Nadu",
+      "name": "Tamil Nadu Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://www.tnpsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "telangana",
+      "regionName": "Telangana",
+      "name": "Telangana Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://www.tgpsc.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "tripura",
+      "regionName": "Tripura",
+      "name": "Tripura Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://tpsc.tripura.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "uttar-pradesh",
+      "regionName": "Uttar Pradesh",
+      "name": "Uttar Pradesh Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://uppsc.up.nic.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "uttarakhand",
+      "regionName": "Uttarakhand",
+      "name": "Uttarakhand Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://psc.uk.gov.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "west-bengal",
+      "regionName": "West Bengal",
+      "name": "West Bengal Public Service Commission",
+      "type": "State Public Service Commission",
+      "url": "https://pscwbapplication.in/",
+      "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
+      "lastCheckedAt": "2026-11-07"
+    }
+  ]
+}

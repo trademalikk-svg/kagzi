@@ -41,3 +41,81 @@ test("ambiguous feed candidates are withheld",async()=>{
  assert.equal(result.publishable,false);
  assert.ok(result.reasons.includes("candidate_requires_manual_review"));
 });
+
+test("Government Jobs landing page exposes only Central and one shared State/UT destination", async()=>{
+ const html=await readFile(new URL("../government-jobs/index.html",import.meta.url),"utf8");
+ assert.match(html,/href="central\/index\.html"/);
+ assert.match(html,/href="states\/index\.html"/);
+ assert.doesNotMatch(html,/href="(?:andhra-pradesh|arunachal-pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal-pradesh|jharkhand|karnataka|kerala|madhya-pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|punjab|rajasthan|sikkim|tamil-nadu|telangana|tripura|uttar-pradesh|uttarakhand|west-bengal|delhi|ladakh|puducherry)\/index\.html"/);
+ assert.match(html,/data-kagzi-protected="true"/);
+});
+
+test("unified State/UT jobs page has search, region filter, deadline sort and clear controls", async()=>{
+ const html=await readFile(new URL("../government-jobs/states/index.html",import.meta.url),"utf8");
+ for(const attr of ["data-search","data-region-filter","data-sort","data-clear","data-count","data-kagzi-directory"]) assert.match(html,new RegExp(attr));
+ assert.match(html,/assets\/regions\.js/);
+ assert.match(html,/assets\/jobs-directory\.js/);
+ assert.match(html,/data-share-page/);
+ assert.match(html,/data-whatsapp-page/);
+ assert.doesNotMatch(html,/href="\.\.\/(?:andhra-pradesh|bihar|haryana|madhya-pradesh|punjab|rajasthan|uttar-pradesh)\/index\.html"/);
+});
+
+test("state recruitment registry contains only complete official-link records", async()=>{
+ const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
+ const data=JSON.parse(raw);
+ assert.ok(Array.isArray(data.items));
+ for(const item of data.items){
+  for(const key of ["id","regionSlug","regionName","department","title","sourceUrl","lastCheckedAt"]) assert.ok(item[key],key+" is required");
+  assert.match(item.sourceUrl,/^https:\/\//);
+  if(item.notificationUrl) assert.match(item.notificationUrl,/^https:\/\//);
+  if(item.applyUrl) assert.match(item.applyUrl,/^https:\/\//);
+  if(item.applyUrl) assert.ok(item.applyVerified===true,"Apply Online must be verified");
+ }
+});
+
+test("unified jobs renderer supports region search, deadline sorting and safe share actions", async()=>{
+ const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
+ assert.match(js,/KAGZI_REGIONS/);
+ assert.match(js,/applicationEnd/);
+ assert.match(js,/navigator\.share/);
+ assert.match(js,/wa\.me/);
+ assert.match(js,/clipboard\.writeText/);
+ assert.match(js,/textContent/);
+});
+
+test("all State PSC portal links are attributed to the official UPPSC directory", async()=>{
+ const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
+ const data=JSON.parse(raw);
+ assert.equal(data.portals.length,29);
+ assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,29);
+ for(const portal of data.portals){
+  assert.match(portal.url,/^https:\/\//);
+  assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
+  assert.ok(portal.lastCheckedAt);
+ }
+});
+
+test("region filter is populated from the complete 36-region registry", async()=>{
+ const raw=await readFile(new URL("../government-jobs/assets/regions.js",import.meta.url),"utf8");
+ const match=raw.match(/window\.KAGZI_REGIONS=(\[[\s\S]*\]);/);
+ const regions=JSON.parse(match[1]);
+ const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
+ assert.equal(regions.length,36);
+ assert.match(js,/regions\.forEach/);
+ assert.match(js,/regionFilter\.append/);
+ assert.match(js,/regionFilter\.value/);
+});
+
+test("Central Jobs shows official recruitment portals without mislabelling homepages as Apply Online", async()=>{
+ const html=await readFile(new URL("../government-jobs/central/index.html",import.meta.url),"utf8");
+ for(const host of ["ssc.gov.in","upsc.gov.in","rrbcdg.gov.in","ncs.gov.in","apprenticeshipindia.gov.in","ibps.in"]) assert.ok(html.includes(host),host+" official portal link");
+ assert.match(html,/Official portal/);
+ assert.doesNotMatch(html,/Apply Online/);
+ assert.match(html,/data-share-page/);
+ assert.match(html,/data-whatsapp-page/);
+});
+
+test("Apply Online is shown only for a verified open vacancy", async()=>{
+ const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
+ assert.match(js,/item\.applyUrl&&item\.applyVerified===true&&open/);
+});
