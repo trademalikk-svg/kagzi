@@ -12,7 +12,10 @@ test("jobs directory contains all 28 states and 8 UT pages", async()=>{
  assert.equal(regions.filter(x=>x[3]==="state").length,28);
  assert.equal(regions.filter(x=>x[3]==="ut").length,8);
  assert.equal(new Set(regions.map(x=>x[0])).size,36);
- for(const [slug] of regions)assert.ok(await readFile(new URL("../government-jobs/"+slug+"/index.html",import.meta.url),"utf8"));
+ for(const [slug] of regions){
+  const page=await readFile(new URL("../government-jobs/states/"+slug+"/index.html",import.meta.url),"utf8");
+  assert.ok(page.includes("KAGZI"),slug+" state/UT page should be present");
+ }
 });
 
 test("RSS parser extracts title, summary and official link",()=>{
