@@ -3,7 +3,7 @@ const modules=[{"id":1,"name":"Document Scanner","cat":"pdf","desc":"Image captu
 const moduleDestinations={36:'resume-cv-maker.html',66:'hindi-english-typing-tools.html',67:'online-calculators.html',21:'office.html',22:'office.html',23:'office.html',2:'index.html#scanner',6:'index.html#pdfWorkbench',7:'index.html#pdfWorkbench',8:'index.html#pdfWorkbench',9:'index.html#pdfWorkbench',10:'index.html#pdfWorkbench',13:'index.html#pdfWorkbench',16:'index.html#pdfWorkbench',17:'index.html#photoStudio',39:'#folderList',47:'index.html#recent',48:'#folderList',54:'#privacyCheckTitle'};
 const availableModuleIds=new Set(Object.keys(moduleDestinations).map(Number));
 const inDevelopmentModuleIds=new Set([3,12,20,25,33,34,35,37,38,41,46,56,57,58,59,60,61,62,63,64,65]);
-const comingSoonModuleIds=new Set(Array.from({length:65},(_,i)=>i+1).filter(id=>!availableModuleIds.has(id)&&!inDevelopmentModuleIds.has(id)));
+const comingSoonModuleIds=new Set(Array.from({length:67},(_,i)=>i+1).filter(id=>!availableModuleIds.has(id)&&!inDevelopmentModuleIds.has(id)));
 modules.forEach(m=>{m.status=availableModuleIds.has(m.id)?'available':inDevelopmentModuleIds.has(m.id)?'in-development':comingSoonModuleIds.has(m.id)?'coming-soon':'coming-soon';m.href=moduleDestinations[m.id]||'';});
 
 const list=document.getElementById('moduleList'),search=document.getElementById('moduleSearch'),category=document.getElementById('moduleCategory');
