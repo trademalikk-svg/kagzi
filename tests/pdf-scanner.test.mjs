@@ -12,14 +12,14 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-function loadScanner(getUserMedia) {
+function loadScanner(getUserMedia, cameraPlayPromise) {
   const nodes = new Map();
   const listeners = new Map();
   const makeNode = id => ({
     id, disabled: false, hidden: id === 'cameraPreview', textContent: '', value: '',
     srcObject: null, files: [], classList: { add() {}, remove() {}, toggle() {} },
     addEventListener(name, callback) { listeners.set(id + ':' + name, callback); },
-    async play() {}, pause() {}, remove() {}, click() {}
+    async play() { if (id === 'cameraPreview' && cameraPlayPromise) await cameraPlayPromise; }, pause() {}, remove() {}, click() {}
   });
   for (const id of ['openCameraScanner','closeCameraScanner','captureScan','cameraPreview','scanPreviewCanvas','scannerStatus','ocrEditStatus','ocrResults','downloadOcrText','copyOcrText','addOcrTextPage','ocrLanguage','ocrImageInput','scanImageOcr','inspectorText']) nodes.set(id, makeNode(id));
   const document = {
@@ -90,5 +90,24 @@ test('closing the scanner while permission is pending stops a late stream instea
   assert.equal(app.nodes.get('cameraPreview').srcObject, null, 'a late stream must not be attached to the preview');
   assert.equal(app.nodes.get('cameraPreview').hidden, true);
   assert.equal(app.nodes.get('captureScan').disabled, true);
+  assert.match(app.nodes.get('scannerStatus').textContent, /Camera closed/i);
+});
+
+test('closing while camera preview playback is pending does not restore active scanner controls', async () => {
+  const playGate = deferred();
+  let stopped = 0;
+  const mediaStream = { getTracks: () => [{ stop() { stopped += 1; } }] };
+  const app = loadScanner(async () => mediaStream, playGate.promise);
+  const opening = app.listeners.get('openCameraScanner:click')();
+  await Promise.resolve();
+  await Promise.resolve();
+  app.windowListeners.get('pagehide')();
+  playGate.resolve();
+  await opening;
+  assert.equal(stopped, 1);
+  assert.equal(app.nodes.get('cameraPreview').srcObject, null);
+  assert.equal(app.nodes.get('cameraPreview').hidden, true);
+  assert.equal(app.nodes.get('captureScan').disabled, true);
+  assert.equal(app.nodes.get('closeCameraScanner').disabled, true);
   assert.match(app.nodes.get('scannerStatus').textContent, /Camera closed/i);
 });
