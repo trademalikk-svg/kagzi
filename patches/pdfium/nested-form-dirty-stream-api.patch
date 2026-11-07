@@ -80,7 +80,7 @@ diff --git a/public/fpdf_edit.h b/public/fpdf_edit.h
 index 0000000..0000000 100644
 --- a/public/fpdf_edit.h
 +++ b/public/fpdf_edit.h
-@@ -1710,6 +1710,21 @@ FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
+@@ -1710,5 +1710,20 @@ FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
  FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index);
  
 +// Experimental API.
