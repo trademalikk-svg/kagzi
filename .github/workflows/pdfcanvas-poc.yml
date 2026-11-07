@@ -1446,6 +1446,132 @@ jobs:
           assert.equal(changedSameLineControl, 0, 'same-line control pixels must remain unchanged');
           NODE
 
+      - name: Probe scaled and translated Form XObject replacement fallback
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+
+          async function render(bytes) {
+            const loadingTask = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+            const pdf = await loadingTask.promise;
+            try {
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1 });
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await page.render({ canvas, canvasContext: context, viewport }).promise;
+              return { width: canvas.width, height: canvas.height, pixels: context.getImageData(0, 0, canvas.width, canvas.height).data };
+            } finally {
+              await loadingTask.destroy();
+            }
+          }
+
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Scaled Form target text', { x: 60, y: 700, size: 16, font: sourceFont });
+          const sourceLoaded = await PDFDocument.load(await source.save());
+          const targetDoc = await PDFDocument.create();
+          const [formPage] = await targetDoc.embedPages([sourceLoaded.getPage(0)]);
+          const page = targetDoc.addPage([612, 792]);
+          // 50% scale plus translation: source text should land near x=130, PDF y=450.
+          page.drawPage(formPage, { x: 100, y: 100, width: 306, height: 396 });
+          const controlFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          page.drawText('Same-line transformed control', { x: 430, y: 450, size: 8, font: controlFont });
+          page.drawText('Unrelated page control', { x: 60, y: 640, size: 12, font: controlFont });
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+          const before = await render(input);
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const target = engine.readPage(0, 0).find(run => run.text.includes('Scaled Form target text'));
+          assert.ok(target, 'scaled Form XObject text must be discovered');
+          assert.equal(target.editable, true, 'source run must be marked editable for this diagnostic');
+          const pagePtr = engine.m.FPDF_LoadPage(engine.docPtr, 0);
+          const formPtr = engine.m.FPDFPage_GetObject(pagePtr, 0);
+          const childPtr = engine.m.FPDFFormObj_GetObject(formPtr, 0);
+          assert.equal(engine.m.FPDFFormObj_RemoveObject(formPtr, childPtr), true, 'nested source text must be removed');
+          engine.m.FPDFPageObj_Destroy(childPtr);
+          assert.equal(engine.m.FPDFPage_GenerateContent(pagePtr), true);
+          const removedBytes = engine.save();
+          engine.m.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+
+          const overlayDoc = await PDFDocument.load(removedBytes);
+          const overlayPage = overlayDoc.getPage(0);
+          const replacementFont = await overlayDoc.embedFont(StandardFonts.Helvetica);
+          const overlayX = target.x;
+          const overlayY = 792 - target.y - target.h;
+          overlayPage.drawText('Scaled Form replacement text', {
+            x: overlayX,
+            y: overlayY,
+            size: target.fontSize,
+            font: replacementFont
+          });
+          const output = new Uint8Array(await overlayDoc.save());
+
+          const verify = await PdfiumTextEngine.create(wasm, output);
+          const extracted = verify.readPage(0, 0).map(run => run.text).join(' ');
+          verify.destroy();
+          const replacementFound = extracted.includes('Scaled Form replacement text');
+          const originalRemoved = !extracted.includes('Scaled Form target text');
+          const controlPreserved = extracted.includes('Same-line transformed control') &&
+            extracted.includes('Unrelated page control');
+          assert.ok(replacementFound && originalRemoved && controlPreserved,
+            'scaled replacement semantic round-trip and controls must pass');
+
+          const after = await render(output);
+          assert.equal(after.width, before.width);
+          assert.equal(after.height, before.height);
+          const y0 = Math.max(0, Math.floor(target.y - 18));
+          const y1 = Math.min(before.height, Math.ceil(target.y + target.h + 24));
+          let changedInside = 0;
+          let changedOutside = 0;
+          let changedControl = 0;
+          for (let y = 0; y < before.height; y += 1) {
+            for (let x = 0; x < before.width; x += 1) {
+              const p = (y * before.width + x) * 4;
+              const changed = before.pixels[p] !== after.pixels[p] ||
+                before.pixels[p + 1] !== after.pixels[p + 1] ||
+                before.pixels[p + 2] !== after.pixels[p + 2] ||
+                before.pixels[p + 3] !== after.pixels[p + 3];
+              if (!changed) continue;
+              if (y >= y0 && y < y1) changedInside += 1;
+              else changedOutside += 1;
+              if (x >= 420 && x < 610 && y >= y0 && y < y1) changedControl += 1;
+            }
+          }
+          const report = {
+            result: 'DIAGNOSTIC',
+            transform: { scale: 0.5, translateX: 100, translateY: 100 },
+            sourceRun: { x: target.x, y: target.y, width: target.w, height: target.h, fontSize: target.fontSize },
+            overlayPosition: { x: overlayX, y: overlayY },
+            replacementFound,
+            originalRemoved,
+            controlPreserved,
+            changedPixelsInsideTargetBand: changedInside,
+            changedPixelsOutsideTargetBand: changedOutside,
+            sameLineControlPixelsChanged: changedControl,
+            interpretation: changedInside > 0 && changedOutside === 0 && changedControl === 0
+              ? 'Scaled and translated identity-form fallback passed this fixture; rotation and nested transforms remain unverified.'
+              : 'Scaled fallback failed visual preservation; keep transformed Form XObject editing disabled.',
+            policy: 'Disposable scaled fixture only. No production documents are changed.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          assert.ok(changedInside > 0, 'replacement must visibly change target band');
+          assert.equal(changedOutside, 0, 'pixels outside target band must remain unchanged');
+          assert.equal(changedControl, 0, 'same-line control pixels must remain unchanged');
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
