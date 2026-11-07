@@ -63,3 +63,10 @@ test('public jobs route and admin login entry are public while admin data is all
   assert.doesNotMatch(adminPage, /data-kagzi-protected="true"/i);
   assert.ok(!protectedPages.includes('private-jobs-admin.html'));
 });
+
+test('admin can close a job without deleting its audit record', () => {
+  const page = read('private-jobs-admin.html');
+  assert.match(page, /Close Job/);
+  assert.match(page, /verification_status:\s*'withheld'/);
+  assert.match(page, /is_published:\s*false/);
+});
