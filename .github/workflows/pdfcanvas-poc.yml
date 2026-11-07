@@ -37,8 +37,8 @@ jobs:
 
       - name: Apply isolated nested Form dirty-stream API prototype
         run: |
-          git -C vendor/embedpdf-runtime apply --check patches/pdfium/nested-form-dirty-stream-api.patch
-          git -C vendor/embedpdf-runtime apply patches/pdfium/nested-form-dirty-stream-api.patch
+          git -C vendor/embedpdf-runtime apply --check "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+          git -C vendor/embedpdf-runtime apply "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
 
       - name: Verify pinned Form dirty-marking and serialization path
         run: |
@@ -4041,8 +4041,8 @@ jobs:
 
       - name: Apply nested Form dirty-stream API prototype
         run: |
-          git -C vendor/embedpdf-runtime apply --check patches/pdfium/nested-form-dirty-stream-api.patch
-          git -C vendor/embedpdf-runtime apply patches/pdfium/nested-form-dirty-stream-api.patch
+          git -C vendor/embedpdf-runtime apply --check "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+          git -C vendor/embedpdf-runtime apply "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
 
       - name: Build patched PDFium WASM static library
         working-directory: vendor/embedpdf-runtime
