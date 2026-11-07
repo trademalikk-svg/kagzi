@@ -640,13 +640,13 @@ jobs:
             '| Engine marks editable | ' + (target?.editable === true) + ' |',
             '| Replacement attempted | ' + replacementAttempted + ' |',
             '| Text round-trip verified | ' + replacementRoundTrip + ' |',
-            '| Unrelated page text found/preserved | ' + Boolean(sentinel) + ' |',
+            '| Unrelated page text | ' + (replacementRoundTrip ? 'preserved after edit' : (sentinel ? 'found before edit; preservation not tested' : 'not found')) + ' |',
             '',
             detail,
             '',
             report.releasePolicy,
             ''
-          ].join('\\n');
+          ].join('\n');
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
           NODE
 
