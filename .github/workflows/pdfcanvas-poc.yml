@@ -3768,11 +3768,12 @@ jobs:
           | Single-level Form child deletion | PDF.js round-trip; 1,523 changed pixels in target band; 0 outside; control unchanged | Verified for deletion fixture only |
           | Nested-nested Form replacement | Ancestor dirty toggles; replacement after reopen; 124 target pixels changed, 0 outside, same-line control unchanged | Verified for this synthetic fixture only |
           | Nested Form resource inheritance | Page/parent resource fallback discovered; nested child deletion survived Save/Reopen; page control preserved | Verified for these synthetic fixtures only |
+          | Form font alias collision | Local Form and parent Form Helvetica aliases each shadowed same-name page-level Courier aliases; text widths matched baseline | Verified for these synthetic fixtures only |
           | CropBox-offset overlay placement | Baseline (150, 600); 1,072 changed target pixels; 0 outside CropBox; controls unchanged | Verified for this fixture |
           | Encrypted and malformed PDF handling | Password-protected PDF and malformed cross-reference rejected by PDFium; qpdf independently rejects malformed fixture | Verified for fixtures |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
-          **Release rule:** Keep general Form XObject content non-editable in the user-facing editor. Identity, scaled, rotated, rectangular-clip, triangular-clip, disjoint-clip, this two-rectangle intersecting-clip case, single-level deletion, CropBox, and nested-nested results are fixture-specific only. Arbitrary clip paths, transformed clipping paths, even-odd rules, Bezier paths, nested clip combinations, resource inheritance during replacement, and broader PDF preservation still require separate proofs. The nested-nested test uses an active-state toggle only as a diagnostic dirty-marking trigger; it is not an approved production mutation strategy.
+          **Release rule:** Keep general Form XObject content non-editable in the user-facing editor. Identity, scaled, rotated, rectangular-clip, triangular-clip, disjoint-clip, this two-rectangle intersecting-clip case, single-level deletion, CropBox, and nested-nested results are fixture-specific only. Arbitrary clip paths, transformed clipping paths, even-odd rules, Bezier paths, nested clip combinations, resource-name collisions during replacement, arbitrary resource dictionaries, and broader PDF preservation still require separate proofs. The nested-nested test uses an active-state toggle only as a diagnostic dirty-marking trigger; it is not an approved production mutation strategy.
 
           All work remains on `experiment/pdfcanvas-poc`. Production branch and deployment were not changed.
           EOF
