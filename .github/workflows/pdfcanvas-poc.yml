@@ -936,6 +936,8 @@ jobs:
             'FPDFPageObj_GetType',
             'FPDFFormObj_CountObjects',
             'FPDFFormObj_GetObject',
+            'FPDFText_LoadPage',
+            'FPDFTextObj_GetText',
             'FPDFPage_GenerateContent'
           ];
           const availability = Object.fromEntries(apiNames.map(name => [
@@ -964,11 +966,32 @@ jobs:
                 const childCount = countFormObjects(objectPtr);
                 for (let childIndex = 0; childIndex < childCount; childIndex += 1) {
                   const childPtr = getFormObject(objectPtr, childIndex);
+                  const childType = getType(childPtr);
+                  let nestedText = null;
+                  if (childType === 1 && typeof module.FPDFTextObj_GetText === 'function' &&
+                      typeof module.FPDFText_LoadPage === 'function') {
+                    const textPagePtr = module.FPDFText_LoadPage(pagePtr);
+                    if (textPagePtr) {
+                      const needed = module.FPDFTextObj_GetText(childPtr, textPagePtr, 0, 0);
+                      if (needed > 0) {
+                        const bufferPtr = exports.malloc(needed);
+                        if (bufferPtr) {
+                          module.FPDFTextObj_GetText(childPtr, textPagePtr, bufferPtr, needed);
+                          const heap = new Uint8Array(exports.memory.buffer);
+                          nestedText = Buffer.from(heap.subarray(bufferPtr, bufferPtr + needed - 2)).toString('utf16le');
+                          exports.free(bufferPtr);
+                        }
+                      }
+                      module.FPDFText_ClosePage?.(textPagePtr);
+                    }
+                  }
                   nested.push({
                     formIndex: index,
                     childIndex,
-                    type: getType(childPtr),
-                    pointerMatchesExtractedText: runObjectPointers.has(childPtr)
+                    pointer: childPtr,
+                    type: childType,
+                    pointerMatchesExtractedText: runObjectPointers.has(childPtr),
+                    nestedObjectText: nestedText
                   });
                 }
               }
@@ -981,7 +1004,12 @@ jobs:
             apiAvailability: availability,
             topLevelPageObjects: topLevel,
             nestedFormObjects: nested,
-            extractedTextRuns: textRuns.map(run => ({ text: run.text, editable: run.editable, memberCount: run.members.length })),
+            extractedTextRuns: textRuns.map(run => ({
+              text: run.text,
+              editable: run.editable,
+              memberCount: run.members.length,
+              memberPointers: run.members.map(member => member.objPtr)
+            })),
             interpretation: availability.FPDFFormObj_CountObjects && availability.FPDFFormObj_GetObject
               ? 'Nested Form Object traversal API is exposed; inspect pointer mapping before implementing nested stream serialization.'
               : 'The required nested Form Object traversal API is not exposed through this PDFium wrapper; a supported binding or another safe approach is needed.',
