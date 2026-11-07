@@ -2056,7 +2056,11 @@ jobs:
           const engine = await PdfiumTextEngine.create(wasm, input);
           const module = engine.m;
           const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
-          const formPtr = module.FPDFPage_GetObject(pagePtr, 0);
+          const pageObjectCount = module.FPDFPage_CountObjects(pagePtr);
+          const formIndex = Array.from({ length: pageObjectCount }, (_, index) => index)
+            .find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          assert.notEqual(formIndex, undefined, 'clipped page must contain a Form XObject');
+          const formPtr = module.FPDFPage_GetObject(pagePtr, formIndex);
           const childPtr = module.FPDFFormObj_GetObject(formPtr, 0);
           const run = engine.readPage(0, 0).find(item => item.text.includes('Clipped form target must stay clipped'));
           assert.ok(run, 'nested clipped text must be discoverable');
