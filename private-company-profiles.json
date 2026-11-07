@@ -1,0 +1,523 @@
+{
+  "Conglomerate": {
+    "about": "कई अलग-अलग industries में काम करने वाला business group; eligibility उसकी अलग-अलग group companies और job role पर निर्भर करती है।",
+    "hiring_areas": [
+      "Engineering & Projects",
+      "Finance, Accounts & Audit",
+      "Sales, Marketing & Customer Support",
+      "HR, Legal & Administration",
+      "IT, Data & Digital"
+    ],
+    "qualification_guide": [
+      "10th/12th: कुछ support, operations और entry-level roles",
+      "ITI/NCVT/SCVT या Diploma: technical और maintenance roles",
+      "B.E./B.Tech: engineering, projects और technology roles",
+      "B.Com/BBA/BA/B.Sc: business, finance और operations roles",
+      "MBA/CA/CS/LLB या relevant postgraduate degree: specialist roles"
+    ],
+    "experience_guide": "Apprentice/trainee और entry-level से लेकर experienced specialist तथा management roles तक; हर vacancy में अलग अनुभव माँगा जाता है।",
+    "fresher_note": "कुछ group companies में trainee, graduate, apprentice और entry-level अवसर मिल सकते हैं; हर group company अलग भर्ती करती है।",
+    "role_specific_note": "Tata Group जैसे groups में apply करते समय सही subsidiary और exact job description चुनें। Group की एक vacancy दूसरी group company की eligibility नहीं बताती।"
+  },
+  "Energy, Retail & Telecom": {
+    "about": "Energy, retail, digital services और telecom जैसे business verticals; qualification चुने हुए department पर निर्भर करती है।",
+    "hiring_areas": [
+      "Retail Store & Customer Operations",
+      "Telecom / Network & Field Operations",
+      "Engineering, Plant & Maintenance",
+      "Digital, IT & Data",
+      "Supply Chain, Sales & Corporate Functions"
+    ],
+    "qualification_guide": [
+      "10th/12th: कुछ store, customer operations और field-support roles",
+      "ITI/Diploma: electrical, mechanical, instrumentation और network field roles",
+      "B.E./B.Tech: engineering, telecom, energy और technology roles",
+      "Any recognised graduation: कुछ sales, retail, operations और support roles",
+      "MBA/CA/CS या specialist postgraduate degree: selected corporate roles"
+    ],
+    "experience_guide": "कुछ entry-level और trainee roles के साथ technical, retail, sales और corporate experienced positions भी होती हैं।",
+    "fresher_note": "Retail/operations trainee और selected graduate hiring संभव; fresher eligibility हर role पर जाँचें।",
+    "role_specific_note": "Reliance group के अलग businesses (Industries, Retail, Jio, New Energy) के आवेदन और job requirements अलग हो सकते हैं।"
+  },
+  "Consumer & Manufacturing": {
+    "about": "Consumer products और manufacturing operations से जुड़ी company; plant, product, sales और corporate jobs की शर्तें अलग होती हैं।",
+    "hiring_areas": [
+      "Production & Plant Operations",
+      "Quality Assurance / Quality Control",
+      "Maintenance & Engineering",
+      "Sales, Distribution & Marketing",
+      "Supply Chain, Procurement & Corporate"
+    ],
+    "qualification_guide": [
+      "10th/12th: कुछ shop-floor support और operations roles",
+      "ITI: fitter, electrician, machinist और अन्य relevant trades",
+      "Diploma: production, mechanical, electrical और quality roles",
+      "B.E./B.Tech: engineering, production, quality और process roles",
+      "B.Com/BBA/MBA: finance, sales, marketing और supply chain roles"
+    ],
+    "experience_guide": "Apprentice/trainee, plant operations, sales entry-level और experienced engineering/management roles; exact years posting में दिए जाते हैं।",
+    "fresher_note": "Apprentice, trainee और selected entry-level roles मिल सकते हैं; openings location और plant के अनुसार बदलती हैं।",
+    "role_specific_note": "Manufacturing plant roles में trade, shift, medical fitness और location conditions भी official notice में देखना जरूरी है।"
+  },
+  "Automotive": {
+    "about": "Vehicle design, manufacturing, service, dealer network और supply-chain functions में अवसर हो सकते हैं।",
+    "hiring_areas": [
+      "Production & Assembly",
+      "Automobile / Mechanical Engineering",
+      "Quality, Testing & R&D",
+      "Maintenance & Plant Operations",
+      "Dealer Sales, Service & Parts",
+      "Supply Chain & Corporate"
+    ],
+    "qualification_guide": [
+      "10th/12th: कुछ support, dealer और entry operations roles",
+      "ITI/NCVT/SCVT: fitter, welder, electrician, machinist, diesel/mechanic trades आदि जहाँ notice में माँगे जाएँ",
+      "Diploma: mechanical, automobile, electrical और production engineering",
+      "B.E./B.Tech: mechanical, automobile, electrical, electronics, production",
+      "BBA/B.Com/MBA: dealer sales, finance, marketing और corporate roles"
+    ],
+    "experience_guide": "Apprenticeship/trainee से लेकर experienced production, service, engineering और management roles तक।",
+    "fresher_note": "Apprentice, ITI workmen, graduate engineer trainee और entry-level opportunities समय-समय पर आ सकती हैं।",
+    "role_specific_note": "ITI भर्ती में trade, NCVT/SCVT, institute type, passing year और age cut-off बहुत specific हो सकते हैं; official notification ही final है।"
+  },
+  "Banking": {
+    "about": "Branch banking, digital banking, lending और risk/compliance functions; customer-facing और specialist roles की पात्रता अलग होती है।",
+    "hiring_areas": [
+      "Branch & Customer Service",
+      "Relationship / Sales & Business Development",
+      "Credit, Risk & Underwriting",
+      "Operations, KYC & Compliance",
+      "Technology, Cybersecurity & Data"
+    ],
+    "qualification_guide": [
+      "Graduation: कई entry-level banking, sales और operations roles में माँगी जा सकती है",
+      "B.Com/BBA/BA/B.Sc: role-specific customer, finance और operations roles",
+      "MBA/PGDM: selected relationship, product और management roles",
+      "CA/CFA/FRM/LLB: specialist finance, risk, audit या legal roles जहाँ आवश्यक हों",
+      "B.E./B.Tech/BCA/MCA: technology, data और cybersecurity roles"
+    ],
+    "experience_guide": "कुछ trainee/certification pathways और entry-level roles; relationship, credit, risk और specialist jobs में relevant experience माँगा जा सकता है।",
+    "fresher_note": "Early-career programmes, internships, certifications या sales/branch entry roles उपलब्ध हो सकते हैं; हर programme की अपनी conditions हैं।",
+    "role_specific_note": "Bank jobs में graduation subject, marks, language, sales targets, location, background verification और role-specific certification की शर्तें जाँचें।"
+  },
+  "IT & Technology": {
+    "about": "Software, IT services, cloud, cybersecurity, data, infrastructure और product engineering में अवसर।",
+    "hiring_areas": [
+      "Software Development & Testing",
+      "IT Support / Infrastructure / Networking",
+      "Cloud, DevOps & Cybersecurity",
+      "Data, AI & Analytics",
+      "Consulting, Product & Project Delivery"
+    ],
+    "qualification_guide": [
+      "B.E./B.Tech: CS, IT, Electronics या relevant engineering",
+      "BCA/MCA/B.Sc/M.Sc: Computer Science, IT, Mathematics या relevant field",
+      "Diploma: selected support, networking और technician roles",
+      "Any graduate: कुछ service desk, operations, business और non-technical roles",
+      "Relevant certifications, coding projects और portfolio role के अनुसार उपयोगी हो सकते हैं"
+    ],
+    "experience_guide": "Campus/graduate hiring और entry-level roles से लेकर specialist, architect, lead और manager roles तक।",
+    "fresher_note": "Campus hiring, graduate trainee और entry-level opportunities कुछ companies में होती हैं; batch, degree, marks और backlog criteria अलग-अलग होते हैं।",
+    "role_specific_note": "Coding test, aptitude, communication, technical interview, project experience और skill-stack requirements job notice में अलग से जाँचें।"
+  },
+  "Technology & Delivery": {
+    "about": "Technology platform और last-mile delivery ecosystem से जुड़े product, operations, customer और logistics roles।",
+    "hiring_areas": [
+      "Software / Product / Data",
+      "City & Delivery Operations",
+      "Customer Experience & Support",
+      "Sales, Partnerships & Account Management",
+      "Supply Chain & Business Operations"
+    ],
+    "qualification_guide": [
+      "10th/12th: कुछ delivery/field/operations roles जहाँ स्थानीय notice अनुमति दे",
+      "Graduation: customer experience, operations, sales और corporate entry roles",
+      "B.E./B.Tech/BCA/MCA: technology and product engineering",
+      "MBA/BBA: business operations, partnerships और management roles",
+      "Role-specific driving licence या local documents केवल तभी जब official posting में आवश्यक हों"
+    ],
+    "experience_guide": "कुछ operations और support roles entry-level हो सकते हैं; product, engineering और managerial positions में relevant experience माँगा जा सकता है।",
+    "fresher_note": "कुछ city operations, support और graduate roles fresher-friendly हो सकते हैं; हर role की minimum age और conditions देखें।",
+    "role_specific_note": "Delivery/field roles में location, shift, safety, vehicle/document requirements और legal age criteria official posting से verify करें।"
+  },
+  "Financial Services": {
+    "about": "Financial products, loan distribution, customer service और sales operations से जुड़े अवसर।",
+    "hiring_areas": [
+      "Sales & Relationship Management",
+      "Loan / Mortgage Operations",
+      "Customer Support",
+      "Credit & Documentation",
+      "Finance, Compliance & Corporate"
+    ],
+    "qualification_guide": [
+      "12th: कुछ customer support या field support roles",
+      "Graduation: कई sales, relationship और operations roles",
+      "B.Com/BBA: finance, lending और accounts roles",
+      "MBA/PGDM: selected business, product और managerial roles",
+      "CA/CS/LLB या relevant certifications: specialist functions"
+    ],
+    "experience_guide": "कुछ sales trainee और entry-level positions; credit, relationship और management roles में experience माँगा जा सकता है।",
+    "fresher_note": "Entry-level sales/customer roles संभव; incentive, fixed salary और target structure अलग-अलग हो सकते हैं।",
+    "role_specific_note": "Job offer स्वीकार करने से पहले fixed pay, incentive, payroll employer, field duties और official location verify करें।"
+  },
+  "Automotive & Manufacturing": {
+    "about": "Automotive manufacturing के साथ engineering, plant, supply chain और dealer operations में अवसर।",
+    "hiring_areas": [
+      "Plant & Production",
+      "Quality / Maintenance / Tooling",
+      "Mechanical & Electrical Engineering",
+      "Dealer Network & Service",
+      "Supply Chain & Corporate Roles"
+    ],
+    "qualification_guide": [
+      "ITI/NCVT/SCVT: trade-based plant and maintenance roles",
+      "Diploma: mechanical, electrical, automobile, production",
+      "B.E./B.Tech: engineering, quality, design and operations",
+      "B.Com/BBA/MBA: finance, sales, HR and supply chain",
+      "12th/Graduation: selected dealer and support roles"
+    ],
+    "experience_guide": "Apprentice और trainee से लेकर plant specialists, service professionals और experienced corporate roles तक।",
+    "fresher_note": "Apprentice/GET और dealer trainee opportunities company-specific notices के अनुसार।",
+    "role_specific_note": "Trade, branch/plant, shift, age cut-off और passing-year conditions को original notice से match करें।"
+  },
+  "IT & Consulting": {
+    "about": "Technology consulting, enterprise systems, digital transformation और professional services के अवसर।",
+    "hiring_areas": [
+      "Software & Cloud Engineering",
+      "Technology Consulting",
+      "Data / Analytics / AI",
+      "Cybersecurity & Enterprise Platforms",
+      "Business Analysis & Project Delivery"
+    ],
+    "qualification_guide": [
+      "B.E./B.Tech: CS/IT/Engineering roles",
+      "BCA/MCA/B.Sc/M.Sc: software, data and support roles",
+      "MBA/PGDM: business and management consulting",
+      "CA/ACCA/CFA/LLB: finance, tax, audit, risk and legal tracks where relevant",
+      "Relevant technical skills, certifications and project portfolio role-dependent"
+    ],
+    "experience_guide": "Graduate/analyst hiring programmes से लेकर experienced consultant, specialist और leadership positions तक।",
+    "fresher_note": "Campus/graduate analyst programmes कुछ locations और intakes में उपलब्ध; degree, passing year, marks और assessment criteria बदलते हैं।",
+    "role_specific_note": "Consulting role के लिए client-facing communication, domain knowledge, travel/location flexibility और technical skills की शर्तें अलग हो सकती हैं।"
+  },
+  "Food & FMCG": {
+    "about": "Food production, quality, packaging, distribution, sales और corporate functions।",
+    "hiring_areas": [
+      "Food / Production Operations",
+      "Quality Assurance & Food Safety",
+      "Plant Maintenance & Engineering",
+      "Sales, Distribution & Marketing",
+      "Supply Chain, Procurement & Finance"
+    ],
+    "qualification_guide": [
+      "10th/12th: selected plant/support and operations roles",
+      "ITI/Diploma: maintenance, electrical, mechanical and process roles",
+      "B.Sc/M.Sc: food technology, microbiology, chemistry and quality roles",
+      "B.E./B.Tech: production, chemical, mechanical and packaging engineering",
+      "BBA/B.Com/MBA: sales, marketing, supply chain and finance"
+    ],
+    "experience_guide": "Plant trainee and sales entry roles से लेकर quality, engineering और corporate experienced roles तक।",
+    "fresher_note": "Graduate trainee, sales trainee और selected plant entry roles हो सकते हैं; food-safety roles में relevant subject degree आवश्यक हो सकती है।",
+    "role_specific_note": "Food manufacturing roles में shift, plant location, food-safety knowledge और statutory requirements जाँचें।"
+  },
+  "FMCG": {
+    "about": "Consumer goods, brand, manufacturing, distribution और retail-facing business roles।",
+    "hiring_areas": [
+      "Sales & Distribution",
+      "Brand / Digital Marketing",
+      "Manufacturing & Production",
+      "Quality & Research",
+      "Supply Chain & Procurement"
+    ],
+    "qualification_guide": [
+      "12th/Graduation: selected sales and operations roles",
+      "BBA/B.Com/BA: sales, marketing and business operations",
+      "MBA/PGDM: brand, category, sales leadership and management tracks",
+      "B.Sc/M.Sc: chemistry, microbiology, food science and product quality where relevant",
+      "ITI/Diploma/B.E./B.Tech: plant, engineering and maintenance roles"
+    ],
+    "experience_guide": "कुछ sales trainee/graduate roles fresher-friendly; brand, category, R&D और leadership jobs में relevant experience माँगा जा सकता है।",
+    "fresher_note": "Sales trainee, graduate trainee और internship opportunities company और intake पर निर्भर करती हैं।",
+    "role_specific_note": "Sales jobs में territory, travel, targets और language skills; technical jobs में subject-specific qualification देखें।"
+  },
+  "Manufacturing": {
+    "about": "Industrial manufacturing, product development, plant operations और distribution से जुड़े पद।",
+    "hiring_areas": [
+      "Production & Operations",
+      "Quality Control / Testing",
+      "Mechanical / Electrical Maintenance",
+      "Design & R&D",
+      "Sales, Procurement & Supply Chain"
+    ],
+    "qualification_guide": [
+      "10th/12th: selected shop-floor/support roles",
+      "ITI: relevant industrial trade",
+      "Diploma: mechanical, electrical, civil, instrumentation or production",
+      "B.E./B.Tech: engineering and process roles",
+      "B.Sc/M.Sc: chemistry, materials or laboratory roles; B.Com/MBA for business functions"
+    ],
+    "experience_guide": "Apprentice/trainee, junior operator और engineer से लेकर experienced plant, quality और management roles तक।",
+    "fresher_note": "Apprentice and graduate trainee roles may be offered; specific trades, pass year and age conditions vary.",
+    "role_specific_note": "Safety training, shift work, plant location, medical fitness and technical trade criteria may apply where stated in the official notice."
+  },
+  "FMCG & Manufacturing": {
+    "about": "Consumer brands के साथ production, packaging, quality और distribution operations।",
+    "hiring_areas": [
+      "Factory / Production",
+      "Quality & Laboratory",
+      "Engineering & Maintenance",
+      "Sales & Marketing",
+      "Supply Chain & Corporate"
+    ],
+    "qualification_guide": [
+      "ITI/Diploma: plant maintenance and technical operations",
+      "B.Sc/M.Sc: chemistry, microbiology, food science and quality",
+      "B.E./B.Tech: manufacturing, chemical, mechanical and electrical",
+      "BBA/B.Com/MBA: sales, finance, marketing and supply chain",
+      "12th/Graduation: selected support and operations jobs"
+    ],
+    "experience_guide": "Entry-level production/sales and graduate trainee roles से लेकर technical specialists और managers तक।",
+    "fresher_note": "Selected plant, sales and graduate trainee vacancies may accept freshers.",
+    "role_specific_note": "Plant-based roles में shift, location, trade, degree specialization और safety requirements अलग से verify करें।"
+  },
+  "Infrastructure & Energy": {
+    "about": "Energy, infrastructure, construction, project execution और corporate functions।",
+    "hiring_areas": [
+      "Civil / Mechanical / Electrical Engineering",
+      "Project Management & Site Operations",
+      "Energy / Renewables / Utilities",
+      "Procurement & Contracts",
+      "Finance, HR, IT & Administration"
+    ],
+    "qualification_guide": [
+      "ITI/Diploma: technician, electrical, civil and mechanical trades",
+      "B.E./B.Tech: civil, mechanical, electrical, chemical and related engineering",
+      "B.Arch/M.Arch: selected design and planning roles",
+      "B.Com/MBA/CA/CS: finance, procurement and corporate roles",
+      "Safety/quality certifications: only where job notice requires them"
+    ],
+    "experience_guide": "Graduate engineer trainee and site entry roles से लेकर experienced project, engineering and leadership positions तक।",
+    "fresher_note": "Selected graduate engineer trainee and apprentice roles may be available.",
+    "role_specific_note": "Site location, travel, project duration, shift, safety certification and engineering discipline must match the exact vacancy."
+  },
+  "Engineering & Construction": {
+    "about": "Engineering, construction, EPC, project delivery, design, commissioning और infrastructure operations।",
+    "hiring_areas": [
+      "Civil / Structural / Mechanical / Electrical Engineering",
+      "Project Planning & Site Execution",
+      "Quantity Surveying / Contracts",
+      "Procurement & Supply Chain",
+      "Safety, Quality & Commissioning"
+    ],
+    "qualification_guide": [
+      "ITI: trade technician roles",
+      "Diploma: civil, mechanical, electrical and instrumentation",
+      "B.E./B.Tech: relevant engineering discipline",
+      "B.Arch/M.Arch: architecture and design roles",
+      "B.Com/MBA/CA: project finance, procurement and commercial roles"
+    ],
+    "experience_guide": "Apprentice/graduate engineer trainee से लेकर site engineer, project manager और specialist roles तक।",
+    "fresher_note": "Campus/GET and apprentice intakes can be offered at specific times.",
+    "role_specific_note": "Engineering branch, institute/degree recognition, project site, travel and safety qualifications are vacancy-specific."
+  },
+  "Pharmaceuticals": {
+    "about": "Pharmaceutical manufacturing, quality, research, regulatory, sales and healthcare support functions।",
+    "hiring_areas": [
+      "Production & Manufacturing",
+      "Quality Control / Quality Assurance",
+      "Research & Development",
+      "Regulatory Affairs & Pharmacovigilance",
+      "Medical / Pharma Sales & Supply Chain"
+    ],
+    "qualification_guide": [
+      "D.Pharm/B.Pharm/M.Pharm: pharmacy-related roles where specified",
+      "B.Sc/M.Sc: chemistry, microbiology, biotechnology and laboratory roles",
+      "B.E./B.Tech/Diploma/ITI: plant engineering and maintenance",
+      "Pharm.D/MBBS/MD or advanced life-science degrees: selected clinical/scientific roles only when stated",
+      "BBA/MBA/B.Com: sales, marketing, finance and business functions"
+    ],
+    "experience_guide": "Some trainee, production and sales entry roles; QA/QC, regulatory, R&D and specialist roles often require relevant degree or experience.",
+    "fresher_note": "Selected production trainee, medical representative and graduate roles may accept freshers, subject to role-specific criteria.",
+    "role_specific_note": "Drug manufacturing and regulated roles may require specific pharmacy/science qualifications, licences or statutory registrations. Never assume a general graduate degree is enough."
+  },
+  "Biotechnology & Healthcare": {
+    "about": "Biotechnology, biopharma, diagnostics, research, manufacturing and healthcare-related functions।",
+    "hiring_areas": [
+      "Research & Development",
+      "Bioprocess / Manufacturing",
+      "Quality Control & Quality Assurance",
+      "Clinical / Regulatory / Lab Operations",
+      "Engineering, Data & Corporate Functions"
+    ],
+    "qualification_guide": [
+      "B.Sc/M.Sc: biotechnology, microbiology, biochemistry, chemistry or life sciences",
+      "B.Tech/M.Tech: biotechnology, chemical, biochemical and related engineering",
+      "B.Pharm/M.Pharm: pharmaceutical functions where required",
+      "Ph.D: research scientist and advanced R&D roles where stated",
+      "ITI/Diploma/B.E./B.Tech: engineering, utilities and plant maintenance"
+    ],
+    "experience_guide": "Lab/production trainee roles से लेकर experienced scientist, quality, regulatory and engineering positions तक।",
+    "fresher_note": "Selected lab, production and graduate trainee openings may be available; research roles can require advanced qualifications.",
+    "role_specific_note": "Lab safety, regulated manufacturing, clinical requirements and subject specialization are vacancy-specific."
+  },
+  "E-commerce & Technology": {
+    "about": "Online retail, fulfilment, logistics, software, data and customer experience roles।",
+    "hiring_areas": [
+      "Fulfilment Centre & Warehouse Operations",
+      "Software / Product / Data",
+      "Customer Service & Seller Support",
+      "Supply Chain & Logistics",
+      "Category, Marketing & Business Operations"
+    ],
+    "qualification_guide": [
+      "10th/12th: selected warehouse and operations roles",
+      "ITI/Diploma: equipment, facility and technical support",
+      "Graduation: customer service, operations, seller support and corporate roles",
+      "B.E./B.Tech/BCA/MCA: software, product and data engineering",
+      "MBA/BBA: category, business, operations and marketing roles"
+    ],
+    "experience_guide": "Selected entry-level operations and support roles, internships and experienced technical/corporate positions.",
+    "fresher_note": "Some seasonal, operations and graduate roles may be entry-level; shift, location and minimum-age rules vary.",
+    "role_specific_note": "Warehouse and field roles may include physical work, shift schedules and site-specific safety conditions; read the job notice carefully."
+  },
+  "Consulting & Professional Services": {
+    "about": "Audit, tax, consulting, risk, legal, technology, deals and business advisory services।",
+    "hiring_areas": [
+      "Audit & Assurance",
+      "Tax & Legal",
+      "Consulting / Strategy / Risk",
+      "Technology & Data",
+      "Finance, Deals & Business Support"
+    ],
+    "qualification_guide": [
+      "B.Com/M.Com: accounting, audit and finance tracks",
+      "CA/ACCA/CMA/CS: professional finance, audit and compliance roles",
+      "B.E./B.Tech/BCA/MCA: technology and digital consulting",
+      "MBA/PGDM: management and strategy roles",
+      "LLB/LLM: legal roles; B.Sc/M.Sc for selected analytics and science tracks"
+    ],
+    "experience_guide": "Internships, campus analyst/associate roles and experienced consultant/manager roles.",
+    "fresher_note": "Graduate analyst, internship and campus hiring programmes may be available in selected cycles; degree and marks criteria differ.",
+    "role_specific_note": "Professional qualification stage, graduation year, academic scores, subject, language and client travel requirements must be checked on the exact posting."
+  },
+  "IT Services": {
+    "about": "IT infrastructure, software services, cloud, enterprise applications and business process technology।",
+    "hiring_areas": [
+      "Application Development & Testing",
+      "Infrastructure / Service Desk",
+      "Cloud & Network Operations",
+      "Cybersecurity & Data",
+      "Enterprise Platforms & Project Delivery"
+    ],
+    "qualification_guide": [
+      "B.E./B.Tech: CS, IT, electronics and related branches",
+      "BCA/MCA/B.Sc/M.Sc: computing, IT and data roles",
+      "Diploma: selected support and infrastructure technician roles",
+      "Any graduate: selected service desk/BPM roles where stated",
+      "Cloud/network/security certifications can be preferred for specific jobs"
+    ],
+    "experience_guide": "Entry-level service desk, campus and graduate roles to experienced developers, administrators, architects and managers.",
+    "fresher_note": "Fresher hiring often has intake windows and may specify graduation year, academic percentage and active backlog rules.",
+    "role_specific_note": "Check exact technology stack, shift timing, work location, client requirements and training/bond clauses before applying."
+  },
+  "Telecommunications": {
+    "about": "Mobile networks, fibre, broadband, telecom infrastructure, retail and customer service operations।",
+    "hiring_areas": [
+      "Network / RF / Telecom Engineering",
+      "Field & Fibre Operations",
+      "Retail / Customer Service",
+      "Sales & Enterprise Accounts",
+      "IT, Cloud, Cybersecurity & Data"
+    ],
+    "qualification_guide": [
+      "10th/12th: selected retail and support roles",
+      "ITI/Diploma: electronics, electrical, telecom and networking trades",
+      "B.E./B.Tech: ECE, telecom, electrical, CS/IT",
+      "Graduation: sales, customer support and operations",
+      "MBA: selected enterprise sales and management roles"
+    ],
+    "experience_guide": "Some retail, customer and field entry roles; network engineering and enterprise positions may require relevant experience.",
+    "fresher_note": "Selected retail, field trainee and graduate roles can be entry-level; field conditions vary.",
+    "role_specific_note": "Network/field roles may require travel, site access, shift work and role-specific technical certifications."
+  },
+  "Insurance": {
+    "about": "Life insurance, distribution, underwriting, claims, actuarial, operations and customer advisory roles।",
+    "hiring_areas": [
+      "Agency / Bancassurance / Direct Sales",
+      "Customer Service & Policy Operations",
+      "Underwriting & Claims",
+      "Actuarial / Risk / Investments",
+      "Technology, Compliance & Corporate"
+    ],
+    "qualification_guide": [
+      "12th/Graduation: selected sales and support roles as per notice",
+      "B.Com/BBA/BA/B.Sc: operations, sales and customer roles",
+      "MBA: business development, product and management",
+      "Actuarial science/statistics/mathematics: actuarial and analytics roles",
+      "CA/CFA/LLB/B.E./B.Tech: finance, legal and technology specialisms"
+    ],
+    "experience_guide": "Some advisor/sales and entry-level roles; underwriting, actuarial, compliance and managerial roles may require experience or qualifications.",
+    "fresher_note": "Some sales and operations roles may consider freshers; mandatory insurance training/exam or licence applies only where regulator/company rules require it.",
+    "role_specific_note": "Check whether the role is salaried employment or commission/agency arrangement, along with fixed pay, incentives and licensing requirements."
+  },
+  "E-commerce & Retail": {
+    "about": "Online grocery, retail, warehouse, procurement, category management and customer experience roles।",
+    "hiring_areas": [
+      "Store / Warehouse / Fulfilment Operations",
+      "Supply Chain & Procurement",
+      "Customer Support",
+      "Category / Merchandising / Marketing",
+      "Software, Data & Product"
+    ],
+    "qualification_guide": [
+      "10th/12th: selected store and warehouse operations",
+      "ITI/Diploma: equipment, electrical and facility roles",
+      "Graduation: customer service, operations, procurement and support",
+      "BBA/B.Com/MBA: category, merchandising and business roles",
+      "B.E./B.Tech/BCA/MCA: technology and analytics roles"
+    ],
+    "experience_guide": "Entry-level operations/support roles and experienced category, supply chain and technical roles.",
+    "fresher_note": "Selected operations and customer-support roles may be open to freshers; site and shift requirements vary.",
+    "role_specific_note": "Verify work location, shift, physical requirements, payroll employer and any role-specific minimum age on the official posting."
+  },
+  "Infrastructure": {
+    "about": "Infrastructure projects, industrial assets, construction, engineering and project-support roles।",
+    "hiring_areas": [
+      "Civil / Mechanical / Electrical Engineering",
+      "Project & Site Operations",
+      "Procurement / Contracts / Planning",
+      "Safety & Quality",
+      "Finance, HR, IT & Administration"
+    ],
+    "qualification_guide": [
+      "ITI/Diploma: technician and trade roles",
+      "B.E./B.Tech: civil, mechanical, electrical and related branches",
+      "B.Arch/Planning: selected design and planning roles",
+      "B.Com/MBA/CA: finance and commercial roles",
+      "Relevant safety/project certifications only where specified"
+    ],
+    "experience_guide": "Apprentice and graduate engineer trainee to experienced site, project and corporate positions.",
+    "fresher_note": "Some GET, apprentice and junior project roles may be available.",
+    "role_specific_note": "Project site, travel, shift, discipline, safety certification and contract duration are specific to each vacancy."
+  },
+  "Digital Payments & Financial Infrastructure": {
+    "about": "Payment networks, digital transaction infrastructure, technology, risk, compliance and operations roles।",
+    "hiring_areas": [
+      "Software / Platform Engineering",
+      "Cybersecurity & Information Security",
+      "Risk, Fraud & Compliance",
+      "Payment Operations & Reconciliation",
+      "Product, Data & Business Analysis"
+    ],
+    "qualification_guide": [
+      "B.E./B.Tech/BCA/MCA: software, network and security roles",
+      "B.Sc/M.Sc: mathematics, statistics, computer science and data roles",
+      "B.Com/BBA/MBA: business, operations and product roles",
+      "CA/CFA/FRM/LLB: finance, risk, audit and compliance roles where required",
+      "Relevant security, cloud or payment certifications can be preferred"
+    ],
+    "experience_guide": "Graduate/analyst and selected trainee roles, alongside experienced cybersecurity, product, risk and engineering positions.",
+    "fresher_note": "Some graduate analyst and junior technology roles may consider freshers; confirm the specific intake requirements.",
+    "role_specific_note": "Security-sensitive and financial infrastructure jobs can require specialised education, experience and background checks. Follow the exact official job description."
+  }
+}

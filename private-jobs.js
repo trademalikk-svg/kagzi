@@ -121,21 +121,54 @@ loadJobs();
 async function loadCompanySources(){
  const container=$('companySources');if(!container)return;
  try{
-  const response=await fetch('./private-job-sources.json',{cache:'no-cache'});
-  if(!response.ok)throw new Error('Company career directory unavailable');
-  const sources=await response.json();
+  const [sourceResponse,profileResponse]=await Promise.all([
+   fetch('./private-job-sources.json',{cache:'no-cache'}),
+   fetch('./private-company-profiles.json',{cache:'no-cache'})
+  ]);
+  if(!sourceResponse.ok||!profileResponse.ok)throw new Error('Company details unavailable');
+  const [sources,profiles]=await Promise.all([sourceResponse.json(),profileResponse.json()]);
   container.replaceChildren();
   for(const source of sources){
    let url;try{url=new URL(source.url)}catch{continue}
    if(url.protocol!=='https:')continue;
-   const link=document.createElement('a');link.className='company-source';link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';
+   const profile=profiles[source.sector];
+   const card=document.createElement('article');card.className='company-profile-card';
+   const head=document.createElement('div');head.className='company-profile-head';
    const name=document.createElement('b');name.textContent=source.company;
-   const sector=document.createElement('small');sector.textContent=source.sector+' · Official career page ↗';
-   link.append(name,sector);container.append(link);
+   const sector=document.createElement('small');sector.textContent=source.sector;
+   head.append(name,sector);card.append(head);
+   if(profile){
+    const about=document.createElement('p');about.className='company-about';about.textContent=profile.about;card.append(about);
+    const details=document.createElement('details');details.className='company-details';
+    const summary=document.createElement('summary');summary.textContent='Eligibility & Details / योग्यता देखें';details.append(summary);
+    const content=document.createElement('div');content.className='company-profile-content';
+    const addList=(heading,items)=>{
+     const section=document.createElement('section');
+     const h=document.createElement('h4');h.textContent=heading;section.append(h);
+     const ul=document.createElement('ul');
+     for(const item of items||[]){const li=document.createElement('li');li.textContent=item;ul.append(li);}
+     section.append(ul);content.append(section);
+    };
+    const addText=(heading,value)=>{
+     const section=document.createElement('section');
+     const h=document.createElement('h4');h.textContent=heading;const para=document.createElement('p');para.textContent=value||'See official vacancy notice.';
+     section.append(h,para);content.append(section);
+    };
+    addList('Hiring Areas / भर्ती विभाग',profile.hiring_areas);
+    addList('Qualification Guide / सामान्य योग्यता',profile.qualification_guide);
+    addText('Experience / अनुभव',profile.experience_guide);
+    addText('Fresher Opportunities / फ्रेशर',profile.fresher_note);
+    addText('Important Role Notes / जरूरी जानकारी',profile.role_specific_note);
+    const notice=document.createElement('p');notice.className='company-eligibility-warning';
+    notice.textContent='ध्यान दें: यह सामान्य जानकारी है, भर्ती की guarantee या fixed eligibility नहीं। Age, marks, branch, passing year, experience और documents हर post के official notice से मिलाएँ।';
+    content.append(notice);details.append(content);card.append(details);
+   }
+   const link=document.createElement('a');link.className='company-official-link';link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Official Careers & Apply ↗';
+   card.append(link);container.append(card);
   }
   if(!container.children.length)throw new Error('No valid company links');
  }catch(error){
-  container.replaceChildren();const state=document.createElement('div');state.className='state-card';state.textContent='Company career links अभी लोड नहीं हो सके।';container.append(state);
+  container.replaceChildren();const state=document.createElement('div');state.className='state-card';state.textContent='Company eligibility details अभी लोड नहीं हो सके।';container.append(state);
   console.error('Company career directory failed:',error.message);
  }
 }
