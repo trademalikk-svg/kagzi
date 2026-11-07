@@ -2545,6 +2545,140 @@ jobs:
           assert.equal(changedControl, 0, 'unrelated page control must remain unchanged');
           NODE
 
+      - name: Test intersecting nested clipping paths for Form XObject fallback
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import {
+            PDFDocument, StandardFonts, pushGraphicsState, popGraphicsState,
+            rectangle, clip, endPath
+          } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const outerClip = { x: 60, y: 680, width: 200, height: 50 };
+          const innerClip = { x: 100, y: 690, width: 100, height: 30 };
+
+          const appendIntersectingClips = page => page.pushOperators(
+            rectangle(outerClip.x, outerClip.y, outerClip.width, outerClip.height),
+            clip(),
+            endPath(),
+            rectangle(innerClip.x, innerClip.y, innerClip.width, innerClip.height),
+            clip(),
+            endPath()
+          );
+
+          async function render(bytes) {
+            const task = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+            const pdf = await task.promise;
+            try {
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1 });
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await page.render({ canvas, canvasContext: context, viewport }).promise;
+              const textContent = await page.getTextContent();
+              return {
+                width: canvas.width,
+                height: canvas.height,
+                pixels: context.getImageData(0, 0, canvas.width, canvas.height).data,
+                text: textContent.items.map(item => item.str).join(' ')
+              };
+            } finally {
+              await task.destroy();
+            }
+          }
+
+          const targetText = 'Intersecting clip target remains inside';
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText(targetText, { x: 60, y: 700, size: 16, font: sourceFont });
+
+          const targetDoc = await PDFDocument.create();
+          const [form] = await targetDoc.embedPages([sourcePage]);
+          const page = targetDoc.addPage([612, 792]);
+          const controlFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          page.drawText('Unrelated page control', { x: 430, y: 700, size: 12, font: controlFont });
+          page.pushOperators(pushGraphicsState());
+          appendIntersectingClips(page);
+          page.drawPage(form, { x: 0, y: 0, width: 612, height: 792 });
+          page.pushOperators(popGraphicsState());
+
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+          const before = await render(input);
+          assert.ok(before.text.includes(targetText), 'intersected-clipped source text must be extractable');
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const module = engine.m;
+          const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
+          const formIndex = Array.from(
+            { length: module.FPDFPage_CountObjects(pagePtr) },
+            (_, index) => index
+          ).find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          assert.notEqual(formIndex, undefined, 'fixture must contain a Form XObject');
+          const formPtr = module.FPDFPage_GetObject(pagePtr, formIndex);
+          const childPtr = module.FPDFFormObj_GetObject(formPtr, 0);
+          const run = engine.readPage(0, 0).find(item => item.text.includes(targetText));
+          assert.ok(run, 'intersected-clipped target must be discoverable');
+          const removed = Boolean(module.FPDFFormObj_RemoveObject(formPtr, childPtr));
+          if (removed) module.FPDFPageObj_Destroy(childPtr);
+          const generated = removed && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          const removedBytes = engine.save();
+          module.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+          assert.ok(removed && generated, 'nested child removal must complete for this fixture');
+
+          const overlayDoc = await PDFDocument.load(removedBytes);
+          const overlayPage = overlayDoc.getPage(0);
+          const overlayFont = await overlayDoc.embedFont(StandardFonts.Helvetica);
+          overlayPage.pushOperators(pushGraphicsState());
+          appendIntersectingClips(overlayPage);
+          overlayPage.drawText(targetText, { x: 60, y: 700, size: run.textFontSize, font: overlayFont });
+          overlayPage.pushOperators(popGraphicsState());
+
+          const after = await render(new Uint8Array(await overlayDoc.save()));
+          assert.ok(after.text.includes(targetText), 'replacement text must survive PDF.js reopen');
+
+          let changedInsideIntersection = 0;
+          let changedOutsideIntersection = 0;
+          let changedControl = 0;
+          for (let y = 0; y < before.height; y += 1) {
+            for (let x = 0; x < before.width; x += 1) {
+              const p = (y * before.width + x) * 4;
+              const changed = before.pixels[p] !== after.pixels[p] ||
+                before.pixels[p + 1] !== after.pixels[p + 1] ||
+                before.pixels[p + 2] !== after.pixels[p + 2] ||
+                before.pixels[p + 3] !== after.pixels[p + 3];
+              if (!changed) continue;
+              if (x >= 100 && x < 200 && y >= 72 && y < 102) changedInsideIntersection += 1;
+              else changedOutsideIntersection += 1;
+              if (x >= 420 && x < 610 && y >= 72 && y < 102) changedControl += 1;
+            }
+          }
+
+          const report = {
+            result: changedInsideIntersection > 0 && changedOutsideIntersection === 0 && changedControl === 0
+              ? 'INTERSECTING_CLIP_FIXTURE_PASS'
+              : 'INTERSECTING_CLIP_REPRODUCTION_UNSUPPORTED',
+            fixture: 'identity Form; two sequential rectangular clipping paths whose intersection is smaller than either source clip',
+            changedPixelsInsideIntersection,
+            changedPixelsOutsideIntersection,
+            unrelatedControlPixelsChanged: changedControl,
+            interpretation: 'A pass proves only this two-rectangle intersection fixture. Arbitrary clipping operators, transformed paths, even-odd rules, Bezier paths, and nested Form resource inheritance remain unverified.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          assert.ok(changedInsideIntersection > 0, 'replacement must visibly change pixels inside the clip intersection');
+          assert.equal(changedOutsideIntersection, 0, 'replacement must not paint outside the intersection');
+          assert.equal(changedControl, 0, 'unrelated page control must remain unchanged');
+          NODE
+
       - name: Diagnose nested-nested Form XObject structure
         working-directory: vendor/pdfcanvas
         run: |
