@@ -2354,7 +2354,7 @@ jobs:
 
           const output = new Uint8Array(await overlayDoc.save());
           const after = await render(output);
-          assert.ok(after.text.includes('Nonrectangular clipped Form replacement'));
+          assert.ok(after.text.includes('REPLACEMENT: Form text inside triangle'));
 
           const insideTriangle = (x, y) => {
             const [a, b, c] = polygon;
