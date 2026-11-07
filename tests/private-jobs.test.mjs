@@ -91,7 +91,7 @@ test('public page lists 51 official career portal links without claiming vacanci
   const page = read('private-jobs.html');
   const sources = JSON.parse(read('private-job-sources.json'));
   assert.equal(sources.length, 51);
-  assert.match(page, /51 Company Career Portals/);
+  assert.match(page, /51 Companies/);
   assert.match(page, /id="companySources"/);
   for (const source of sources) {
     assert.ok(source.company && source.sector);
