@@ -25,3 +25,14 @@ test('English Monthly and Yearly pages do not claim incomplete periods are final
   assert.match(read('current-affairs/english/monthly/index.html'), /still being compiled/);
   assert.match(read('current-affairs/english/yearly/index.html'), /after the year ends/);
 });
+
+test('English paid monthly/yearly source content is explicitly marked incomplete', () => {
+  const source = read('current-affairs/english/source.html');
+  for (const id of ['monthly', 'yearly']) {
+    const match = source.match(new RegExp('<section[^>]*id="' + id + '"[^>]*>'));
+    assert.ok(match, 'missing source section: ' + id);
+    assert.match(match[0], /data-edition-status="in-progress"/);
+  }
+  assert.match(source, /calendar month closes/);
+  assert.match(source, /after 31 December 2026/);
+});
