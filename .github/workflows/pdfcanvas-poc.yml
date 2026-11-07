@@ -3254,7 +3254,7 @@ jobs:
           | Two disjoint rectangular clip subpaths explicitly reproduced | New PDF.js pixel-diff regression; both regions must change and gap/outside must remain unchanged | Pending CI |
           | Two sequential intersecting rectangular clips explicitly reproduced | New PDF.js pixel-diff regression; intersection changes and all pixels outside remain unchanged | Pending CI |
           | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
-          | CropBox-offset coordinates and overlay placement | PDF.js full-MediaBox render; replacement baseline within 1 pt; control unchanged; zero changed pixels outside original CropBox | Verified for the synthetic fixture (only after this workflow succeeds) |
+          | CropBox-offset coordinates and overlay placement | PDF.js full-MediaBox render; replacement baseline within 1 pt; control unchanged; zero changed pixels outside original CropBox | Pending CI |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
           **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
