@@ -41,3 +41,11 @@ test("ambiguous feed candidates are withheld",async()=>{
  assert.equal(result.publishable,false);
  assert.ok(result.reasons.includes("candidate_requires_manual_review"));
 });
+
+test("Government Jobs landing page exposes only Central and one shared State/UT destination", async()=>{
+ const html=await readFile(new URL("../government-jobs/index.html",import.meta.url),"utf8");
+ assert.match(html,/href="central\/index\.html"/);
+ assert.match(html,/href="states\/index\.html"/);
+ assert.doesNotMatch(html,/href="(?:andhra-pradesh|arunachal-pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal-pradesh|jharkhand|karnataka|kerala|madhya-pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|punjab|rajasthan|sikkim|tamil-nadu|telangana|tripura|uttar-pradesh|uttarakhand|west-bengal|delhi|ladakh|puducherry)\/index\.html"/);
+ assert.match(html,/data-kagzi-protected="true"/);
+});
