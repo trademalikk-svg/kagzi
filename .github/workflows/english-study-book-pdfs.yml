@@ -57,5 +57,7 @@ jobs:
             echo "No English study-book PDF changes"
           else
             git commit -m "Publish nine KAGZI English study book PDFs"
+            git fetch origin main
+            git rebase origin/main
             git push origin main
           fi
