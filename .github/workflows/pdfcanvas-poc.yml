@@ -4072,18 +4072,19 @@ jobs:
           test -s "$library"
           test -s "$object"
           source third_party/emsdk/emsdk_env.sh
-          nm_tool="$(command -v llvm-nm)"
-          test -n "$nm_tool"
           {
             echo "### Compiled PDFium prototype symbol inspection"
             echo
             echo 'The archive and translation unit were produced by the patched WASM build.'
             echo
-            echo '#### Archive symbol table'
-            "$nm_tool" --defined-only --format=posix "$library" || true
-            echo
-            echo '#### fpdf_editpage object symbol table'
-            "$nm_tool" --defined-only --format=posix "$object" || true
+            echo '#### Object symbol table (when llvm-nm is available)'
+            nm_tool="$(command -v llvm-nm || true)"
+            if [ -n "$nm_tool" ]; then
+              "$nm_tool" --defined-only --format=posix "$library" || true
+              "$nm_tool" --defined-only --format=posix "$object" || true
+            else
+              echo 'llvm-nm is not installed in this Emscripten environment; exact symbol resolution is checked by the following WASM link.'
+            fi
             echo
             echo '#### Patched source definition'
             grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp
