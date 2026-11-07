@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-let stream=null,capturing=false;
+let stream=null,capturing=false,openingCamera=false;
 const byId=id=>document.getElementById(id);
 function status(message){const node=byId('scannerStatus');if(node)node.textContent=message;}
 function ocrStatus(message){const node=byId('ocrEditStatus');if(node)node.textContent=message;}
@@ -19,8 +19,12 @@ async function recognizeSource(source,label){
  }catch(error){ocrStatus('OCR failed: '+(error.message||'unknown error'));return null;}
 }
 async function openCamera(){
- const video=byId('cameraPreview');
  if(!navigator.mediaDevices?.getUserMedia){status('Camera API is unavailable. Open this page over HTTPS in a supported browser.');return;}
+ if(openingCamera)return;
+ openingCamera=true;
+ const button=byId('openCameraScanner');
+ if(button)button.disabled=true;
+ const video=byId('cameraPreview');
  try{
   if(stream)closeCamera();
   stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
@@ -33,6 +37,9 @@ async function openCamera(){
   if(byId('captureScan'))byId('captureScan').disabled=true;
   if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;
   status(error.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in browser settings.':'Could not open camera. Check camera availability and permissions.');
+ }finally{
+  openingCamera=false;
+  if(button)button.disabled=false;
  }
 }
 function closeCamera(){if(stream)stream.getTracks().forEach(track=>track.stop());stream=null;const video=byId('cameraPreview');if(video){video.pause();video.srcObject=null;video.hidden=true;}if(byId('captureScan'))byId('captureScan').disabled=true;if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;status('Camera closed.');}
