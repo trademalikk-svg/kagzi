@@ -10,10 +10,10 @@ test('English Current Affairs has its own source and independent PDF outputs',()
  assert.ok(source.includes('6 November 2026 — Daily Current Affairs'));
  assert.ok(source.includes('Weekly Current Affairs Summary'));
  const generator=read('scripts/build_current_affairs_english_pdfs.py');
- assert.ok(generator.includes('current-affairs/english/day/'));
- assert.ok(generator.includes('current-affairs/english/weekly/'));
- assert.ok(!generator.includes('current-affairs/day/'));
- assert.ok(!generator.includes('current-affairs/weekly/'));
+ assert.ok(generator.includes('"english" / "day"'));
+ assert.ok(generator.includes('"english" / "weekly"'));
+ assert.ok(!generator.includes('"day" / "KAGZI-Daily'));
+ assert.ok(!generator.includes('"weekly" / "KAGZI-Weekly'));
 });
 test('English PDFs are linked separately and never merged into Hindi edition',()=>{
  const index=read('current-affairs/english/index.html');
