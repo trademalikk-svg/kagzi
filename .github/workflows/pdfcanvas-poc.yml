@@ -2304,7 +2304,7 @@ jobs:
           const source = await PDFDocument.create();
           const sourceFont = await source.embedFont(StandardFonts.Helvetica);
           const sourcePage = source.addPage([612, 792]);
-          sourcePage.drawText('Nonrectangular clipped Form replacement', {
+          sourcePage.drawText('Nonrectangular clipped Form target', {
             x: 60, y: 700, size: 16, font: sourceFont
           });
           const sourceDoc = await PDFDocument.load(await source.save());
