@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { hmacHex, verifyHmacHex, capturedPaymentMatches } from '../functions/api/payments/_shared.js';
 
 const root = new URL('../', import.meta.url);
@@ -30,6 +31,27 @@ test('private storage paths are not readable by public catalogue clients', () =>
   assert.match(migration, /grant select \(id,title,description,price_inr,is_active,created_at,updated_at\)/);
   assert.doesNotMatch(catalogue, /storage_path/);
   assert.doesNotMatch(library, /storage_path/);
+});
+
+test('server uses the database price and blocks duplicate purchases', () => {
+  const create = read('functions/api/payments/create-order.js');
+  assert.match(create, /resource\.price_inr \* 100/);
+  assert.match(create, /kagzi_paid_entitlements/);
+  assert.match(create, /alreadyOwned/);
+  assert.match(create, /status: "eq\.active"/);
+});
+
+test('all payment Cloudflare Functions pass Node syntax checks', () => {
+  for (const path of [
+    'functions/api/payments/_shared.js',
+    'functions/api/payments/create-order.js',
+    'functions/api/payments/verify.js',
+    'functions/api/payments/webhook.js',
+    'functions/api/payments/download.js'
+  ]) {
+    const result = spawnSync(process.execPath, ['--check', new URL('../' + path, import.meta.url).pathname], { encoding: 'utf8' });
+    assert.equal(result.status, 0, path + ': ' + (result.stderr || result.stdout));
+  }
 });
 
 test('checkout verifies Razorpay HMAC and captured order amount before entitlement grant', () => {
