@@ -47,14 +47,15 @@ def main():
             blocks.map(day => '<h3>' + day.heading + '</h3>' + day.articles.join('')).join('') +
             '<p class="muted">Detailed news stories included: ' + total + '. Count reflects the available daily source material.</p></section>';
         }""")
-        if not all(sections.values()) or not weekly or not daily_roundup:
-            raise RuntimeError("One or more English daily/weekly sections are missing")
+        weekly_mcq = page.locator("#daily-6-nov .quiz").evaluate("(el)=>el.outerHTML")
+        if not all(sections.values()) or not weekly or not daily_roundup or not weekly_mcq:
+            raise RuntimeError("One or more English daily/weekly sections or MCQs are missing")
 
         outputs = [
             (DAILY["06"], "Daily Current Affairs · 6 November 2026", sections["06"]),
             (DAILY["05"], "Daily Current Affairs · 5 November 2026", sections["05"]),
             (DAILY["04"], "Daily Current Affairs · 4 November 2026", sections["04"]),
-            (WEEKLY, "Weekly Current Affairs · 1–6 November 2026", weekly + daily_roundup),
+            (WEEKLY, "Weekly Current Affairs · 1–6 November 2026", weekly + daily_roundup + weekly_mcq),
         ]
         for output, title, content in outputs:
             cover = f'<section class="cover"><div class="eyebrow">KAGZI · ENGLISH MEDIUM</div><h1>{escape(title)}</h1><p>UPSC · UPPSC · UPSSSC · SSC</p></section>'

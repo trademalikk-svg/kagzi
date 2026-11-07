@@ -64,6 +64,8 @@ test('PDF generator and workflow publish only free Daily and Weekly PDFs', () =>
   assert.ok(generator.includes('section[id^="daily-"]'), 'Hindi weekly PDF collects dated daily sections');
   assert.ok(generator.includes('article.news'), 'Hindi weekly PDF includes full daily news articles');
   assert.ok(generator.includes('weekly-daily-roundup'), 'Hindi weekly PDF adds a dated news digest');
+  assert.ok(generator.includes("#quiz-6-nov"), 'Hindi weekly PDF extracts daily MCQs');
+  assert.ok(generator.includes('weekly-mcq'), 'Hindi weekly PDF adds a weekly MCQ section');
   assert.ok(!generator.includes('current-affairs/yearly/'));
   assert.ok(read('current-affairs/archive.html').includes('Paid Only'));
 });
