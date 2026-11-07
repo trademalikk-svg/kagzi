@@ -203,6 +203,8 @@ A follow-up mutation fixture then removed the deepest text object from the neste
 
 CI run #132 verified local-Form-over-page precedence; CI run #134 verified parent-Form-over-page precedence. Both runs passed. These are generated font-alias collision fixtures only; they do not yet verify resource-name collision behavior during text replacement or arbitrary resource dictionaries.
 
+**Replacement-overlay follow-up:** CI run #137 passed a synthetic nested child deletion followed by a distinct Helvetica page overlay while the inherited parent Form font alias collided with a page-level Courier alias. The original nested text remained absent after reopen, the replacement remained present, and the unrelated page control survived. PDF.js measured the replacement at 270.126 pt, matching the standalone Helvetica baseline exactly. This covers only an unclipped identity-transform page overlay; it does not prove in-Form text-stream replacement.
+
 **Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
 
 ### Intersecting clipping-path fixture correction (2026-11-07)
