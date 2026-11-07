@@ -3231,14 +3231,56 @@ jobs:
           const [parentForm] = await outerDoc.embedPages([parentReloaded.getPage(0)]);
           const outerPage = outerDoc.addPage([612, 792]);
           outerPage.drawPage(parentForm, { x: 0, y: 0, width: 612, height: 792 });
+          const outerFont = await outerDoc.embedFont(StandardFonts.Helvetica);
+          outerPage.drawText('Inherited-resource page control', { x: 430, y: 700, size: 12, font: outerFont });
           const parentFallbackBytes = new Uint8Array(await outerDoc.save({ useObjectStreams: true }));
           const parentFallback = await discover('parent-Form-resource fallback', parentFallbackBytes);
+
+          // Exercise deletion and serialization while the deepest Form inherits its font
+          // dictionary from the parent Form rather than carrying local /Resources.
+          const mutationEngine = await PdfiumTextEngine.create(wasm, parentFallbackBytes);
+          const module = mutationEngine.m;
+          const pagePtr = module.FPDF_LoadPage(mutationEngine.docPtr, 0);
+          const outerIndex = Array.from(
+            { length: module.FPDFPage_CountObjects(pagePtr) },
+            (_, index) => index
+          ).find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          assert.notEqual(outerIndex, undefined, 'parent-resource fixture must contain an outer Form');
+          const outerPtr = module.FPDFPage_GetObject(pagePtr, outerIndex);
+          const childFormPtr = module.FPDFFormObj_GetObject(outerPtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(childFormPtr), 5, 'outer Form must contain the child Form');
+          const childTextPtr = module.FPDFFormObj_GetObject(childFormPtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(childTextPtr), 1, 'child Form must contain its inherited-resource text object');
+
+          const markDirty = objectPtr => {
+            const wasActive = Boolean(module.FPDFPageObj_GetIsActive(objectPtr));
+            if (!module.FPDFPageObj_SetIsActive(objectPtr, !wasActive)) return false;
+            return Boolean(module.FPDFPageObj_SetIsActive(objectPtr, wasActive));
+          };
+          const removed = Boolean(module.FPDFFormObj_RemoveObject(childFormPtr, childTextPtr));
+          if (removed) module.FPDFPageObj_Destroy(childTextPtr);
+          const childMarkedDirty = removed && markDirty(childFormPtr);
+          const outerMarkedDirty = childMarkedDirty && markDirty(outerPtr);
+          const generated = outerMarkedDirty && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          const mutationBytes = mutationEngine.save();
+          module.FPDF_ClosePage(pagePtr);
+          mutationEngine.destroy();
+          assert.ok(removed && generated, 'nested inherited-resource child removal and ancestor serialization must complete');
+
+          const verifyEngine = await PdfiumTextEngine.create(wasm, mutationBytes);
+          const reopenedText = verifyEngine.readPage(0, 0).map(run => run.text).join(' | ');
+          verifyEngine.destroy();
+          assert.ok(!reopenedText.includes('Inherited nested Form font sentinel'), 'removed nested text must stay absent after Save/Reopen');
+          assert.ok(reopenedText.includes('Inherited-resource page control'), 'unrelated page-level control must survive Save/Reopen');
 
           console.log(JSON.stringify({
             result: 'INHERITED_FORM_RESOURCE_FIXTURES_PASS',
             sourceRuntime: 'PDFium pinned by this workflow',
             cases: [pageFallback, parentFallback],
-            interpretation: 'Text discovery passed when the nested Form omitted local Resources and inherited the font dictionary from its page or parent Form. This is a parser/resource-resolution fixture only; no replacement or editability claim is made.'
+            nestedInheritedResourceDeletion: 'PASS',
+            originalNestedTextRemovedAfterReopen: true,
+            unrelatedPageControlPreserved: true,
+            interpretation: 'PDFium discovered inherited resources from the page and parent Form. Nested child deletion also survived Save/Reopen while the child Form inherited its font dictionary from its parent. This is a synthetic fixture result, not general Form editing support.'
           }, null, 2));
           NODE
 
