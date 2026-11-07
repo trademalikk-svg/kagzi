@@ -1,7 +1,7 @@
 name: KAGZI new tools checks
 on:
   push:
-    branches: [feat/resume-typing-calculators-preview-2026-11-08]
+    branches: [fix/public-free-access-preview-2026-11-08]
   pull_request:
     branches: [fix/public-free-access-preview-2026-11-08]
 jobs:
