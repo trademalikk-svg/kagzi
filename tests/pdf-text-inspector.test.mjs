@@ -84,3 +84,23 @@ test('mobile inspector is placed in normal page flow above the PDF workspace, no
   assert.doesNotMatch(css, /translateX\(calc\(100% - 48px\)\)/);
   assert.match(css, /\.editor-shell\s*>\s*#pdfInspector/);
 });
+
+
+test('replacement text stays within the selected PDF text bounds and cannot cover adjacent words', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+
+  assert.match(editor, /selectedText\.width=selectedText\.originalWidth\|\|selectedText\.width/);
+  assert.match(editor, /span\.style\.width=selectedText\.width\+'px'/);
+  assert.match(editor, /span\.style\.overflow='hidden'/);
+  assert.match(editor, /previewContext\.measureText\(value\)\.width>selectedText\.width-4/);
+  assert.match(editor, /el\.inspectorFitWarning\.hidden=false/);
+  assert.match(editor, /match\.style\.width=Math\.max\(1,edit\.pdfWidth\*viewport\.scale\)\+'px'/);
+  assert.match(editor, /match\.style\.overflow='hidden'/);
+  assert.match(html, /id="inspectorFitWarning"/);
+});
+
+test('PDF text layer does not force a seven-pixel font size at low zoom', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(editor, /fontHeight=Math\.max\(1,Math\.hypot\(tx\[2\],tx\[3\]\)\)/);
+});
