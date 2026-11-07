@@ -196,6 +196,13 @@ CI run #120 completed successfully on commit `665924ef142eb78da79c49941701a7792f
 
 A follow-up mutation fixture then removed the deepest text object from the nested child Form while that Form inherited its font dictionary from the parent Form. The test marked both Form ancestors dirty using the same fixture-only active-state diagnostic, generated page content, saved, reopened, and verified that the original nested text stayed absent while an unrelated page-level control remained. CI run #126 passed this synthetic deletion round-trip.
 
+**Resource-name collision follow-up (2026-11-07):** two independent PDF.js + PDFium fixtures now verify font alias precedence:
+
+- A Form-local Helvetica alias remained in effect when the page defined the same resource name as Courier (baseline and collision text widths both 328.122 pt).
+- A nested child Form with no local `/Resources` continued to use its parent Form's Helvetica alias when the outer page defined the same name as Courier (both widths 321.102 pt).
+
+CI run #132 verified local-Form-over-page precedence; CI run #134 verified parent-Form-over-page precedence. Both runs passed. These are generated font-alias collision fixtures only; they do not yet verify resource-name collision behavior during text replacement or arbitrary resource dictionaries.
+
 **Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
 
 ### Intersecting clipping-path fixture correction (2026-11-07)
