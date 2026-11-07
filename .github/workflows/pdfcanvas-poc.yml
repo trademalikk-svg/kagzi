@@ -1824,7 +1824,7 @@ jobs:
             const pdf = await task.promise;
             try {
               const page = await pdf.getPage(1);
-              const viewport = page.getViewport({ rotation: 1 });
+              const viewport = page.getViewport({ scale: 1 });
               const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
               const context = canvas.getContext('2d');
               await page.render({ canvas, canvasContext: context, viewport }).promise;
