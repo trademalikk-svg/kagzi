@@ -64,3 +64,11 @@ test('camera startup lock resets after permission failure so the user can retry'
   assert.equal(app.nodes.get('cameraPreview').srcObject, mediaStream);
   assert.match(app.nodes.get('scannerStatus').textContent, /Camera ready/i);
 });
+
+test('unsupported camera browsers keep the Open camera control usable', async () => {
+  const app = loadScanner(undefined);
+  const button = app.nodes.get('openCameraScanner');
+  await app.listeners.get('openCameraScanner:click')();
+  assert.equal(button.disabled, false);
+  assert.match(app.nodes.get('scannerStatus').textContent, /Camera API is unavailable/i);
+});
