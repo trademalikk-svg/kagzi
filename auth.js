@@ -10,10 +10,10 @@
   const candidate=new URL(requestedRedirect,location.origin);
   if(candidate.origin===location.origin && !candidate.pathname.endsWith('/auth.html')) safeRedirect=candidate.pathname+candidate.search+candidate.hash;
  }catch(_){}
- const message=$('authMessage'),form=$('authForm'),submit=$('authSubmit'),resend=$('resendConfirm');
+ const message=$('authMessage'),form=$('authForm'),submit=$('authSubmit'),resend=$('authResend');
  let resendTimer=null;
  function setMessage(text){message.textContent=text;}
- function showResend(show){resend.hidden=!show;}
+ function showResend(show){if(resend)resend.style.display=show?'block':'none';}
  function render(){
   const signup=mode==='signup';
   $('loginTab').classList.toggle('active',!signup);
