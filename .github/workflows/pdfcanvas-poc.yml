@@ -991,6 +991,7 @@ jobs:
         working-directory: vendor/pdfcanvas
         run: |
           node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
           import { PDFDocument, StandardFonts } from 'pdf-lib';
           import { PdfiumTextEngine } from './dist/index.js';
 
