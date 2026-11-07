@@ -87,11 +87,11 @@ test('migration seeds 50 official company career sources for manual permission r
   assert.match(seed, /on conflict \(careers_url\) do nothing/i);
 });
 
-test('public page lists 50 official career portal links without claiming vacancies', () => {
+test('public page lists 51 official career portal links without claiming vacancies', () => {
   const page = read('private-jobs.html');
   const sources = JSON.parse(read('private-job-sources.json'));
-  assert.equal(sources.length, 50);
-  assert.match(page, /50 Company Career Portals/);
+  assert.equal(sources.length, 51);
+  assert.match(page, /51 Company Career Portals/);
   assert.match(page, /id="companySources"/);
   for (const source of sources) {
     assert.ok(source.company && source.sector);
@@ -107,4 +107,20 @@ test('policy tuning migration keeps one combined select policy and indexes admin
   assert.match(sql, /create policy "KAGZI admins delete private jobs"/i);
   assert.match(sql, /kagzi_private_jobs_created_by_idx/);
   assert.match(sql, /kagzi_private_job_sources_created_by_idx/);
+});
+
+test('link-only factual job records may be published with original summaries and direct official links', () => {
+  const sql = read('supabase/migrations/20261107_private_jobs_live_listing.sql');
+  assert.ok(sql.includes("source_permission_status in ('link_only','licensed','written_permission')"));
+  assert.match(sql, /Senior Associate - Identity and Access Management/);
+  assert.ok(sql.includes('careers.npci.org.in'));
+  assert.match(sql, /is_published = true/);
+  const admin = read('private-jobs-admin.html');
+  assert.match(admin, /link_only/);
+  assert.match(admin, /company description copy न करें/);
+});
+
+test('official NPCI career page is included in the public company directory', () => {
+  const sources = JSON.parse(read('private-job-sources.json'));
+  assert.ok(sources.some(source => source.company === 'NPCI' && source.url.includes('careers.npci.org.in')));
 });

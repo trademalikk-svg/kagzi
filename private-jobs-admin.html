@@ -74,7 +74,7 @@ button{border:0;border-radius:9px;background:var(--blue);color:white;padding:11p
 <div><label for="sourceTermsUrl">Source Terms / Licence URL</label><input id="sourceTermsUrl" type="url"></div>
 </div>
 <div class="grid">
-<div><label for="sourcePermissionStatus">Content Permission</label><select id="sourcePermissionStatus"><option value="pending_review">Pending Review</option><option value="link_only">Link Only</option><option value="licensed">Licensed Reuse</option><option value="written_permission">Written Permission</option><option value="disallowed">Disallowed</option></select></div>
+<div><label for="sourcePermissionStatus">Content Permission</label><select id="sourcePermissionStatus"><option value="pending_review">Pending Review</option><option value="link_only">Link Only — factual details + official link only</option><option value="licensed">Licensed Reuse</option><option value="written_permission">Written Permission</option><option value="disallowed">Disallowed</option></select></div>
 <div><label for="verificationStatus">Verification</label><select id="verificationStatus"><option value="pending">Pending</option><option value="verified">Verified</option><option value="needs_recheck">Needs Recheck</option><option value="expired">Expired</option><option value="withheld">Withheld</option></select></div>
 </div>
 <label class="check"><input id="publishJob" type="checkbox"><span>Publish this job after checking the official source, application link, deadline and permission.</span></label>
@@ -131,7 +131,7 @@ function jobPayload(){
  if(termsRaw&&!termsUrl)throw new Error('Source Terms URL HTTPS होना चाहिए।');
  const permission=$('sourcePermissionStatus').value,verified=$('verificationStatus').value==='verified';
  const publish=$('publishJob').checked;
- if(publish&&(!verified||!['licensed','written_permission'].includes(permission)))throw new Error('Publish करने के लिए Verified status और Licensed / Written Permission आवश्यक है।');
+ if(publish&&(!verified||!['link_only','licensed','written_permission'].includes(permission)))throw new Error('Publish के लिए Verified status और Link Only / Licensed / Written Permission आवश्यक है। Link Only में केवल अपने शब्दों में छोटे factual details और official link दें; company description copy न करें।');
  const lastDate=optionalDate('lastDate');
  if(publish&&lastDate&&lastDate<new Date().toISOString().slice(0,10))throw new Error('पुरानी Last Date वाली नौकरी Publish नहीं की जा सकती।');
  const disclosure=$('salaryDisclosure').value;
