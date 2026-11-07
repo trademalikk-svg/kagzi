@@ -40,7 +40,7 @@ static int append_object(PdfBuffer* buffer, size_t offsets[], int number,
 
 static int build_nested_form_pdf(PdfBuffer* buffer) {
   size_t offsets[8] = {0};
-  const char* page_content = "q /Outer Do Q";
+  const char* page_content = "BT /F1 9 Tf 10 10 Td (PAGECONTROL) Tj ET q /Outer Do Q";
   const char* outer_content = "q /Inner Do Q";
   const char* inner_content = "BT /F1 12 Tf 10 100 Td (ORIGINAL) Tj ET";
 
@@ -51,7 +51,8 @@ static int build_nested_form_pdf(PdfBuffer* buffer) {
       "<< /Type /Pages /Kids [3 0 R] /Count 1 >>")) return 0;
   if (!append_object(buffer, offsets, 3,
       "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 300] "
-      "/Resources << /XObject << /Outer 4 0 R >> >> /Contents 7 0 R >>"))
+      "/Resources << /Font << /F1 6 0 R >> /XObject << /Outer 4 0 R >> >> "
+      "/Contents 7 0 R >>"))
     return 0;
 
   char stream_body[1024];
@@ -113,6 +114,7 @@ int main(void) {
   if (!build_nested_form_pdf(&input)) return 1;
 
   FPDF_InitLibrary();
+  if (FPDFFormObj_MarkObjectDirty(NULL, NULL)) return 16;
   FPDF_DOCUMENT document =
       FPDF_LoadMemDocument64(input.bytes, (unsigned long long)input.size, NULL);
   if (!document) return 2;
@@ -172,11 +174,12 @@ int main(void) {
 
   int replacement_found = contains_text(text_page, "REPLACED");
   int original_remains = contains_text(text_page, "ORIGINAL");
+  int control_preserved = contains_text(text_page, "PAGECONTROL");
   FPDFText_ClosePage(text_page);
   FPDF_ClosePage(reopened_page);
   FPDF_CloseDocument(reopened);
   FPDF_DestroyLibrary();
 
-  if (!replacement_found || original_remains) return 15;
+  if (!replacement_found || original_remains || !control_preserved) return 15;
   return 0;
 }
