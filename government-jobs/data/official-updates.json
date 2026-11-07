@@ -1,0 +1,54 @@
+{
+  "updatedAt": "2026-11-07",
+  "note": "केवल आधिकारिक वेबसाइट पर प्रकाशित अपडेट शामिल हैं। यदि स्रोत पेज पर उम्मीदवार लॉगिन या PDF उपलब्ध हो, वहीँ से आगे बढ़ें।",
+  "items": [
+    {
+      "id": "ssc-cgle-tier1-answer-key-2026",
+      "category": "answer-keys",
+      "title": "Combined Graduate Level Examination 2026 (Tier-I) — Tentative Answer Key",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-11-04",
+      "status": "published",
+      "summary": "Candidate response sheets और tentative answer keys अपलोड; objections आमंत्रित।",
+      "sourceUrl": "https://ssc.gov.in/home/notice-board",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "notice"
+    },
+    {
+      "id": "ssc-gd-final-answer-key-2026",
+      "category": "answer-keys",
+      "title": "Constable (GD) Examination 2026 — Final Answer Key",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-11-03",
+      "status": "published",
+      "summary": "Final answer keys, question papers, response sheets और CBE marks संबंधी सूचना।",
+      "sourceUrl": "https://ssc.gov.in/home/notice-board",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "notice"
+    },
+    {
+      "id": "upsc-cds1-final-result-2026",
+      "category": "results",
+      "title": "Combined Defence Services Examination (I), 2026 — Final Result",
+      "organization": "Union Public Service Commission (UPSC)",
+      "publishedAt": "2026-11-02",
+      "status": "published",
+      "summary": "UPSC की Examination Final Results सूची में परिणाम अपलोड किया गया।",
+      "sourceUrl": "https://cms.upsc.gov.in/results/examination-final-results/",
+      "sourceLabel": "UPSC Final Results",
+      "linkType": "result"
+    },
+    {
+      "id": "ssc-cgept-admit-card-info-2027",
+      "category": "admit-cards",
+      "title": "CGEPT-01/27 और 02/27 — Exam City और Admit Card सूचना",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-11-06",
+      "status": "notice",
+      "summary": "उम्मीदवारों के लिए परीक्षा शहर और प्रवेश पत्र से संबंधित सूचना प्रकाशित। उपलब्धता/डाउनलोड स्थिति आधिकारिक नोटिस पर जाँचें।",
+      "sourceUrl": "https://ssc.gov.in/home/notice-board",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "notice"
+    }
+  ]
+}
