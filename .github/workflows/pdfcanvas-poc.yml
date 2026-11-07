@@ -105,6 +105,24 @@ jobs:
           assert.ok(holderRemoveBody.includes('dirty_streams_.insert(content_stream);'),
             'removing a child must mark its containing content stream dirty');
 
+          const holderHeader = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/page/cpdf_pageobjectholder.h', 'utf8');
+          assert.ok(holderHeader.includes('MarkDirtyStreamForPageObject(CPDF_PageObject* page_object);'),
+            'prototype must expose a holder-level direct-child dirty-stream operation');
+          const markDirtyStart = holderSource.indexOf('CPDF_PageObjectHolder::MarkDirtyStreamForPageObject(');
+          assert.notEqual(markDirtyStart, -1, 'prototype implementation must exist');
+          const markDirtyBody = holderSource.slice(markDirtyStart, markDirtyStart + 850);
+          assert.ok(markDirtyBody.includes('pdfium::MatchesUniquePtr(pPageObj)') &&
+            markDirtyBody.includes('pPageObj->GetContentStream()') &&
+            markDirtyBody.includes('dirty_streams_.insert(content_stream);'),
+            'prototype must verify direct ownership and mark the child content stream dirty');
+
+          const editFormStart = editSource.indexOf('FPDFFormObj_MarkObjectDirty(FPDF_PAGEOBJECT form_object,');
+          assert.notEqual(editFormStart, -1, 'prototype public API implementation must exist');
+          const editFormBody = editSource.slice(editFormStart, editFormStart + 1000);
+          assert.ok(editFormBody.includes('MarkDirtyStreamForPageObject(child_object)') &&
+            editFormBody.includes('cform_page_object->SetDirty(true);'),
+            'prototype API must dirty the child stream and containing Form object');
+
           const formHeader = fs.readFileSync('vendor/embedpdf-runtime/public/fpdf_edit.h', 'utf8');
           const formApiStart = formHeader.indexOf('FPDFFormObj_CountObjects(FPDF_PAGEOBJECT form_object)');
           const formApiEnd = formHeader.indexOf('FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,', formApiStart);
