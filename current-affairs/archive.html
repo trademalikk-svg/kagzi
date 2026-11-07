@@ -8,8 +8,11 @@
 <style>
 :root{--ink:#172033;--muted:#68748a;--line:#e4e9f2;--bg:#f4f6fb;--blue:#315efb}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,"Noto Sans Devanagari",sans-serif}.wrap{width:min(980px,calc(100% - 28px));margin:auto}header{background:#111a35;color:white;padding:16px 0}header a{color:#d7dcff;text-decoration:none}.hero{padding:28px 0 16px}.hero h1{font-size:clamp(27px,5vw,40px);margin:5px 0}.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.tabs a,.period-link{display:inline-block;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:white;color:#30489b;text-decoration:none;font-weight:800;font-size:13px}.tabs a.active{background:#eaf0ff;border-color:#b9c8ff}.status{padding:12px 14px;border-left:4px solid var(--blue);background:#edf2ff;border-radius:9px;font-size:13px;margin:14px 0}.group{margin:22px 0}.group h2{font-size:21px;margin:8px 0}.news{background:white;border:1px solid var(--line);border-radius:14px;padding:17px;margin:11px 0}.news h3{font-size:18px;line-height:1.5;margin:7px 0}.tag{display:inline-block;background:#edf1ff;color:#3d50a2;padding:4px 9px;border-radius:30px;font-size:11px;font-weight:850}.news p{margin:8px 0}.news a{color:#2452bb;font-weight:800}.periods{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.empty{padding:22px;background:white;border:1px solid var(--line);border-radius:14px;color:var(--muted)}footer{padding:28px 0;color:var(--muted);font-size:13px}@media(max-width:600px){.news{padding:14px}.news h3{font-size:16px}}
 </style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
 </head>
-<body>
+<body data-kagzi-protected="true">
 <header><div class="wrap"><b>KAGZI · CURRENT AFFAIRS LIBRARY</b>　<a href="./">← Folders</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="muted">OFFICIAL SOURCE ARCHIVE</div><h1>Current Affairs · Auto Archive</h1><p class="muted">PIB की हिंदी आधिकारिक विज्ञप्तियों से स्वचालित संग्रह। एक ही समाचार Daily से Yearly तक सही तारीख के अनुसार व्यवस्थित होता है।</p>
