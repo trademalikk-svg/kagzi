@@ -97,7 +97,8 @@ window.kagziPhotoInputChanged=function(input){
   $('#photoDimensions').textContent='Choose an image to view its dimensions.';
   photoBgBlobState.cutout=null;
   passportDownload.disabled=true;
-  setPhotoStatus('Choose a photo to start automatic background editing.');
+  setPhotoStatus('Choose a photo. Use AI background removal only if you need it.');
+  $('#removePhotoBackground').disabled=true;
   return;
  }
  const validType=/^(image\/(jpeg|png|webp))$/i.test(file.type)||/\.(jpe?g|png|webp)$/i.test(file.name);
@@ -128,7 +129,7 @@ window.kagziPhotoInputChanged=function(input){
   downloadPhotoBtn.disabled=false;
   $('#compressPhotoBtn').disabled=false;
   if(passportName)passportName.textContent='Selected: '+file.name+' · Preview ready';
-  setPhotoStatus('Photo loaded. Starting automatic background editing…');
+  setPhotoStatus('Photo ready. Adjust it below or tap Remove background with AI if needed.');
   $('#removePhotoBackground').disabled=false;
  };
  photoPreview.onerror=()=>{
@@ -198,7 +199,7 @@ const passportBgSelect=$('#passportBgColor');
 const passportBgStatus=$('#passportBgStatus');
 const passportDownload=$('#downloadPassportPhoto');
 function setPhotoStatus(message){if(photoStatusEl)photoStatusEl.textContent=message;if(passportBgStatus)passportBgStatus.textContent=message;}
-function setPhotoSource(blob,preserveDimensions=false){const wantedWidth=Number(photoWidth.value),wantedHeight=Number(photoHeight.value);if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;if(!preserveDimensions||!wantedWidth||!wantedHeight){photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;}$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';downloadPhotoBtn.disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
+function setPhotoSource(blob,preserveDimensions=false){const wantedWidth=Number(photoWidth.value),wantedHeight=Number(photoHeight.value);if(photoObjectUrl)URL.revokeObjectURL(photoObjectUrl);photoObjectUrl=URL.createObjectURL(blob);photoPreview.src=photoObjectUrl;photoPreview.style.display='block';$('#photoPreviewEmpty').hidden=true;const image=new Image();image.onload=()=>{photoOriginalWidth=image.naturalWidth;photoOriginalHeight=image.naturalHeight;if(!preserveDimensions||!wantedWidth||!wantedHeight){photoWidth.value=photoOriginalWidth;photoHeight.value=photoOriginalHeight;}$('#photoCropW').value=photoOriginalWidth;$('#photoCropH').value=photoOriginalHeight;$('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';updatePhotoPreviewEffects();downloadPhotoBtn.disabled=false;$('#compressPhotoBtn').disabled=false;};image.src=photoObjectUrl;}
 async function applySelectedPassportBackground(){
  if(!photoBgBlobState.cutout)return;
  const image=new Image(),url=URL.createObjectURL(photoBgBlobState.cutout);
