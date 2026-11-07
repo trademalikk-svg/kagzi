@@ -127,6 +127,8 @@ $('resetJob').addEventListener('click',resetJob);
 function jobPayload(){
  const applicationUrl=httpsUrl($('applicationUrl').value.trim()),sourceUrl=httpsUrl($('sourceUrl').value.trim());
  if(!applicationUrl||!sourceUrl)throw new Error('Apply और Source URL दोनों HTTPS होने चाहिए।');
+ const termsRaw=$('sourceTermsUrl').value.trim(),termsUrl=termsRaw?httpsUrl(termsRaw):null;
+ if(termsRaw&&!termsUrl)throw new Error('Source Terms URL HTTPS होना चाहिए।');
  const permission=$('sourcePermissionStatus').value,verified=$('verificationStatus').value==='verified';
  const publish=$('publishJob').checked;
  if(publish&&(!verified||!['licensed','written_permission'].includes(permission)))throw new Error('Publish करने के लिए Verified status और Licensed / Written Permission आवश्यक है।');
@@ -145,9 +147,9 @@ function jobPayload(){
   annual_ctc_max_inr:disclosure==='not_disclosed'?null:optionalNumber('annualCtcMax'),
   in_hand_min_inr:disclosure==='not_disclosed'?null:optionalNumber('inHandMin'),
   in_hand_max_inr:disclosure==='not_disclosed'?null:optionalNumber('inHandMax'),
-  salary_disclosure:disclosure,salary_note:$('salaryNote').value.trim(),
+  salary_disclosure:disclosure,salary_note:$('salaryNote').value.trim(),salary_source_url:disclosure==='not_disclosed'?null:sourceUrl,
   application_url:applicationUrl,source_name:$('sourceName').value.trim(),source_url:sourceUrl,
-  source_terms_url:$('sourceTermsUrl').value.trim()?httpsUrl($('sourceTermsUrl').value.trim()):null,
+  source_terms_url:termsUrl,
   source_permission_status:permission,source_checked_at:new Date().toISOString(),
   verification_status:$('verificationStatus').value,is_published:publish,
   published_at:publish?new Date().toISOString():null,created_by:adminUser.id,updated_at:new Date().toISOString()
