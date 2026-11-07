@@ -12,7 +12,7 @@ test('English Current Affairs generates one independent PDF for each date plus w
  const generator=read('scripts/build_current_affairs_english_pdfs.py');
  for (const day of ['06','05','04']) assert.ok(generator.includes('KAGZI-English-Daily-Current-Affairs-2026-11-'+day+'.pdf'));
  assert.ok(generator.includes('KAGZI-English-Weekly-Current-Affairs-2026-11.pdf'));
- assert.ok(generator.includes('page.locator(selector)')===false);
+ assert.ok(generator.includes('page.locator(selector).evaluate'));
  assert.ok(generator.includes('page.locator("#weekly")'));
  assert.ok(!generator.includes('current-affairs" / "day"'));
 });
