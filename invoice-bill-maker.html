@@ -81,10 +81,12 @@ function update(){
  $('previewCustomer').textContent=[$('customerName').value.trim()||'Customer name',$('customerAddress').value.trim(),$('customerPhone').value.trim()].filter(Boolean).join('\n');
  $('previewCustomerGstin').textContent=gstMode&&$('customerGstin').value.trim()?'GSTIN: '+$('customerGstin').value.trim():'';
  $('previewNotes').textContent=$('notes').value.trim()||'धन्यवाद!';
- let subtotal=0,taxTotal=0,rows='';let idx=0;
- document.querySelectorAll('.item-row').forEach(row=>{const desc=row.querySelector('.desc').value.trim()||'Item',qty=Math.max(0,Number(row.querySelector('.qty').value)||0),rate=Math.max(0,Number(row.querySelector('.rate').value)||0),tax=gstMode?Math.max(0,Number(row.querySelector('.tax').value)||0):0,base=qty*rate,taxAmt=base*tax/100,total=base+taxAmt;subtotal+=base;taxTotal+=taxAmt;row.querySelector('.item-amount').textContent=money(total);idx++;rows+='<tr><td>'+idx+'</td><td>'+esc(desc)+'</td><td>'+qty+'</td><td>'+money(rate)+'</td><td>'+tax+'%</td><td>'+money(total)+'</td></tr>';});
+ let subtotal=0,taxTotal=0,rows='';const lineData=[];let idx=0;
+ document.querySelectorAll('.item-row').forEach(row=>{const desc=row.querySelector('.desc').value.trim()||'Item',qty=Math.max(0,Number(row.querySelector('.qty').value)||0),rate=Math.max(0,Number(row.querySelector('.rate').value)||0),tax=gstMode?Math.max(0,Number(row.querySelector('.tax').value)||0):0,base=qty*rate;subtotal+=base;lineData.push({row,desc,qty,rate,tax,base});});
+ const discount=Math.min(subtotal,Math.max(0,Number($('discount').value)||0));let taxable=0;
+ lineData.forEach(line=>{const lineDiscount=subtotal?discount*(line.base/subtotal):0,lineTaxable=Math.max(0,line.base-lineDiscount),taxAmt=lineTaxable*line.tax/100,total=lineTaxable+taxAmt;taxable+=lineTaxable;taxTotal+=taxAmt;line.row.querySelector('.item-amount').textContent=money(total);idx++;rows+='<tr><td>'+idx+'</td><td>'+esc(line.desc)+'</td><td>'+line.qty+'</td><td>'+money(line.rate)+'</td><td>'+line.tax+'%</td><td>'+money(total)+'</td></tr>';});
  $('previewItems').innerHTML=rows||'<tr><td colspan="6" class="empty">Add items to create your bill.</td></tr>';
- const discount=Math.min(subtotal,Math.max(0,Number($('discount').value)||0)),taxable=Math.max(0,subtotal-discount),effectiveTax=subtotal?taxTotal*(taxable/subtotal):0,total=taxable+effectiveTax,fmt=n=>money(n);
+ const effectiveTax=taxTotal,total=taxable+effectiveTax,fmt=n=>money(n);
  let lines='<div class="total-line"><span>Subtotal</span><b>'+fmt(subtotal)+'</b></div>';
  if(discount)lines+='<div class="total-line"><span>Discount</span><b>− '+fmt(discount)+'</b></div>';
  if(gstMode){if(inter)lines+='<div class="total-line"><span>IGST</span><b>'+fmt(effectiveTax)+'</b></div>';else{lines+='<div class="total-line"><span>CGST</span><b>'+fmt(effectiveTax/2)+'</b></div><div class="total-line"><span>SGST</span><b>'+fmt(effectiveTax/2)+'</b></div>';}}
