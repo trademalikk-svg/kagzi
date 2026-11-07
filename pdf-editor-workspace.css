@@ -52,3 +52,76 @@
     flex: 1 1 auto;
   }
 }
+
+
+/* Mobile inspector stays in normal document flow above the PDF workspace. */
+
+.inspector-style-row { display: flex; align-items: center; gap: 18px; }
+
+.inspector-style-row { display: flex; align-items: center; gap: 18px; }
+
+.inspector-live-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid #cbd8f5;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #f5f8ff, #fff);
+}
+.live-preview-kicker {
+  color: #315fe9;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+.live-preview-canvas {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 76px;
+  padding: 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  border: 1px dashed #b8c8eb;
+  border-radius: 7px;
+  background: #fff;
+  line-height: 1.35;
+}
+.live-preview-canvas[data-empty="true"] {
+  color: #8a96aa !important;
+  font-size: 12px !important;
+  font-style: italic !important;
+}
+@media (max-width: 650px) {
+  .editor-shell > #pdfInspector {
+    position: relative !important;
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 7px !important;
+    padding: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    box-sizing: border-box;
+    z-index: 20 !important;
+  }
+  .editor-shell > #pdfInspector .inspector-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 9px !important;
+  }
+  .editor-shell > #pdfInspector .inspector-empty { display: none !important; }
+  .editor-shell > #pdfInspector #inspectorText {
+    width: 100%;
+    min-height: 76px !important;
+    height: 76px !important;
+  }
+  .editor-shell > #pdfInspector #applyTextEdit { min-height: 44px !important; }
+}
+
+.inspector-fit-warning{display:block;padding:8px 9px;border:1px solid #e5a4a4;border-radius:7px;background:#fff4f4;color:#a32626;font-size:11px;font-weight:700;line-height:1.45}.inspector-fit-warning[hidden]{display:none!important}

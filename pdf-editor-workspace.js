@@ -35,8 +35,8 @@
       const placeInspector = () => {
         if (window.matchMedia('(max-width: 650px)').matches) {
           if (inspector.parentElement !== shell) shell.insertBefore(inspector, workspace);
-        } else if (inspector.parentElement !== workspace) {
-          workspace.appendChild(inspector);
+        } else {
+          if (inspector.parentElement !== workspace) workspace.appendChild(inspector);
         }
       };
       placeInspector();
