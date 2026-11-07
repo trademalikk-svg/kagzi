@@ -22,3 +22,16 @@ test('live text preview expands to fit replacement text and paints it above the 
   assert.match(editor, /selectedText\.span\.style\.background(Color)?\s*=/);
   assert.match(editor, /selectedText\.span\.style\.webkitTextFillColor/);
 });
+
+test('selected PDF text loads its original size and available font style into the inspector', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+
+  assert.match(editor, /content\.styles\[item\.fontName\]/);
+  assert.match(editor, /fontHeight\/Math\.max\(\.01,viewport\.scale\)/);
+  assert.match(editor, /inspectorFontSize\.value=String\(Number\(originalFontSize\.toFixed\(2\)\)\)/);
+  assert.match(editor, /inspectorItalic\.checked=isItalic/);
+  assert.match(editor, /fontSize:previewSize\+'px'/);
+  assert.match(editor, /italic:!!\(el\.inspectorItalic&&el\.inspectorItalic\.checked\)/);
+  assert.match(html, /id="inspectorItalic"/);
+});
