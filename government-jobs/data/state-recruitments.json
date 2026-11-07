@@ -3,6 +3,25 @@
   "source": "UPPSC official State Public Service Commissions directory",
   "items": [
     {
+      "id": "upsssc-lower-subordinate-inter-2026-26-exam",
+      "title": "UPSSSC Combined Lower Subordinate Services (Intermediate Level) Main Examination 2026",
+      "regionSlug": "uttar-pradesh",
+      "regionName": "Uttar Pradesh",
+      "department": "Uttar Pradesh Subordinate Services Selection Commission (UPSSSC)",
+      "summary": "विज्ञापन 26-परीक्षा/2026। कुल 1,784 पद। आवेदन 10 नवम्बर 2026 से शुरू होंगे और 1 दिसम्बर 2026 अंतिम तारीख है। अभी आवेदन शुरू नहीं हुए हैं।",
+      "publishedAt": "2026-10-16",
+      "applicationStart": "2026-11-10",
+      "applicationEnd": "2026-12-01",
+      "status": "upcoming",
+      "notificationUrl": "https://upsssc.gov.in/AllNotifications.aspx",
+      "applyVerified": false,
+      "sourceUrl": "https://upsssc.gov.in/",
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "मुख्य रूप से इंटरमीडिएट (10+2) तथा PET-2025 में सम्मिलित होना आवश्यक; कुछ पदों के लिए CCC/अन्य पद-विशेष योग्यता लागू है। पदवार शर्तें आधिकारिक विज्ञापन 26-परीक्षा/2026 में जाँचें।",
+      "feeDetails": "ऑनलाइन आवेदन प्रक्रिया शुल्क ₹25 बताया गया है; मुख्य परीक्षा शुल्क/अन्य भुगतान की पुष्टि आधिकारिक विज्ञापन और पोर्टल पर करें।",
+      "eligibilitySourceUrl": "https://upsssc.gov.in/AllNotifications.aspx"
+    },
+    {
       "id": "uppsc-ro-aro-2026-a4-e1",
       "title": "Samiksha Adhikari / Sahayak Samiksha Adhikari Examination 2026",
       "regionSlug": "uttar-pradesh",
@@ -14,12 +33,11 @@
       "applicationEnd": "2026-11-26",
       "status": "open",
       "notificationUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
-      "applyVerified": true,
+      "applyVerified": false,
       "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
       "lastCheckedAt": "2026-11-07",
       "eligibilityDetails": "RO पद के लिए मान्यता प्राप्त विश्वविद्यालय से स्नातक, DOEACC O Level या समकक्ष कंप्यूटर योग्यता और हिंदी टंकण 25 शब्द प्रति मिनट। ARO तथा अन्य पदों की शर्तें अलग हो सकती हैं; पदवार योग्यता आधिकारिक विज्ञापन में देखें।",
       "feeDetails": "सामान्य / OBC / EWS: ₹125; SC / ST / Ex-Servicemen: ₹65; PwD: ₹25. भुगतान से पहले आधिकारिक विज्ञापन और आवेदन पोर्टल पर पुष्टि करें।",
-      "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
       "eligibilitySourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx"
     },
     {
@@ -34,12 +52,11 @@
       "applicationEnd": "2026-12-04",
       "status": "open",
       "notificationUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
-      "applyVerified": true,
+      "applyVerified": false,
       "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
       "lastCheckedAt": "2026-11-07",
       "eligibilityDetails": "इस विज्ञापन में शामिल पदों के अनुसार शैक्षिक योग्यता, अनुभव और आयु सीमा अलग-अलग हैं। पदवार शर्तें आधिकारिक विज्ञापन A-5/E-1/2026 में देखें।",
-      "feeDetails": "श्रेणी और पद के अनुसार शुल्क की पुष्टि आधिकारिक विज्ञापन तथा आवेदन पोर्टल पर करें।",
-      "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx"
+      "feeDetails": "श्रेणी और पद के अनुसार शुल्क की पुष्टि आधिकारिक विज्ञापन तथा आवेदन पोर्टल पर करें।"
     },
     {
       "id": "rrb-ntpc-ug-cen-07-2026",
