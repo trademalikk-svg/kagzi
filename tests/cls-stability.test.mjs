@@ -29,6 +29,7 @@ test('private company directory reserves all 51 company slots while loading', ()
   assert.match(privateHtml, /id="companySources"[^>]*aria-busy="true"/);
   assert.match(privateCss, /\.company-source-grid\[aria-busy="true"\][^{]*\{[^}]*repeat\(26,\s*minmax\(190px,\s*auto\)\)/s);
   assert.match(privateCss, /@media\s*\(max-width:\s*760px\)[\s\S]*\.company-source-grid\[aria-busy="true"\][^{]*\{[^}]*repeat\(51,\s*minmax\(190px,\s*auto\)\)/s);
+  assert.match(privateCss, /company-source-grid\[aria-busy="true"\]\s*>\s*\.state-card[^{]*\{[^}]*grid-column:\s*1\s*\/\s*-1/s);
   assert.match(privateJs, /container\.removeAttribute\(['"]aria-busy['"]\)/);
 });
 
