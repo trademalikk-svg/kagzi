@@ -77,3 +77,12 @@ test('homepage links to the separate Private Jobs directory', () => {
   assert.match(home, /href="private-jobs.html">Private Jobs/);
   assert.match(home, /FIND PRIVATE JOBS/);
 });
+
+test('migration seeds 50 official company career sources for manual permission review', () => {
+  const sql = read('supabase/migrations/20261107_private_jobs.sql');
+  const seed = sql.split('-- Curated official career-page directory (50 companies). All remain pending permission review.')[1] || '';
+  const rows = seed.match(/^  \('/gm) || [];
+  assert.equal(rows.length, 50);
+  assert.match(seed, /'pending_review',false,false,true,'manual',true/);
+  assert.match(seed, /on conflict \(careers_url\) do nothing/i);
+});
