@@ -2347,7 +2347,7 @@ jobs:
           const overlayFont = await overlayDoc.embedFont(StandardFonts.Helvetica);
           overlayPage.pushOperators(pushGraphicsState());
           appendTriangleClip(overlayPage);
-          overlayPage.drawText('Nonrectangular clipped Form target', {
+          overlayPage.drawText('Nonrectangular clipped Form replacement', {
             x: 60, y: 700, size: run.textFontSize, font: overlayFont
           });
           overlayPage.pushOperators(popGraphicsState());
