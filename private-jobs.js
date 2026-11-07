@@ -117,3 +117,26 @@ async function loadJobs(){
 for(const id of filters)$(id).addEventListener(id==='jobSearch'?'input':'change',render);
 $('clearFilters').addEventListener('click',()=>{for(const id of filters)$(id).value=id==='regionFilter'?'all': 'all';$('jobSearch').value='';render();});
 loadJobs();
+
+async function loadCompanySources(){
+ const container=$('companySources');if(!container)return;
+ try{
+  const response=await fetch('./private-job-sources.json',{cache:'no-cache'});
+  if(!response.ok)throw new Error('Company career directory unavailable');
+  const sources=await response.json();
+  container.replaceChildren();
+  for(const source of sources){
+   let url;try{url=new URL(source.url)}catch{continue}
+   if(url.protocol!=='https:')continue;
+   const link=document.createElement('a');link.className='company-source';link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';
+   const name=document.createElement('b');name.textContent=source.company;
+   const sector=document.createElement('small');sector.textContent=source.sector+' · Official career page ↗';
+   link.append(name,sector);container.append(link);
+  }
+  if(!container.children.length)throw new Error('No valid company links');
+ }catch(error){
+  container.replaceChildren();const state=document.createElement('div');state.className='state-card';state.textContent='Company career links अभी लोड नहीं हो सके।';container.append(state);
+  console.error('Company career directory failed:',error.message);
+ }
+}
+loadCompanySources();
