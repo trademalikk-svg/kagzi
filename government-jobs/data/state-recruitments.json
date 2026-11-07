@@ -1,7 +1,42 @@
 {
   "updatedAt": "2026-11-07",
   "source": "UPPSC official State Public Service Commissions directory",
-  "items": [],
+  "items": [
+    {
+      "id": "uppsc-ro-aro-2026-a4-e1",
+      "title": "Samiksha Adhikari / Sahayak Samiksha Adhikari Examination 2026",
+      "regionSlug": "uttar-pradesh",
+      "regionName": "Uttar Pradesh",
+      "department": "Uttar Pradesh Public Service Commission (UPPSC)",
+      "summary": "विज्ञापन A-4/E-1/2026। ऑनलाइन आवेदन 26 अक्टूबर 2026 से 26 नवम्बर 2026 तक। आवेदन UPPSC के आधिकारिक OTR आधारित पोर्टल से करें।",
+      "publishedAt": "2026-10-26",
+      "applicationStart": "2026-10-26",
+      "applicationEnd": "2026-11-26",
+      "status": "open",
+      "notificationUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "applyVerified": true,
+      "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "id": "uppsc-misc-2026-a5-e1",
+      "title": "UPPSC Miscellaneous Examination 2026",
+      "regionSlug": "uttar-pradesh",
+      "regionName": "Uttar Pradesh",
+      "department": "Uttar Pradesh Public Service Commission (UPPSC)",
+      "summary": "विज्ञापन A-5/E-1/2026। ऑनलाइन आवेदन 4 नवम्बर 2026 से 4 दिसम्बर 2026 तक। पद-विशेष पात्रता और विवरण आधिकारिक विज्ञापन में देखें।",
+      "publishedAt": "2026-11-04",
+      "applicationStart": "2026-11-04",
+      "applicationEnd": "2026-12-04",
+      "status": "open",
+      "notificationUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "applyVerified": true,
+      "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
+      "lastCheckedAt": "2026-11-07"
+    }
+  ],
   "portals": [
     {
       "regionSlug": "andhra-pradesh",
