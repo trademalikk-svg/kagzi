@@ -34,14 +34,27 @@ def main():
             selector = f"#daily-{int(day)}-nov"
             sections[day] = page.locator(selector).evaluate("(el)=>el.outerHTML")
         weekly = page.locator("#weekly").evaluate("(el)=>el.outerHTML")
-        if not all(sections.values()) or not weekly:
+        daily_roundup = page.evaluate("""() => {
+          const days = Array.from(document.querySelectorAll('section[id^="daily-"]'));
+          const blocks = days.map(section => {
+            const heading = section.querySelector('h2')?.innerText || section.id;
+            const articles = Array.from(section.querySelectorAll('article.news')).map(article => article.outerHTML);
+            return { heading, articles };
+          }).filter(day => day.articles.length);
+          const total = blocks.reduce((sum, day) => sum + day.articles.length, 0);
+          if (!total) throw new Error('No dated English daily news articles available for weekly compilation');
+          return '<section class="chapter" id="weekly-daily-roundup"><div class="label">DATE-WISE NEWS DIGEST</div><h2>Detailed Daily News Digest</h2><p>The dated daily stories currently available are consolidated below for weekly revision. Each story retains its context, exam relevance and official source reference.</p>' +
+            blocks.map(day => '<h3>' + day.heading + '</h3>' + day.articles.join('')).join('') +
+            '<p class="muted">Detailed news stories included: ' + total + '. Count reflects the available daily source material.</p></section>';
+        }""")
+        if not all(sections.values()) or not weekly or not daily_roundup:
             raise RuntimeError("One or more English daily/weekly sections are missing")
 
         outputs = [
             (DAILY["06"], "Daily Current Affairs · 6 November 2026", sections["06"]),
             (DAILY["05"], "Daily Current Affairs · 5 November 2026", sections["05"]),
             (DAILY["04"], "Daily Current Affairs · 4 November 2026", sections["04"]),
-            (WEEKLY, "Weekly Current Affairs · 1–6 November 2026", weekly),
+            (WEEKLY, "Weekly Current Affairs · 1–6 November 2026", weekly + daily_roundup),
         ]
         for output, title, content in outputs:
             cover = f'<section class="cover"><div class="eyebrow">KAGZI · ENGLISH MEDIUM</div><h1>{escape(title)}</h1><p>UPSC · UPPSC · UPSSSC · SSC</p></section>'

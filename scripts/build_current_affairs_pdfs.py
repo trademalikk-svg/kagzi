@@ -42,11 +42,24 @@ def main():
         page.set_content(make_document("दैनिक समसामयिक घटनाक्रम", daily, style), wait_until="load")
         page.pdf(path=str(OUT["daily"]), format="A4", print_background=True, display_header_footer=False)
 
-        # Weekly section.
+        # Weekly section + all dated daily news articles currently available.
         page.goto(SOURCE.as_uri(), wait_until="networkidle")
         weekly = page.locator("#weekly").evaluate("(el) => el.outerHTML")
+        daily_roundup = page.evaluate("""() => {
+          const days = Array.from(document.querySelectorAll('section[id^="daily-"]'));
+          const blocks = days.map(section => {
+            const heading = section.querySelector('h2')?.innerText || section.id;
+            const articles = Array.from(section.querySelectorAll('article.news')).map(article => article.outerHTML);
+            return { heading, articles };
+          }).filter(day => day.articles.length);
+          const total = blocks.reduce((sum, day) => sum + day.articles.length, 0);
+          if (!total) throw new Error('No dated daily news articles available for weekly compilation');
+          return '<section class="chapter" id="weekly-daily-roundup"><div class="label">DATE-WISE NEWS DIGEST</div><h2>दिनवार विस्तृत समाचार</h2><p>नीचे उपलब्ध दैनिक अंकों की खबरों को सप्ताहवार पुनरावृत्ति के लिए एक साथ रखा गया है। प्रत्येक खबर के साथ उसका मूल संदर्भ और परीक्षा उपयोगिता सुरक्षित रखी गई है।</p>' +
+            blocks.map(day => '<h3>' + day.heading + '</h3>' + day.articles.join('')).join('') +
+            '<p class="muted">इस PDF में शामिल विस्तृत समाचार: ' + total + '। यह संख्या उपलब्ध दैनिक स्रोत सामग्री पर आधारित है।</p></section>';
+        }""")
         OUT["weekly"].parent.mkdir(parents=True, exist_ok=True)
-        page.set_content(make_document("साप्ताहिक समसामयिक सार", [weekly], style), wait_until="load")
+        page.set_content(make_document("साप्ताहिक समसामयिक सार", [weekly, daily_roundup], style), wait_until="load")
         page.pdf(path=str(OUT["weekly"]), format="A4", print_background=True, display_header_footer=False)
 
         browser.close()
