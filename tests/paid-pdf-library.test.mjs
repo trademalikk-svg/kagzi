@@ -7,8 +7,10 @@ test('paid library requires a signed-in user', () => {
   assert.match(page, /supabase\.auth\.getUser\(\)/);
   assert.match(page, /auth\.html\?redirect=current-affairs\/my-library\.html/);
 });
-test('paid downloads use short-lived signed URLs from the private bucket', () => {
-  assert.match(page, /from\("kagzi-paid-pdfs"\)\.createSignedUrl\(resource\.storage_path,60/);
+test('paid downloads request short-lived signed URLs from the server after entitlement verification', () => {
+  assert.match(page, /fetch\("\/api\/payments\/download"/);
+  assert.match(page, /resource_id:resource\.id/);
+  assert.doesNotMatch(page, /storage_path/);
   assert.match(migration, /values \('kagzi-paid-pdfs','kagzi-paid-pdfs',false/);
 });
 test('entitlement RLS limits rows to the authenticated owner', () => {

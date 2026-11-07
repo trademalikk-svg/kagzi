@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
-const publicPages=new Set(['index.html','auth.html','about.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html',
+const publicPages=new Set(['index.html','auth.html','about.html','paid-library.html','pricing.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html',
  'current-affairs.html','current-affairs-book.html','current-affairs/archive.html','current-affairs/day/index.html',
  'current-affairs/english/index.html','current-affairs/index.html','current-affairs/monthly/index.html',
  'current-affairs/weekly/index.html','current-affairs/yearly/index.html','economy-book.html','education.html',

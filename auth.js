@@ -35,7 +35,7 @@
   const button=$('authSubmit');button.disabled=true;button.textContent='Please wait…';
   try{
    const result=mode==='signup'
-    ?await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/auth.html?mode=login'}})
+    ?await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/auth.html?mode=login&redirect='+encodeURIComponent(safeRedirect)}})
     :await client.auth.signInWithPassword({email,password});
    if(result.error)throw result.error;
    if(mode==='signup'&&!result.data.session)setMessage('Account request created. Check your email for the confirmation link, then log in.');

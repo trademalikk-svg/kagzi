@@ -18,7 +18,7 @@ button{border:0;border-radius:10px;padding:12px 17px;background:var(--blue);colo
 <script defer src="/config.js"></script>
 <script defer src="/auth-guard.js"></script>
 </head><body data-kagzi-protected="true">
-<header><b>KAGZI · CURRENT AFFAIRS ADMIN</b>　<a href="./">← Folder Home</a></header>
+<header><b>KAGZI · CURRENT AFFAIRS ADMIN</b>　<a href="./">← Folder Home</a>　<a href="../paid-library.html">Paid PDF Catalogue ↗</a></header>
 <main class="wrap">
 <section class="card" id="loginPanel"><div class="muted">SECURE ADMIN ACCESS</div><h1>Admin Login</h1>
 <p class="muted">केवल kagzi_library_admins में अनुमति प्राप्त अकाउंट ही इन सेटिंग्स को बदल सकते हैं।</p>
@@ -38,7 +38,7 @@ button{border:0;border-radius:10px;padding:12px 17px;background:var(--blue);colo
 <p class="muted">यहाँ अपलोड की गई PDF केवल kagzi-paid-pdfs Private Bucket में जाएगी। यह public URL नहीं बनाएगी। Upload के बाद edition My Paid Library में entitlement मिलने पर ही खुलेगी।</p>
 <label for="paidTitle">PDF Title</label><input id="paidTitle" maxlength="200" placeholder="November 2026 Monthly Current Affairs · Hindi">
 <label for="paidDescription">Description</label><input id="paidDescription" maxlength="2000" placeholder="Edition details">
-<label for="paidPrice">Price (INR)</label><input id="paidPrice" type="number" min="0" step="1" value="30">
+<label for="paidPrice">Price (INR)</label><input id="paidPrice" type="number" min="1" step="1" value="30">
 <label for="paidPdf">PDF File · Maximum 50 MB</label><input id="paidPdf" type="file" accept="application/pdf,.pdf">
 <button id="paidUploadBtn" type="button">Upload to Private Library</button>
 <button id="paidRefreshBtn" type="button" class="secondary">Refresh Paid Editions</button>
@@ -99,7 +99,7 @@ $("paidUploadBtn").addEventListener("click",async()=>{
  if(!file){status.textContent="पहले PDF file चुनें।";return;}
  if(file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){status.textContent="केवल PDF file स्वीकार है।";return;}
  if(file.size<=0||file.size>50*1024*1024){status.textContent="PDF का आकार 1 byte से 50 MB के बीच होना चाहिए।";return;}
- if(!Number.isInteger(price)||price<0){status.textContent="Price एक पूर्णांक INR राशि होनी चाहिए।";return;}
+ if(!Number.isInteger(price)||price<1){status.textContent="Paid PDF की कीमत कम-से-कम ₹1 और पूर्णांक INR राशि होनी चाहिए।";return;}
  button.disabled=true;status.textContent="Private Storage में upload हो रहा है…";
  const safeName=file.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(-100)||"edition.pdf";
  const storagePath="editions/"+crypto.randomUUID()+"-"+safeName;
