@@ -202,6 +202,11 @@ int main(void) {
   if (!text_object || FPDFPageObj_GetType(text_object) != FPDF_PAGEOBJ_TEXT)
     return 6;
 
+  // The API must reject objects that are not direct children of the supplied
+  // Form. Otherwise callers could mark the wrong content stream dirty.
+  if (FPDFFormObj_MarkObjectDirty(outer_form, text_object)) return 25;
+  if (FPDFFormObj_MarkObjectDirty(inner_form, outer_form)) return 26;
+
   const unsigned short replacement[] = {
       'R', 'E', 'P', 'L', 'A', 'C', 'E', 'D', 0
   };
