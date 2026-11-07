@@ -34,7 +34,7 @@ jobs:
             'photoOverlayText', 'photoOverlayColor', 'photoOverlaySize',
             'photoOverlayX', 'photoOverlayY', 'photoOverlayAdd',
             'photoOverlayClear', 'photoCoverApply', 'photoCoverClear',
-            'photoTextStatus'
+            'photoTextStatus', 'photoCloneSize', 'photoCloneSample', 'photoCloneClear'
           ];
           for (const id of requiredIds) {
             const count = (html.match(new RegExp('id="' + id + '"', 'g')) || []).length;
@@ -46,5 +46,7 @@ jobs:
           if (!addon.includes('window.buildPhotoBlob = async')) throw new Error('Edited export wrapper is missing.');
           if (!addon.includes('ctx.fillText')) throw new Error('Text drawing operation is missing.');
           if (!addon.includes('ctx.fillRect')) throw new Error('Area cover drawing operation is missing.');
+          if (!addon.includes('function paintClone')) throw new Error('Clone brush export operation is missing.');
+          if (!addon.includes('pointerdown') || !addon.includes('pointermove')) throw new Error('Touch/pointer brush interaction is missing.');
           console.log('Photo editor IDs, script order, text overlay, cover, and export wiring verified.');
           NODE
