@@ -115,7 +115,17 @@ test("Central Jobs shows official recruitment portals without mislabelling homep
  assert.match(html,/data-whatsapp-page/);
 });
 
-test("Apply Online is shown only for a verified open vacancy", async()=>{
+test("Apply Online is shown only for a verified open vacancy and dates control all three statuses", async()=>{
  const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
- assert.match(js,/item\.applyUrl&&item\.applyVerified===true&&open/);
+ assert.match(js,/item\.applyVerified===true/);
+ assert.match(js,/status==="active"/);
+ assert.match(js,/status==="upcoming"/);
+ assert.match(js,/status==="inactive"/);
+ assert.match(js,/applicationStart/);
+ assert.match(js,/applicationEnd/);
+ const central=await readFile(new URL("../government-jobs/assets/central-jobs.js",import.meta.url),"utf8");
+ assert.match(central,/Apply Online/);
+ assert.match(central,/x\.applyVerified===true/);
+ assert.match(central,/status-upcoming/);
+ assert.match(central,/status-inactive/);
 });
