@@ -3407,6 +3407,7 @@ jobs:
           assert.ok(aliases.length > 0, 'parent Form must own the inherited child font alias');
           const collidingAlias = aliases[0];
 
+          const baselineBytes = new Uint8Array(await outerDoc.save({ useObjectStreams: true }));
           const courier = await outerDoc.embedFont(StandardFonts.Courier);
           outerPage.drawText('outer page control', { x: 60, y: 650, size: 10, font: courier });
           const outerFonts = outerPage.node.Resources().lookup(fontKey);
@@ -3435,7 +3436,7 @@ jobs:
             engine.destroy();
           }
 
-          const baselineTask = pdfjs.getDocument({ data: new Uint8Array(await outerDoc.save({ useObjectStreams: true })), useSystemFonts: true });
+          const baselineTask = pdfjs.getDocument({ data: new Uint8Array(baselineBytes), useSystemFonts: true });
           const baselinePdf = await baselineTask.promise;
           let baselineWidth;
           try {
