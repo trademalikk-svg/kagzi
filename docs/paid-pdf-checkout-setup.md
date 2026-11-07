@@ -14,7 +14,7 @@ The checkout sequence is **Login → Razorpay payment → server-side verificati
 
 ## Required Supabase migration
 
-Apply `supabase/migrations/20261108_paid_pdf_checkout.sql` in the KAGZI Supabase project's SQL Editor after the existing paid-PDF library migration has been applied.
+Apply `supabase/migrations/20261107_paid_pdf_checkout.sql` in the KAGZI Supabase project's SQL Editor after the existing paid-PDF library migration has been applied.
 
 The migration adds `kagzi_payment_orders`, restricts public resource reads to catalogue-safe columns, and leaves the existing private bucket and admin upload policies in place.
 
