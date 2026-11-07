@@ -3383,19 +3383,21 @@ jobs:
 
           | Fixture / operation | Evidence | Status |
           |---|---|---|
-          | Identity-transform Form replacement | Text round-trip and PDF.js pixel-preservation checks | Verified for the synthetic fixture |
-          | 50% scaled + translated Form | Matrix composition; 123 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
-          | 15° rotated Form | PDF.js text round-trip; 482 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
+          | Identity-transform Form replacement fallback | PDF.js text round-trip and pixel-preservation; unrelated controls unchanged | Verified for the synthetic fixture |
+          | 50% scaled + translated Form replacement | Matrix composition; 123 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
+          | 15° rotated Form replacement | PDF.js text round-trip; 482 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
           | Clipped Form without clip reproduction | 824 changed pixels escaped the original clipping region | Blocked |
-          | Rectangular clip explicitly reproduced | New PDF.js pixel-diff regression; must show 0 changed pixels outside clip | Pending CI |
-          | Triangular non-rectangular clip explicitly reproduced | 18 changed raster pixels classified outside geometric triangle; remains blocked | Blocked |
-          | Two disjoint rectangular clip subpaths explicitly reproduced | 30 changed pixels detected in gap/outside region in prior run; remains blocked | Blocked |
-          | Two sequential intersecting rectangular clips explicitly reproduced | 0 changed pixels inside intersection in latest run; remains blocked | Blocked |
-          | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
-          | CropBox-offset coordinates and overlay placement | PDF.js full-MediaBox render; replacement baseline within 1 pt; control unchanged; zero changed pixels outside original CropBox | Pending CI |
+          | Explicit rectangular clip reproduction | 325 changed pixels inside; 0 outside; unrelated control unchanged | Verified for this fixture |
+          | Explicit triangular clip reproduction | 541 changed pixels inside; 0 outside; unrelated control unchanged | Verified for this fixture |
+          | Two disjoint rectangular clip subpaths | Both regions changed; 0 outside compound clip; 30 changed pixels outside target text band but inside clip | Verified for this fixture only |
+          | Two sequential intersecting rectangular clips | 0 changed pixels inside expected intersection; replacement not produced | Blocked |
+          | Single-level Form child deletion | PDF.js round-trip; 1,523 changed pixels in target band; 0 outside; control unchanged | Verified for deletion fixture only |
+          | Nested-nested Form replacement | Child removal did not survive serialization; original text remained | Blocked |
+          | CropBox-offset overlay placement | Baseline (150, 600); 1,072 changed target pixels; 0 outside CropBox; controls unchanged | Verified for this fixture |
+          | Encrypted and malformed PDF handling | Password-protected PDF and malformed cross-reference rejected by PDFium; qpdf independently rejects malformed fixture | Verified for fixtures |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
-          **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
+          **Release rule:** Keep general Form XObject content non-editable in the user-facing editor. Identity, scaled, rotated, rectangular-clip, triangular-clip, disjoint-clip, single-level deletion, and CropBox results are fixture-specific only. Intersecting clips and nested-nested replacement remain blocked; arbitrary clip paths, resource inheritance, and broader PDF preservation still require separate proofs.
 
           All work remains on `experiment/pdfcanvas-poc`. Production branch and deployment were not changed.
           EOF
