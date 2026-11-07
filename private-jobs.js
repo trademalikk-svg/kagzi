@@ -15,7 +15,7 @@ const safeHttpsUrl = (value) => {
 };
 const salaryMonthlyEquivalent = (job) => {
   if (job.salary_period === 'monthly') return job.salary_min_inr ?? job.salary_max_inr ?? null;
-  if (job.salary_period === 'annual') return job.salary_min_inr == null ? null : Math.round(job.salary_min_inr / 12);
+  if (job.salary_period === 'annual') { const annual = job.salary_min_inr ?? job.salary_max_inr; return annual == null ? null : Math.round(annual / 12); }
   if (job.salary_period === 'stipend') return job.salary_min_inr ?? job.salary_max_inr ?? null;
   return null;
 };
