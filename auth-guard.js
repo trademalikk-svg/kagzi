@@ -18,7 +18,7 @@
   catch(_){return false;}
  }
  async function enforcePageGate(){
-  if(!document.body||document.body.dataset.kagziProtected!=='true')return;
+  if(!document.body||document.body.dataset.kagziAuthScope!=='membership')return;
   if(!await hasSession())location.replace(loginUrl());
  }
  function protectPaidItems(){
