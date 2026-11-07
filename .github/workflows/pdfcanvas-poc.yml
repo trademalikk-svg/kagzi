@@ -1223,6 +1223,108 @@ jobs:
           console.log(JSON.stringify(report, null, 2));
           NODE
 
+      - name: Verify nested Form XObject deletion with PDF.js visual comparison
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+
+          async function render(bytes) {
+            const pdf = await pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true }).promise;
+            try {
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1 });
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await page.render({ canvas, canvasContext: context, viewport }).promise;
+              return { width: canvas.width, height: canvas.height, pixels: context.getImageData(0, 0, canvas.width, canvas.height).data };
+            } finally {
+              await pdf.destroy();
+            }
+          }
+
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Nested form visual deletion target', { x: 60, y: 700, size: 16, font: sourceFont });
+          const targetDoc = await PDFDocument.create();
+          const [formPage] = await targetDoc.embedPages([await PDFDocument.load(await source.save()).then(doc => doc.getPage(0))]);
+          const page = targetDoc.addPage([612, 792]);
+          page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
+          const controlFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          page.drawText('Unrelated page control', { x: 60, y: 640, size: 12, font: controlFont });
+          page.drawText('Same-line control sentinel', { x: 440, y: 700, size: 12, font: controlFont });
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const pagePtr = engine.m.FPDF_LoadPage(engine.docPtr, 0);
+          const formPtr = engine.m.FPDFPage_GetObject(pagePtr, 0);
+          const childPtr = engine.m.FPDFFormObj_GetObject(formPtr, 0);
+          assert.equal(typeof engine.m.FPDFFormObj_RemoveObject, 'function', 'Form XObject removal API must be exposed');
+          const removed = Boolean(engine.m.FPDFFormObj_RemoveObject(formPtr, childPtr));
+          assert.equal(removed, true, 'nested text child must be removed');
+          assert.equal(engine.m.FPDFFormObj_CountObjects(formPtr), 0, 'Form XObject must no longer contain the target child');
+          engine.m.FPDFPageObj_Destroy(childPtr);
+          assert.equal(engine.m.FPDFPage_GenerateContent(pagePtr), true, 'page content generation must succeed');
+          const output = engine.save();
+          engine.m.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+
+          const verify = await PdfiumTextEngine.create(wasm, output);
+          const afterText = verify.readPage(0, 0).map(run => run.text).join(' ');
+          verify.destroy();
+          assert.ok(!afterText.includes('Nested form visual deletion target'), 'removed text must be absent after reopen');
+          assert.ok(afterText.includes('Unrelated page control'), 'unrelated page text must survive');
+          assert.ok(afterText.includes('Same-line control sentinel'), 'same-line control text must survive');
+
+          const before = await render(input);
+          const after = await render(output);
+          assert.equal(after.width, before.width);
+          assert.equal(after.height, before.height);
+          const y0 = 55;
+          const y1 = 110;
+          let changedInsideTargetBand = 0;
+          let changedOutsideTargetBand = 0;
+          let changedSameLineControl = 0;
+          for (let y = 0; y < before.height; y += 1) {
+            for (let x = 0; x < before.width; x += 1) {
+              const offset = (y * before.width + x) * 4;
+              const changed = before.pixels[offset] !== after.pixels[offset] ||
+                before.pixels[offset + 1] !== after.pixels[offset + 1] ||
+                before.pixels[offset + 2] !== after.pixels[offset + 2] ||
+                before.pixels[offset + 3] !== after.pixels[offset + 3];
+              if (!changed) continue;
+              if (y >= y0 && y < y1) changedInsideTargetBand += 1;
+              else changedOutsideTargetBand += 1;
+              if (x >= 430 && x < 600 && y >= y0 && y < y1) changedSameLineControl += 1;
+            }
+          }
+          assert.ok(changedInsideTargetBand > 0, 'target text deletion must change rendered pixels in its band');
+          assert.equal(changedOutsideTargetBand, 0, 'all pixels outside the target band must remain identical');
+          assert.equal(changedSameLineControl, 0, 'same-line control pixels must remain identical');
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            renderer: 'PDF.js with @napi-rs/canvas',
+            targetTextRemovedAfterReopen: true,
+            unrelatedPageTextPreserved: true,
+            changedPixelsInsideTargetBand: changedInsideTargetBand,
+            changedPixelsOutsideTargetBand: changedOutsideTargetBand,
+            sameLineControlPixelsChanged: changedSameLineControl,
+            interpretation: 'Nested Form XObject child deletion passed semantic and visual checks for this synthetic fixture only.',
+            policy: 'This validates deletion only for this fixture. It does not enable general Form XObject text replacement.'
+          }, null, 2));
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
