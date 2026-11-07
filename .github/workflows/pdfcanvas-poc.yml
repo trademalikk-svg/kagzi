@@ -998,10 +998,16 @@ jobs:
             }
           }
 
+          const formRelatedExports = [...new Set([
+            ...Object.keys(module).filter(name => /form|generatecontent|insertobject|removeobject/i.test(name)),
+            ...Object.keys(exports).filter(name => /form|generatecontent|insertobject|removeobject/i.test(name))
+          ])].sort();
+
           const report = {
             result: 'DIAGNOSTIC',
             fixture: 'one page-level Form XObject containing one text object',
             apiAvailability: availability,
+            formRelatedExports,
             topLevelPageObjects: topLevel,
             nestedFormObjects: nested,
             extractedTextRuns: textRuns.map(run => ({
