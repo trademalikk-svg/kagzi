@@ -2991,7 +2991,23 @@ jobs:
 
           const removed = Boolean(module.FPDFFormObj_RemoveObject(middlePtr, innerTextPtr));
           if (removed) module.FPDFPageObj_Destroy(innerTextPtr);
-          const generated = removed && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+
+          // PDFium marks the directly edited Form dirty. In a nested chain, also
+          // mark each ancestor Form dirty without changing its matrix values so
+          // the serializer has an explicit dirty path from the page to the child.
+          const markAncestorFormDirty = (formPtr, matrix) => {
+            const memory = module.pdfium.wasmExports.memory;
+            const ptrOut = module.pdfium.wasmExports.malloc(24);
+            try {
+              const view = new DataView(memory.buffer);
+              matrix.forEach((value, index) => view.setFloat32(ptrOut + index * 4, value, true));
+              return Boolean(module.FPDFPageObj_SetMatrix(formPtr, ptrOut));
+            } finally {
+              module.pdfium.wasmExports.free(ptrOut);
+            }
+          };
+          const ancestorMarkedDirty = removed && markAncestorFormDirty(outerPtr, outerMatrix);
+          const generated = removed && ancestorMarkedDirty && Boolean(module.FPDFPage_GenerateContent(pagePtr));
           const removedBytes = engine.save();
           module.FPDF_ClosePage(pagePtr);
           engine.destroy();
