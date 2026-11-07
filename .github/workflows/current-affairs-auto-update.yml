@@ -32,16 +32,25 @@ jobs:
         run: |
           npm test
           python -m unittest discover -s tests -p 'test_*.py'
+      - name: Install fonts and browser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
       - name: Collect official PIB Hindi RSS updates
         run: python scripts/update_current_affairs.py
-      - name: Commit updated archive
+      - name: Build Hindi Daily and Weekly PDFs from the updated archive
+        run: python scripts/build_current_affairs_pdfs.py
+      - name: Commit archive and Hindi PDFs together
         run: |
-          if git diff --quiet -- current-affairs/data/items.json; then
-            echo "No archive changes to commit."
+          if git diff --quiet -- current-affairs/data/items.json current-affairs/day/ current-affairs/weekly/; then
+            echo "No archive or PDF changes to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add current-affairs/data/items.json
-          git commit -m "chore: update current affairs archive"
+          git add current-affairs/data/items.json current-affairs/day/*.pdf current-affairs/weekly/*.pdf
+          git commit -m "chore: publish current affairs archive and Hindi PDFs"
           git push
