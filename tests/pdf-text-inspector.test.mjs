@@ -35,5 +35,7 @@ test('selected PDF text loads its original size and available font style into th
   assert.match(editor, /italic:!!\(el\.inspectorItalic&&el\.inspectorItalic\.checked\)/);
   assert.match(editor, /fontKey=family\+\(edit\.bold\?'Bold':''\)\+\(edit\.italic\?/);
   assert.match(editor, /Math\.min\(96,edit\.fontSize\)/);
+  assert.match(editor, /fontKey=family\+\(edit\.bold\?'Bold':''\)\+\(edit\.italic\?/);
+  assert.match(editor, /Math\.min\(96,edit\.fontSize\)/);
   assert.match(html, /id="inspectorItalic"/);
 });
