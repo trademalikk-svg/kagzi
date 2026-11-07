@@ -46,6 +46,7 @@ a{color:inherit}.topbar{min-height:76px;background:linear-gradient(105deg,var(--
   align-content: start;
 }
 .company-source-grid[aria-busy="true"] > .state-card {
+  grid-column: 1 / -1;
   grid-row: 1 / -1;
   display: grid;
   place-items: center;
