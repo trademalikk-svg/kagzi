@@ -45,5 +45,7 @@ jobs:
             echo "No PDF changes to commit"
           else
             git commit -m "Publish Current Affairs PDFs into their folders"
+            git fetch origin main
+            git rebase origin/main
             git push origin main
           fi
