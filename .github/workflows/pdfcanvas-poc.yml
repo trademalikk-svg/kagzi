@@ -3363,6 +3363,103 @@ jobs:
           }, null, 2));
           NODE
 
+      - name: Verify parent Form font aliases shadow conflicting page aliases
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, PDFName } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+          import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const resourcesKey = PDFName.of('Resources');
+          const fontKey = PDFName.of('Font');
+          const sentinel = 'Child Form inherits parent Helvetica font';
+
+          const source = await PDFDocument.create();
+          const font = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText(sentinel, { x: 60, y: 700, size: 18, font });
+
+          const parentDoc = await PDFDocument.create();
+          const [childForm] = await parentDoc.embedPages([sourcePage]);
+          const parentPage = parentDoc.addPage([612, 792]);
+          parentPage.drawPage(childForm, { x: 0, y: 0, width: 612, height: 792 });
+          await childForm.embed();
+          const childStream = parentDoc.context.lookup(childForm.ref);
+          const childResources = childStream.dict.lookup(resourcesKey);
+          const inheritedFonts = childResources.lookup(fontKey);
+          parentPage.node.Resources().set(fontKey, inheritedFonts);
+          assert.equal(childStream.dict.delete(resourcesKey), true, 'child Form must omit local Resources');
+
+          const parentReloaded = await PDFDocument.load(await parentDoc.save());
+          const outerDoc = await PDFDocument.create();
+          const [parentForm] = await outerDoc.embedPages([parentReloaded.getPage(0)]);
+          const outerPage = outerDoc.addPage([612, 792]);
+          outerPage.drawPage(parentForm, { x: 0, y: 0, width: 612, height: 792 });
+          await parentForm.embed();
+
+          const parentStream = outerDoc.context.lookup(parentForm.ref);
+          const parentResources = parentStream.dict.lookup(resourcesKey);
+          const parentFonts = parentResources.lookup(fontKey);
+          const aliases = parentFonts.keys();
+          assert.ok(aliases.length > 0, 'parent Form must own the inherited child font alias');
+          const collidingAlias = aliases[0];
+
+          const courier = await outerDoc.embedFont(StandardFonts.Courier);
+          outerPage.drawText('outer page control', { x: 60, y: 650, size: 10, font: courier });
+          const outerFonts = outerPage.node.Resources().lookup(fontKey);
+          assert.ok(outerFonts, 'control text must create outer page font resources');
+          outerFonts.set(collidingAlias, courier.ref);
+          const bytes = new Uint8Array(await outerDoc.save({ useObjectStreams: true }));
+
+          const loadingTask = pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: true });
+          const pdf = await loadingTask.promise;
+          let width;
+          try {
+            const page = await pdf.getPage(1);
+            const content = await page.getTextContent();
+            const item = content.items.find(item => typeof item.str === 'string' && item.str.includes(sentinel));
+            assert.ok(item, 'PDF.js must find child text through parent Form resources');
+            width = item.width;
+          } finally {
+            await loadingTask.destroy();
+          }
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          try {
+            const text = engine.readPage(0, 0).map(run => run.text).join(' | ');
+            assert.ok(text.includes(sentinel), 'PDFium must resolve the inherited parent Form font alias');
+          } finally {
+            engine.destroy();
+          }
+
+          const baselineTask = pdfjs.getDocument({ data: new Uint8Array(await outerDoc.save({ useObjectStreams: true })), useSystemFonts: true });
+          const baselinePdf = await baselineTask.promise;
+          let baselineWidth;
+          try {
+            const content = await (await baselinePdf.getPage(1)).getTextContent();
+            const item = content.items.find(item => typeof item.str === 'string' && item.str.includes(sentinel));
+            assert.ok(item, 'baseline must include inherited child text');
+            baselineWidth = item.width;
+          } finally {
+            await baselineTask.destroy();
+          }
+
+          assert.ok(Math.abs(width - baselineWidth) < 0.01,
+            'parent Form Helvetica alias must shadow the conflicting outer page Courier alias');
+
+          console.log(JSON.stringify({
+            result: 'PARENT_FORM_RESOURCE_SHADOWING_PASS',
+            baselineWidth,
+            collisionWidth: width,
+            childFormHasLocalResources: false,
+            parentFormAliasShadowedOuterPageAlias: true,
+            interpretation: 'A child Form without local Resources continued to use the parent Form Helvetica alias when the outer page defined the same alias as Courier. This is one generated nested fixture only.'
+          }, null, 2));
+          NODE
+
       - name: Compare CropBox coordinates with PDF.js viewport geometry
         working-directory: vendor/pdfcanvas
         run: |
