@@ -18,6 +18,9 @@ jobs:
       - name: Check out KAGZI experiment branch
         uses: actions/checkout@v4
 
+      - name: Test KAGZI native text editing fail-closed gate
+        run: node --test tests/pdf-native-text-gate.test.mjs
+
       - name: Check out pinned PDFcanvas source
         uses: actions/checkout@v4
         with:
