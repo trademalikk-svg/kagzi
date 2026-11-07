@@ -4087,7 +4087,7 @@ jobs:
             fi
             echo
             echo '#### Patched source definition'
-            grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp
+            grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp || echo "Source grep did not locate the prototype; exact WASM link remains the authoritative check."
           } | tee "$RUNNER_TEMP/pdfium-symbol-inspection.txt" >> "$GITHUB_STEP_SUMMARY"
           cat "$RUNNER_TEMP/pdfium-symbol-inspection.txt"
           # The following WASM link step is the authoritative symbol gate:
