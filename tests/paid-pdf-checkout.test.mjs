@@ -16,7 +16,7 @@ test('paid library exposes a public catalogue before login', () => {
 });
 
 test('paid PDF records support server-verified payment orders', () => {
-  const migration = read('supabase/migrations/20261108_paid_pdf_checkout.sql');
+  const migration = read('supabase/migrations/20261107_paid_pdf_checkout.sql');
   assert.match(migration, /kagzi_payment_orders/);
   assert.match(migration, /razorpay_order_id/);
   assert.match(migration, /payment_verified_at/);
@@ -24,7 +24,7 @@ test('paid PDF records support server-verified payment orders', () => {
 });
 
 test('private storage paths are not readable by public catalogue clients', () => {
-  const migration = read('supabase/migrations/20261108_paid_pdf_checkout.sql');
+  const migration = read('supabase/migrations/20261107_paid_pdf_checkout.sql');
   const catalogue = read('paid-library.html');
   const library = read('current-affairs/my-library.html');
   assert.match(migration, /revoke select on public\.kagzi_paid_resources from anon, authenticated/);
