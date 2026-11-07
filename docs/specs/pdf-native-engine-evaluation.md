@@ -173,7 +173,11 @@ The dependency chain is now resolved to the source revision used to build the ex
 
 This source-level explanation matches the fixture evidence: removal dirties the Form containing the child, while the containing page-level Form also needs a dirty trigger so the serializer reaches the nested Form and regenerates its stream. The diagnostic active-state toggle in the fixture is only a test probe; it is not approved as a production API strategy.
 
-The isolated PDFcanvas workflow now checks out the exact runtime source commit and asserts these implementation details on each experiment-branch run. This is a source-regression guard, not proof that all nested Forms, resources, clipping combinations, or real-world PDFs are supported. General Form XObject editing remains disabled.
+The isolated PDFcanvas workflow now checks out the exact runtime source commit and asserts these implementation details on each experiment-branch run. The audit also confirms that `CPDF_PageObject::SetIsActive(bool)` sets `dirty_ = true` when the active state changes. Toggling an ancestor Form off and back on therefore restores its original active state while leaving its dirty flag set; the workflow uses this only as a fixture diagnostic to force serialization through each ancestor level. It is not an approved production mutation strategy or a supported public dirty-marking API.
+
+The CI run on commit `505d47137fe74e026307bced517bab1679bd68ab` completed successfully (workflow run #114). The nested-nested round-trip fixture reported `NESTED_FIXTURE_PASS`: replacement text was found after reopen, original text was absent, 124 pixels changed inside the target bounds, 0 outside, and 0 pixels changed in the same-line control. Earlier probes using direct child removal alone and unchanged `SetMatrix` calls did not persist the nested edit. This isolates the successful result to explicit dirty propagation on both ancestor Form objects in this synthetic fixture.
+
+This is a source-regression guard and one synthetic fixture result, not proof that all nested Forms, resources, clipping combinations, or real-world PDFs are supported. Intersecting nested clipping paths remain blocked; arbitrary resource inheritance and broader preservation still require separate proofs. General Form XObject editing remains disabled.
 
 Pinned source references:
 - https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/fpdfsdk/fpdf_editpage.cpp
