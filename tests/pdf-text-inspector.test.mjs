@@ -82,5 +82,5 @@ test('mobile inspector is placed in normal page flow above the PDF workspace, no
   assert.match(workspace, /shell\.insertBefore\(inspector, workspace\)/);
   assert.doesNotMatch(workspace, /is-mobile-drawer/);
   assert.doesNotMatch(css, /translateX\(calc\(100% - 48px\)\)/);
-  assert.match(css, /\.editor-shell>#pdfInspector/);
+  assert.match(css, /\.editor-shell\s*>\s*#pdfInspector/);
 });
