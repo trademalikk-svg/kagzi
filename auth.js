@@ -7,7 +7,7 @@
  const requestedRedirect=params.get('redirect')||'index.html';
  let safeRedirect='index.html';
  try{const candidate=new URL(requestedRedirect,location.origin);if(candidate.origin===location.origin&&!candidate.pathname.endsWith('/auth.html'))safeRedirect=candidate.pathname+candidate.search+candidate.hash;}catch(_){}
- const message=$('authMessage'),form=$('authForm'),otpForm=$('otpForm'),submit=$('authSubmit'),otpSubmit=$('otpSubmit'),resend=$('authResend');
+ const message=$('authMessage'),form=$('authForm'),otpForm=$('otpForm'),submit=$('authSubmit'),otpSubmit=$('otpSubmit'),resend=$('authResend'),googleButton=$('googleSignIn');
  let resendTimer=null;
  function setMessage(text){message.textContent=text;}
  function showResend(show){resend.style.display=show?'block':'none';}
@@ -38,9 +38,24 @@
  $('signupTab').addEventListener('click',()=>{mode='signup';showOtp(false);showResend(false);render();setMessage('Email से account बनाएँ। फिर email पर आया 6-digit OTP दर्ज करें।');});
  const cfg=window.KAGZI_CONFIG||{};
  if(window.supabase&&cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY){
-  try{client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});setMessage('KAGZI account service connected.');}
+  try{client=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});setMessage('KAGZI account service connected.');
+   client.auth.onAuthStateChange((event,session)=>{
+    if(event==='SIGNED_IN'&&session&&location.hash.includes('access_token')){setMessage('Google login successful. KAGZI खोल रहे हैं…');location.replace(safeRedirect);}
+   });}
   catch(e){setMessage('Supabase configuration में समस्या है। Project URL और publishable key जाँचें।');}
  }else setMessage('Supabase setup अधूरा है। config.js जाँचें।');
+ googleButton.addEventListener('click',async()=>{
+  if(!client){setMessage('Account service से connection नहीं हुआ। Page refresh करें।');return;}
+  googleButton.disabled=true;googleButton.textContent='Google से connect हो रहा है…';
+  try{
+   const redirectTo=location.origin+location.pathname+'?redirect='+encodeURIComponent(safeRedirect);
+   const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo}});
+   if(error)throw error;
+  }catch(error){
+   setMessage('Google Login शुरू नहीं हो सका: '+(error.message||'कृपया Supabase Google Provider सेटिंग जाँचें।'));
+   googleButton.disabled=false;googleButton.textContent='Continue with Google';
+  }
+ });
  form.addEventListener('submit',async event=>{
   event.preventDefault();
   if(!client){setMessage('Account service से connection नहीं हुआ। Page refresh करें।');return;}
