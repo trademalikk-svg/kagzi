@@ -1613,7 +1613,10 @@ jobs:
               if (!mem) return null;
               try {
                 if (!m.FPDFPageObj_GetMatrix(ptr, mem)) return null;
-                return Array.from({ length: 6 }, (_, i) => m.pdfium.wasmExports.HEAPF32[(mem >> 2) + i]);
+                const memory = m.pdfium.wasmExports.memory;
+                if (!memory?.buffer) return { unavailable: true, exports: Object.keys(m.pdfium.wasmExports).filter(key => /memory|heap/i.test(key)) };
+                const view = new DataView(memory.buffer);
+                return Array.from({ length: 6 }, (_, i) => view.getFloat32(mem + i * 4, true));
               } finally {
                 m.pdfium.wasmExports.free(mem);
               }
