@@ -47,7 +47,7 @@ function cardFor(resource,owned){
  const description=document.createElement("p");description.textContent=resource.description||"KAGZI की सुरक्षित PDF edition";
  const price=document.createElement("div");price.className="price";price.textContent="₹"+resource.price_inr;
  const meta=document.createElement("div");meta.className="meta";meta.textContent="INR · Secure checkout";
- const button=document.createElement("button");button.type="button";button.className=owned?"secondary":"buy";button.textContent=owned?"पहले खरीदी गई · My Library खोलें":"पहले Login करें / खरीदें";
+ const button=document.createElement("button");button.type="button";button.className=owned?"secondary":"buy";button.textContent=owned?"पहले खरीदी गई · My Library खोलें":(signedInUser?"अभी खरीदें":"पहले Login करें / खरीदें");
  button.addEventListener("click",()=>owned?location.assign("/current-affairs/my-library.html"):beginPurchase(resource,button));
  card.append(title,description,price,meta,button);return card;
 }
