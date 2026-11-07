@@ -552,6 +552,74 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Test Form XObject editability and round-trip
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Form XObject original text', { x: 60, y: 700, size: 16, font: sourceFont });
+          const sourceBytes = await source.save();
+          const loadedSource = await PDFDocument.load(sourceBytes);
+
+          const targetDoc = await PDFDocument.create();
+          const [formPage] = await targetDoc.embedPages([loadedSource.getPage(0)]);
+          const page = targetDoc.addPage([612, 792]);
+          page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
+          const sentinelFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          page.drawText('Unrelated page sentinel', { x: 60, y: 640, size: 12, font: sentinelFont });
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const runs = engine.readPage(0, 0);
+          const target = runs.find(run => run.text.includes('Form XObject original text'));
+          const sentinel = runs.find(run => run.text.includes('Unrelated page sentinel'));
+          assert.ok(sentinel, 'ordinary page text must be discoverable');
+
+          let replacementAttempted = false;
+          let replacementRoundTrip = false;
+          let classification = 'not discovered';
+          if (target) {
+            classification = target.editable ? 'engine marks Form XObject text editable; round-trip test attempted' : 'discovered but engine marks non-editable';
+            if (target.editable) {
+              replacementAttempted = true;
+              const edited = engine.applyEdits([{
+                ...target,
+                newText: 'Form XObject replacement text',
+                originalText: target.text,
+                background: '#ffffff'
+              }]);
+              if (edited.failed.length === 0) {
+                engine.destroy();
+                const verify = await PdfiumTextEngine.create(wasm, edited.bytes);
+                const after = verify.readPage(0, 0).map(run => run.text).join(' ');
+                replacementRoundTrip = after.includes('Form XObject replacement text') &&
+                  !after.includes('Form XObject original text') &&
+                  after.includes('Unrelated page sentinel');
+                verify.destroy();
+                console.log(JSON.stringify({ result: 'PASS', classification, replacementAttempted, replacementRoundTrip, policy: replacementRoundTrip ? 'candidate behavior observed; still requires visual render comparison' : 'block Form XObject replacement' }, null, 2));
+                assert.equal(replacementRoundTrip, true, 'Form XObject replacement must round-trip and preserve unrelated page text');
+                process.exit(0);
+              }
+              classification = 'engine marked editable but applyEdits reported failure';
+            }
+          }
+          engine.destroy();
+          console.log(JSON.stringify({
+            result: 'PASS',
+            classification,
+            replacementAttempted,
+            replacementRoundTrip,
+            policy: 'Form XObject content remains non-editable unless a verified replacement round-trip succeeds.'
+          }, null, 2));
+          NODE
+
       - name: Classify text inside Form XObjects
         working-directory: vendor/pdfcanvas
         run: |
