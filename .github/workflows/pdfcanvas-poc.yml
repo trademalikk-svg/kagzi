@@ -2356,18 +2356,51 @@ jobs:
           const after = await render(output);
           assert.ok(after.text.includes('REPLACEMENT: Form text inside triangle'));
 
-          const insideTriangle = (x, y) => {
+          const insideTriangle = (point) => {
             const [a, b, c] = polygon;
             const sign = (p1, p2, p3) =>
               (p1[0] - p3[0]) * (p2[1] - p3[1]) -
               (p2[0] - p3[0]) * (p1[1] - p3[1]);
-            const point = [x, y];
             const d1 = sign(point, a, b);
             const d2 = sign(point, b, c);
             const d3 = sign(point, c, a);
             const hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
             const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
             return !(hasNeg && hasPos);
+          };
+          const orientation = (a, b, c) =>
+            (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+          const segmentsIntersect = (a, b, c, d) => {
+            const o1 = orientation(a, b, c);
+            const o2 = orientation(a, b, d);
+            const o3 = orientation(c, d, a);
+            const o4 = orientation(c, d, b);
+            return ((o1 <= 0 && o2 >= 0) || (o1 >= 0 && o2 <= 0)) &&
+              ((o3 <= 0 && o4 >= 0) || (o3 >= 0 && o4 <= 0));
+          };
+          const pixelIntersectsTriangle = (canvasX, canvasY) => {
+            // A raster pixel is a 1x1 area. Count anti-aliased edge pixels as
+            // intersecting the clip when any part of that pixel touches it.
+            const left = canvasX;
+            const right = canvasX + 1;
+            const bottom = 792 - (canvasY + 1);
+            const top = 792 - canvasY;
+            const corners = [
+              [left, bottom], [right, bottom], [right, top], [left, top]
+            ];
+            if (corners.some(insideTriangle)) return true;
+            if (polygon.some(([x, y]) => x >= left && x <= right && y >= bottom && y <= top)) return true;
+            const rectangleEdges = [
+              [corners[0], corners[1]], [corners[1], corners[2]],
+              [corners[2], corners[3]], [corners[3], corners[0]]
+            ];
+            const triangleEdges = [
+              [polygon[0], polygon[1]], [polygon[1], polygon[2]],
+              [polygon[2], polygon[0]]
+            ];
+            return triangleEdges.some(([a, b]) =>
+              rectangleEdges.some(([c, d]) => segmentsIntersect(a, b, c, d))
+            );
           };
 
           let changedInsideClip = 0;
@@ -2381,7 +2414,7 @@ jobs:
                 before.pixels[p + 2] !== after.pixels[p + 2] ||
                 before.pixels[p + 3] !== after.pixels[p + 3];
               if (!changed) continue;
-              if (insideTriangle(x + 0.5, 792 - (y + 0.5))) changedInsideClip += 1;
+              if (pixelIntersectsTriangle(x, y)) changedInsideClip += 1;
               else changedOutsideClip += 1;
               if (x >= 420 && x < 610 && y >= 62 && y < 112) changedControl += 1;
             }
