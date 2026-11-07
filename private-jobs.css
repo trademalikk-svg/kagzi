@@ -39,3 +39,23 @@ a{color:inherit}.topbar{min-height:76px;background:linear-gradient(105deg,var(--
 .company-eligibility-warning{background:#fff5df;border-left:3px solid #d7a83e;padding:8px;font-size:10px;line-height:1.5;color:#76561b}
 .company-official-link{display:inline-block;margin-top:auto;text-align:center;background:#eaf0fa;color:#234675;padding:9px 10px;border-radius:9px;text-decoration:none;font-size:11px;font-weight:900}
 @media(max-width:760px){.company-source-grid{grid-template-columns:1fr}}
+
+/* Prevent the 51-company directory from jumping when its JSON data arrives. */
+.company-source-grid[aria-busy="true"] {
+  grid-template-rows: repeat(26, minmax(190px, auto));
+  align-content: start;
+}
+.company-source-grid[aria-busy="true"] > .state-card {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: grid;
+  place-items: center;
+}
+.company-profile-card {
+  min-height: 190px;
+}
+@media (max-width: 760px) {
+  .company-source-grid[aria-busy="true"] {
+    grid-template-rows: repeat(51, minmax(190px, auto));
+  }
+}

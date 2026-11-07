@@ -167,8 +167,10 @@ async function loadCompanySources(){
    card.append(link);container.append(card);
   }
   if(!container.children.length)throw new Error('No valid company links');
+  container.removeAttribute("aria-busy");
  }catch(error){
   container.replaceChildren();const state=document.createElement('div');state.className='state-card';state.textContent='Company eligibility details अभी लोड नहीं हो सके।';container.append(state);
+  container.removeAttribute("aria-busy");
   console.error('Company career directory failed:',error.message);
  }
 }
