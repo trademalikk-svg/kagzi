@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'current-affairs-book.html'
+      - 'current-affairs-book-source.html'
       - 'scripts/build_current_affairs_pdfs.py'
       - 'scripts/build_current_affairs_english_pdfs.py'
       - 'current-affairs/english/source.html'
