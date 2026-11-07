@@ -2479,7 +2479,7 @@ jobs:
           NODE
 
       - name: Summarize Form XObject support boundaries
-        if: always()
+        if: success()
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
           ### Form XObject support boundary
