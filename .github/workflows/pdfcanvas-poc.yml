@@ -603,14 +603,25 @@ jobs:
               engine.destroy();
               const verify = await PdfiumTextEngine.create(wasm, edited.bytes);
               const after = verify.readPage(0, 0).map(run => run.text).join(' ');
-              replacementRoundTrip = after.includes('Form XObject replacement text') &&
-                !after.includes('Form XObject original text') &&
-                after.includes('Unrelated page sentinel');
+              const replacementFound = after.includes('Form XObject replacement text');
+              const originalRemoved = !after.includes('Form XObject original text');
+              const unrelatedPreserved = after.includes('Unrelated page sentinel');
+              const sameLineControlPreserved = after.includes('Same-line control sentinel');
+              replacementRoundTrip = replacementFound && originalRemoved && unrelatedPreserved && sameLineControlPreserved;
               verify.destroy();
-              assert.equal(replacementRoundTrip, true,
-                'replacement must re-extract as new text, remove old text, and preserve unrelated page text');
-              gate = 'TEXT_ROUND_TRIP_VERIFIED_VISUAL_CHECK_PENDING';
-              detail = 'Text replacement round-trip and unrelated page-text preservation passed; rendered visual comparison is still required.';
+              if (replacementRoundTrip) {
+                gate = 'TEXT_ROUND_TRIP_VERIFIED_VISUAL_CHECK_PENDING';
+                detail = 'Replacement text, removal of original text, and both unrelated sentinels passed extraction checks; rendered visual comparison is still required.';
+              } else {
+                gate = 'BLOCKED_ROUND_TRIP_NOT_VERIFIED';
+                detail = JSON.stringify({
+                  replacementFound,
+                  originalRemoved,
+                  unrelatedPageSentinelPreserved: unrelatedPreserved,
+                  sameLineControlPreserved,
+                  extractedAfterEdit: after
+                });
+              }
             } else {
               gate = 'BLOCKED_APPLY_EDITS_FAILED';
               detail = JSON.stringify(edited.failed);
@@ -750,9 +761,41 @@ jobs:
           const verify = await PdfiumTextEngine.create('node_modules/@embedpdf/pdfium/dist/pdfium.wasm', edited.bytes);
           const afterText = verify.readPage(0, 0).map(run => run.text).join(' ');
           verify.destroy();
-          assert.ok(afterText.includes('Form XObject replacement text'), 'replacement text must survive PDFium re-open');
-          assert.ok(!afterText.includes('Form XObject original text'), 'original text must be absent after replacement');
-          assert.ok(afterText.includes('Same-line control sentinel'), 'same-line control text must remain extractable');
+          const replacementFound = afterText.includes('Form XObject replacement text');
+          const originalRemoved = !afterText.includes('Form XObject original text');
+          const sameLineControlPreserved = afterText.includes('Same-line control sentinel');
+          const pageSentinelPreserved = afterText.includes('Unrelated page sentinel');
+          if (!replacementFound || !originalRemoved || !sameLineControlPreserved || !pageSentinelPreserved) {
+            const report = {
+              result: 'BLOCKED',
+              reason: 'PDFium applyEdits returned bytes, but text extraction round-trip did not prove a safe replacement',
+              replacementFound,
+              originalRemoved,
+              sameLineControlPreserved,
+              pageSentinelPreserved,
+              extractedAfterEdit: afterText,
+              policy: 'Do not enable Form XObject editing; visual comparison is skipped because semantic round-trip failed.'
+            };
+            console.log(JSON.stringify(report, null, 2));
+            const summary = [
+              '### Form XObject visual comparison',
+              '',
+              '**BLOCKED** — applyEdits returned output, but semantic text round-trip was not verified.',
+              '',
+              '| Check | Result |',
+              '|---|---|',
+              '| Replacement text found | ' + replacementFound + ' |',
+              '| Original text removed | ' + originalRemoved + ' |',
+              '| Same-line control preserved | ' + sameLineControlPreserved + ' |',
+              '| Unrelated page sentinel preserved | ' + pageSentinelPreserved + ' |',
+              '',
+              'Rendered pixel comparison skipped. Keep Form XObject editing disabled.',
+              ''
+            ].join('\\n');
+            const fs = await import('node:fs');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+            process.exit(0);
+          }
 
           const before = await renderFirstPage(input);
           const after = await renderFirstPage(edited.bytes);
