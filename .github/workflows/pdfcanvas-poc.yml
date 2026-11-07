@@ -4063,7 +4063,8 @@ jobs:
         run: |
           library="out/embedpdf-runtime/wasm32/obj/libembedpdf.a"
           test -s "$library"
-          nm_tool="$(find third_party/emsdk/upstream/bin -type f -name llvm-nm -print -quit)"
+          source third_party/emsdk/emsdk_env.sh
+          nm_tool="$(command -v llvm-nm)"
           test -n "$nm_tool"
           "$nm_tool" --defined-only "$library" | grep -F "FPDFFormObj_MarkObjectDirty"
 
