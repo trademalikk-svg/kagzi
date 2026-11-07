@@ -3461,6 +3461,131 @@ jobs:
           }, null, 2));
           NODE
 
+      - name: Verify nested Form replacement overlay under inherited font alias collision
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, PDFName } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+          import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const resourcesKey = PDFName.of('Resources');
+          const fontKey = PDFName.of('Font');
+          const original = 'Nested inherited font original';
+          const replacement = 'Nested inherited font replacement';
+
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText(original, { x: 60, y: 700, size: 18, font: sourceFont });
+
+          const parentDoc = await PDFDocument.create();
+          const [childForm] = await parentDoc.embedPages([sourcePage]);
+          const parentPage = parentDoc.addPage([612, 792]);
+          parentPage.drawPage(childForm, { x: 0, y: 0, width: 612, height: 792 });
+          await childForm.embed();
+          const childStream = parentDoc.context.lookup(childForm.ref);
+          const childResources = childStream.dict.lookup(resourcesKey);
+          const inheritedFonts = childResources.lookup(fontKey);
+          parentPage.node.Resources().set(fontKey, inheritedFonts);
+          assert.equal(childStream.dict.delete(resourcesKey), true);
+
+          const parentReloaded = await PDFDocument.load(await parentDoc.save());
+          const outerDoc = await PDFDocument.create();
+          const [parentForm] = await outerDoc.embedPages([parentReloaded.getPage(0)]);
+          const outerPage = outerDoc.addPage([612, 792]);
+          outerPage.drawPage(parentForm, { x: 0, y: 0, width: 612, height: 792 });
+          await parentForm.embed();
+
+          const parentStream = outerDoc.context.lookup(parentForm.ref);
+          const parentFormResources = parentStream.dict.lookup(resourcesKey);
+          const parentFormFonts = parentFormResources.lookup(fontKey);
+          const inheritedAlias = parentFormFonts.keys()[0];
+          assert.ok(inheritedAlias, 'parent Form must expose inherited font alias');
+
+          const courier = await outerDoc.embedFont(StandardFonts.Courier);
+          outerPage.drawText('Unrelated page control', { x: 60, y: 650, size: 10, font: courier });
+          outerPage.node.Resources().lookup(fontKey).set(inheritedAlias, courier.ref);
+          const collidingBytes = new Uint8Array(await outerDoc.save({ useObjectStreams: true }));
+
+          const mutationEngine = await PdfiumTextEngine.create(wasm, collidingBytes);
+          const module = mutationEngine.m;
+          const pagePtr = module.FPDF_LoadPage(mutationEngine.docPtr, 0);
+          const outerIndex = Array.from({ length: module.FPDFPage_CountObjects(pagePtr) }, (_, index) => index)
+            .find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          assert.notEqual(outerIndex, undefined);
+          const outerPtr = module.FPDFPage_GetObject(pagePtr, outerIndex);
+          const childPtr = module.FPDFFormObj_GetObject(outerPtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(childPtr), 5);
+          const textPtr = module.FPDFFormObj_GetObject(childPtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(textPtr), 1);
+
+          const markDirty = ptr => {
+            const wasActive = Boolean(module.FPDFPageObj_GetIsActive(ptr));
+            return Boolean(module.FPDFPageObj_SetIsActive(ptr, !wasActive)) &&
+              Boolean(module.FPDFPageObj_SetIsActive(ptr, wasActive));
+          };
+          const removed = Boolean(module.FPDFFormObj_RemoveObject(childPtr, textPtr));
+          if (removed) module.FPDFPageObj_Destroy(textPtr);
+          const generated = removed && markDirty(childPtr) && markDirty(outerPtr) &&
+            Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          const removedBytes = mutationEngine.save();
+          module.FPDF_ClosePage(pagePtr);
+          mutationEngine.destroy();
+          assert.ok(removed && generated, 'nested original must be removed before overlay replacement');
+
+          const editedDoc = await PDFDocument.load(removedBytes);
+          const editedPage = editedDoc.getPage(0);
+          const replacementFont = await editedDoc.embedFont(StandardFonts.Helvetica);
+          editedPage.drawText(replacement, { x: 60, y: 700, size: 18, font: replacementFont });
+          const editedBytes = new Uint8Array(await editedDoc.save({ useObjectStreams: true }));
+
+          async function textMetrics(bytes, target) {
+            const loadingTask = pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: true });
+            const pdf = await loadingTask.promise;
+            try {
+              const content = await (await pdf.getPage(1)).getTextContent();
+              const item = content.items.find(item => typeof item.str === 'string' && item.str.includes(target));
+              assert.ok(item, 'PDF.js must discover ' + target);
+              return item.width;
+            } finally {
+              await loadingTask.destroy();
+            }
+          }
+
+          const baselineDoc = await PDFDocument.create();
+          const baselineFont = await baselineDoc.embedFont(StandardFonts.Helvetica);
+          const baselinePage = baselineDoc.addPage([612, 792]);
+          baselinePage.drawText(replacement, { x: 60, y: 700, size: 18, font: baselineFont });
+          const baselineBytes = new Uint8Array(await baselineDoc.save());
+          const baselineWidth = await textMetrics(baselineBytes, replacement);
+          const editedWidth = await textMetrics(editedBytes, replacement);
+          assert.ok(Math.abs(baselineWidth - editedWidth) < 0.01,
+            'replacement overlay must use Helvetica metrics despite the inherited alias collision');
+
+          const verifyEngine = await PdfiumTextEngine.create(wasm, editedBytes);
+          try {
+            const text = verifyEngine.readPage(0, 0).map(run => run.text).join(' | ');
+            assert.ok(!text.includes(original), 'original nested text must remain absent');
+            assert.ok(text.includes(replacement), 'replacement overlay must survive PDFium reopen');
+            assert.ok(text.includes('Unrelated page control'), 'unrelated page control must survive');
+          } finally {
+            verifyEngine.destroy();
+          }
+
+          console.log(JSON.stringify({
+            result: 'NESTED_INHERITED_ALIAS_REPLACEMENT_PASS',
+            baselineHelveticaWidth: baselineWidth,
+            collisionOverlayWidth: editedWidth,
+            originalNestedTextRemoved: true,
+            replacementOverlaySurvivedReopen: true,
+            unrelatedPageControlPreserved: true,
+            interpretation: 'A distinct Helvetica page overlay replaced nested inherited-resource text without inheriting the colliding page-level Courier alias. This validates one unclipped identity-transform overlay fixture only, not in-Form text mutation.'
+          }, null, 2));
+          NODE
+
       - name: Compare CropBox coordinates with PDF.js viewport geometry
         working-directory: vendor/pdfcanvas
         run: |
