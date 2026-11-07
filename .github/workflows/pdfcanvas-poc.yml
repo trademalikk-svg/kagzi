@@ -64,12 +64,30 @@ jobs:
           assert.ok(formBody.includes('form_xobject->HasDirtyStreams()'), 'Form serialization must check dirty streams before reusing its XObject');
           assert.ok(formBody.includes('form_content_generator.GenerateContent()'), 'dirty Form content must be regenerated');
 
+          const formSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/page/cpdf_form.cpp', 'utf8');
+          const chooseStart = formSource.indexOf('const CPDF_Dictionary* CPDF_Form::ChooseResourcesDict(');
+          assert.notEqual(chooseStart, -1, 'pinned runtime must contain Form resource selection');
+          const chooseEnd = formSource.indexOf('\n}', chooseStart);
+          assert.notEqual(chooseEnd, -1, 'could not isolate ChooseResourcesDict implementation');
+          const chooseBody = formSource.slice(chooseStart, chooseEnd);
+          assert.ok(chooseBody.includes('if (pResources)') && chooseBody.includes('return pResources;'), 'Form-local Resources must take priority');
+          assert.ok(chooseBody.includes('return pParentResources ? pParentResources : pPageResources;'), 'missing Form-local Resources must fall back to parent Form, then page Resources');
+
+          const parserSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/page/cpdf_streamcontentparser.cpp', 'utf8');
+          const parserStart = parserSource.indexOf('CPDF_StreamContentParser::CPDF_StreamContentParser(');
+          assert.notEqual(parserStart, -1, 'pinned runtime must contain the stream content parser constructor');
+          const parserBody = parserSource.slice(parserStart, parserStart + 1800);
+          assert.ok(parserBody.includes('CPDF_Form::ChooseResourcesDict(pResources.Get(),') &&
+            parserBody.includes('pParentResources.Get()') && parserBody.includes('pPageResources.Get()'),
+            'stream parser must resolve resources through Form-local, parent, then page dictionaries');
+
           console.log(JSON.stringify({
             result: 'PINNED_SOURCE_AUDIT_PASS',
             runtimeCommit: '42388d3b4c9895d6672f5da357b1429678a0994c',
             removeObject: 'marks the Form object that directly owns the removed child dirty',
             serialization: 'ProcessForm regenerates a Form XObject when its holder has dirty streams',
-            boundary: 'ancestor page-level Form dirty propagation is not performed by RemoveObject itself'
+            resourceResolution: 'Form-local Resources -> parent Form Resources -> page Resources',
+            boundary: 'source audit proves fallback selection; real fixture coverage is still required for nested resource combinations'
           }, null, 2));
           NODE
 
