@@ -129,7 +129,7 @@ window.kagziPhotoInputChanged=function(input){
   $('#compressPhotoBtn').disabled=false;
   if(passportName)passportName.textContent='Selected: '+file.name+' · Preview ready';
   setPhotoStatus('Photo loaded. Starting automatic background editing…');
-  autoRemovePassportBackground();
+  $('#removePhotoBackground').disabled=false;
  };
  photoPreview.onerror=()=>{
   photoPreview.hidden=true;
@@ -217,7 +217,16 @@ async function autoRemovePassportBackground(){
  }catch(err){setPhotoStatus('Automatic background editing could not run: '+(err.message||'check your connection and try again.'));notify('AI background removal unavailable.');}
  finally{photoBgBlobState.processing=false;}
 }
-// AI background removal starts after the image preview has loaded in kagziPhotoInputChanged.
+$('#removePhotoBackground').addEventListener('click',async()=>{
+ const button=$('#removePhotoBackground');
+ try{
+  if(!photoInput.files[0])throw new Error('Choose an image first.');
+  button.disabled=true;button.textContent='Loading AI model…';
+  await autoRemovePassportBackground();
+ }catch(err){setPhotoStatus(err.message||'AI background removal could not run.');}
+ finally{button.disabled=!photoInput.files.length;button.textContent='✧ Remove background with AI';}
+});
+// AI background removal is opt-in; normal photo editing does not load the AI model.
 passportBgSelect.addEventListener('change',()=>{if(photoBgBlobState.cutout)applySelectedPassportBackground().catch(err=>{setPhotoStatus(err.message||'Could not apply this colour.');});});
 $('#passportPreset').addEventListener('change',e=>{const value=e.target.value;if(!value||value==='custom')return;const [w,h]=value.split('x').map(Number);photoWidth.value=w;photoHeight.value=h;photoKeepRatio.checked=false;setPhotoStatus('Photo size selected: '+w+' × '+h+' px. Verify the receiving authority requirements.');});
 passportDownload.addEventListener('click',async()=>{try{if(!photoBgBlobState.cutout)throw new Error('Wait for automatic background editing to finish.');const width=Number(photoWidth.value),height=Number(photoHeight.value);if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>12000||height>12000)throw new Error('Choose valid output dimensions.');passportDownload.disabled=true;passportDownload.textContent='Preparing download…';const blob=await buildPhotoBlob($('#photoFormat').value,Number($('#photoQuality').value)/100);downloadPhotoBlob(blob,'-passport');setPhotoStatus('Edited passport photo downloaded. Check the receiving authority photo rules before submitting.');}catch(err){notify(err.message||'Could not download the edited photo.');}finally{passportDownload.disabled=!photoBgBlobState.cutout;passportDownload.textContent='Download edited passport photo';}});
