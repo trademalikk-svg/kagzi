@@ -9,7 +9,7 @@
   const clearCoverButton = $("photoCoverClear");
   if (!preview || !sourceImage || !addButton) return;
 
-  const state = { text: null, cover: null, rendering: false };
+  const state = { text: null, cover: null, clone: { sample: null, strokes: [] }, pickingSample: false, activeStroke: null, rendering: false };
   const originalBuildPhotoBlob = window.buildPhotoBlob;
   const status = (message) => {
     const el = $("photoTextStatus");
@@ -61,8 +61,25 @@
     }
   }
 
+  function paintClone(ctx, image, width, height) {
+    for (const stroke of state.clone.strokes) {
+      const radius = stroke.radius;
+      for (const point of stroke.points) {
+        const sx = point.x + stroke.offsetX - radius;
+        const sy = point.y + stroke.offsetY - radius;
+        if (sx < 0 || sy < 0 || sx + radius * 2 > width || sy + radius * 2 > height) continue;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(image, sx, sy, radius * 2, radius * 2, point.x - radius, point.y - radius, radius * 2, radius * 2);
+        ctx.restore();
+      }
+    }
+  }
+
   async function applyEdits(blob, mime, quality) {
-    if (!state.text && !state.cover) return blob;
+    if (!state.text && !state.cover && !state.clone.strokes.length) return blob;
     const url = URL.createObjectURL(blob);
     try {
       const image = new Image();
@@ -74,6 +91,7 @@
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Photo canvas is not available in this browser.");
       ctx.drawImage(image, 0, 0);
+      paintClone(ctx, image, canvas.width, canvas.height);
       paint(canvas, ctx, canvas.width, canvas.height);
       const result = await new Promise(resolve => canvas.toBlob(resolve, mime || "image/png", quality));
       canvas.width = canvas.height = 1;
@@ -109,6 +127,8 @@
         ctx.clearRect(0, 0, preview.width, preview.height);
         ctx.drawImage(image, 0, 0);
         preview.hidden = false;
+        preview.style.touchAction = "none";
+        preview.style.cursor = state.pickingSample || state.clone.sample ? "crosshair" : "default";
         sourceImage.style.display = "none";
       } finally {
         URL.revokeObjectURL(url);
@@ -119,6 +139,77 @@
       state.rendering = false;
     }
   }
+
+  const cloneSampleButton = $("photoCloneSample");
+  const cloneClearButton = $("photoCloneClear");
+  if (cloneSampleButton) cloneSampleButton.addEventListener("click", () => {
+    if (!preview.width || preview.hidden) { status("Choose a photo first."); return; }
+    state.pickingSample = true;
+    status("Tap a clean area of the photo to sample, then drag over the unwanted text.");
+  });
+  if (cloneClearButton) cloneClearButton.addEventListener("click", async () => {
+    state.clone.sample = null;
+    state.clone.strokes = [];
+    state.activeStroke = null;
+    status("Manual retouch strokes cleared.");
+    await renderPreview();
+  });
+
+  function pointerPosition(event) {
+    const rect = preview.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(preview.width, (event.clientX - rect.left) * preview.width / rect.width)),
+      y: Math.max(0, Math.min(preview.height, (event.clientY - rect.top) * preview.height / rect.height))
+    };
+  }
+  preview.addEventListener("pointerdown", event => {
+    if (preview.hidden || !preview.width) return;
+    const point = pointerPosition(event);
+    if (state.pickingSample) {
+      state.clone.sample = point;
+      state.pickingSample = false;
+      if (cloneSampleButton) cloneSampleButton.textContent = "Sample selected · choose another";
+      status("Sample selected. Now drag over the text you want to retouch.");
+      preview.style.cursor = "crosshair";
+      return;
+    }
+    if (!state.clone.sample) return;
+    event.preventDefault();
+    preview.setPointerCapture(event.pointerId);
+    const radius = Math.max(2, Math.min(80, Number($("photoCloneSize").value) / 2 || 14));
+    state.activeStroke = {
+      radius,
+      offsetX: state.clone.sample.x - point.x,
+      offsetY: state.clone.sample.y - point.y,
+      points: [point]
+    };
+    state.clone.strokes.push(state.activeStroke);
+  });
+  preview.addEventListener("pointermove", event => {
+    if (!state.activeStroke) return;
+    const point = pointerPosition(event);
+    const last = state.activeStroke.points[state.activeStroke.points.length - 1];
+    if (Math.hypot(point.x - last.x, point.y - last.y) >= Math.max(1, state.activeStroke.radius * 0.25)) {
+      state.activeStroke.points.push(point);
+      const ctx = preview.getContext("2d");
+      const r = state.activeStroke.radius;
+      const sx = point.x + state.activeStroke.offsetX - r;
+      const sy = point.y + state.activeStroke.offsetY - r;
+      if (sx >= 0 && sy >= 0 && sx + r * 2 <= preview.width && sy + r * 2 <= preview.height) {
+        ctx.save(); ctx.beginPath(); ctx.arc(point.x, point.y, r, 0, Math.PI * 2); ctx.clip();
+        ctx.drawImage(preview, sx, sy, r * 2, r * 2, point.x - r, point.y - r, r * 2, r * 2);
+        ctx.restore();
+      }
+    }
+  });
+  async function finishCloneStroke() {
+    if (!state.activeStroke) return;
+    state.activeStroke = null;
+    status("Clone brush applied to preview. Export the photo to save the retouch.");
+    await renderPreview();
+  }
+  preview.addEventListener("pointerup", finishCloneStroke);
+  preview.addEventListener("pointercancel", finishCloneStroke);
 
   sourceImage.addEventListener("load", () => {
     const hasImage = !!sourceImage.naturalWidth;
