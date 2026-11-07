@@ -3543,6 +3543,7 @@ jobs:
           | Two sequential intersecting rectangular clips | 0 changed pixels inside expected intersection; replacement not produced | Blocked |
           | Single-level Form child deletion | PDF.js round-trip; 1,523 changed pixels in target band; 0 outside; control unchanged | Verified for deletion fixture only |
           | Nested-nested Form replacement | Ancestor dirty toggles; replacement after reopen; 124 target pixels changed, 0 outside, same-line control unchanged | Verified for this synthetic fixture only |
+          | Nested Form resource inheritance | PDFium discovered sentinel text through page-resource and parent-Form-resource fallback when child Form had no local Resources | Verified for parser discovery fixtures only |
           | CropBox-offset overlay placement | Baseline (150, 600); 1,072 changed target pixels; 0 outside CropBox; controls unchanged | Verified for this fixture |
           | Encrypted and malformed PDF handling | Password-protected PDF and malformed cross-reference rejected by PDFium; qpdf independently rejects malformed fixture | Verified for fixtures |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
