@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-let stream=null,capturing=false,openingCamera=false;
+let stream=null,capturing=false,openingCamera=false,cameraRequestId=0;
 const byId=id=>document.getElementById(id);
 function status(message){const node=byId('scannerStatus');if(node)node.textContent=message;}
 function ocrStatus(message){const node=byId('ocrEditStatus');if(node)node.textContent=message;}
@@ -22,27 +22,29 @@ async function openCamera(){
  if(!navigator.mediaDevices?.getUserMedia){status('Camera API is unavailable. Open this page over HTTPS in a supported browser.');return;}
  if(openingCamera)return;
  openingCamera=true;
+ const requestId=++cameraRequestId;
  const button=byId('openCameraScanner');
  if(button)button.disabled=true;
  const video=byId('cameraPreview');
  try{
-  if(stream)closeCamera();
-  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+  if(stream)stopCameraStream();
+  const acquiredStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+  if(requestId!==cameraRequestId){acquiredStream.getTracks().forEach(track=>track.stop());return;}
+  stream=acquiredStream;
   video.srcObject=stream;video.hidden=false;await video.play();
+  if(requestId!==cameraRequestId)return;
   byId('captureScan').disabled=false;byId('closeCameraScanner').disabled=false;
   status('Camera ready. Place the page in view and tap Capture page.');
  }catch(error){
-  if(stream)stream.getTracks().forEach(track=>track.stop());
-  stream=null;if(video){video.srcObject=null;video.hidden=true;}
-  if(byId('captureScan'))byId('captureScan').disabled=true;
-  if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;
+  if(requestId!==cameraRequestId)return;
+  stopCameraStream();
   status(error.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in browser settings.':'Could not open camera. Check camera availability and permissions.');
  }finally{
-  openingCamera=false;
-  if(button)button.disabled=false;
+  if(requestId===cameraRequestId){openingCamera=false;if(button)button.disabled=false;}
  }
 }
-function closeCamera(){if(stream)stream.getTracks().forEach(track=>track.stop());stream=null;const video=byId('cameraPreview');if(video){video.pause();video.srcObject=null;video.hidden=true;}if(byId('captureScan'))byId('captureScan').disabled=true;if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;status('Camera closed.');}
+function stopCameraStream(){if(stream)stream.getTracks().forEach(track=>track.stop());stream=null;const video=byId('cameraPreview');if(video){video.pause();video.srcObject=null;video.hidden=true;}if(byId('captureScan'))byId('captureScan').disabled=true;if(byId('closeCameraScanner'))byId('closeCameraScanner').disabled=true;}
+function closeCamera(){cameraRequestId++;openingCamera=false;const button=byId('openCameraScanner');if(button)button.disabled=false;stopCameraStream();status('Camera closed.');}
 async function capture(){
  const video=byId('cameraPreview'),canvas=byId('scanPreviewCanvas'),button=byId('captureScan');
  if(capturing)return;

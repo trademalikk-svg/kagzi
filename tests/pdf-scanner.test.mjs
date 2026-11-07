@@ -12,23 +12,24 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-function loadScanner(getUserMedia) {
+function loadScanner(getUserMedia, cameraPlayPromise) {
   const nodes = new Map();
   const listeners = new Map();
   const makeNode = id => ({
     id, disabled: false, hidden: id === 'cameraPreview', textContent: '', value: '',
     srcObject: null, files: [], classList: { add() {}, remove() {}, toggle() {} },
     addEventListener(name, callback) { listeners.set(id + ':' + name, callback); },
-    async play() {}, pause() {}, remove() {}, click() {}
+    async play() { if (id === 'cameraPreview' && cameraPlayPromise) await cameraPlayPromise; }, pause() {}, remove() {}, click() {}
   });
   for (const id of ['openCameraScanner','closeCameraScanner','captureScan','cameraPreview','scanPreviewCanvas','scannerStatus','ocrEditStatus','ocrResults','downloadOcrText','copyOcrText','addOcrTextPage','ocrLanguage','ocrImageInput','scanImageOcr','inspectorText']) nodes.set(id, makeNode(id));
   const document = {
     getElementById: id => nodes.get(id) || null,
     addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); }
   };
-  const window = { addEventListener() {}, KAGZIPdfOcrRecognize: async () => ({ text: '', confidence: 0, words: [] }) };
+  const windowListeners = new Map();
+  const window = { addEventListener(name, callback) { windowListeners.set(name, callback); }, KAGZIPdfOcrRecognize: async () => ({ text: '', confidence: 0, words: [] }) };
   vm.runInNewContext(source, { window, document, navigator: { mediaDevices: { getUserMedia } }, setTimeout, Blob, URL });
-  return { nodes, listeners };
+  return { nodes, listeners, windowListeners };
 }
 
 test('camera startup is single-flight while permission is pending and restores the control afterward', async () => {
@@ -71,4 +72,42 @@ test('unsupported camera browsers keep the Open camera control usable', async ()
   await app.listeners.get('openCameraScanner:click')();
   assert.equal(button.disabled, false);
   assert.match(app.nodes.get('scannerStatus').textContent, /Camera API is unavailable/i);
+});
+
+test('closing the scanner while permission is pending stops a late stream instead of reopening the camera', async () => {
+  const gate = deferred();
+  let stopped = 0;
+  const mediaStream = { getTracks: () => [{ stop() { stopped += 1; } }] };
+  const app = loadScanner(() => gate.promise);
+  const openButton = app.nodes.get('openCameraScanner');
+  const opening = app.listeners.get('openCameraScanner:click')();
+  assert.equal(openButton.disabled, true);
+  app.windowListeners.get('pagehide')();
+  assert.equal(openButton.disabled, false, 'closing the page scanner must release the disabled control');
+  gate.resolve(mediaStream);
+  await opening;
+  assert.equal(stopped, 1, 'a stream arriving after close must have every track stopped');
+  assert.equal(app.nodes.get('cameraPreview').srcObject, null, 'a late stream must not be attached to the preview');
+  assert.equal(app.nodes.get('cameraPreview').hidden, true);
+  assert.equal(app.nodes.get('captureScan').disabled, true);
+  assert.match(app.nodes.get('scannerStatus').textContent, /Camera closed/i);
+});
+
+test('closing while camera preview playback is pending does not restore active scanner controls', async () => {
+  const playGate = deferred();
+  let stopped = 0;
+  const mediaStream = { getTracks: () => [{ stop() { stopped += 1; } }] };
+  const app = loadScanner(async () => mediaStream, playGate.promise);
+  const opening = app.listeners.get('openCameraScanner:click')();
+  await Promise.resolve();
+  await Promise.resolve();
+  app.windowListeners.get('pagehide')();
+  playGate.resolve();
+  await opening;
+  assert.equal(stopped, 1);
+  assert.equal(app.nodes.get('cameraPreview').srcObject, null);
+  assert.equal(app.nodes.get('cameraPreview').hidden, true);
+  assert.equal(app.nodes.get('captureScan').disabled, true);
+  assert.equal(app.nodes.get('closeCameraScanner').disabled, true);
+  assert.match(app.nodes.get('scannerStatus').textContent, /Camera closed/i);
 });
