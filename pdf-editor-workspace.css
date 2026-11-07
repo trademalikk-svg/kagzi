@@ -75,7 +75,8 @@
     transition: transform .22s ease;
     background: #fff;
   }
-  .pdf-inspector.is-mobile-drawer.is-open { transform: translateX(0); }
+  #pdfInspector.is-mobile-drawer:not(.is-open) { transform: translateX(calc(100% - 48px)); }
+  #pdfInspector.is-mobile-drawer.is-open { transform: translateX(0); }
   .pdf-inspector.is-mobile-drawer .inspector-head {
     position: sticky;
     top: -13px;
@@ -93,3 +94,5 @@
 @media (prefers-reduced-motion: reduce) {
   .pdf-inspector.is-mobile-drawer { transition: none; }
 }
+
+.inspector-style-row { display: flex; align-items: center; gap: 18px; }
