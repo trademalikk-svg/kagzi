@@ -2835,16 +2835,21 @@ jobs:
           engine.destroy();
           assert.ok(removed && generated, 'nested child removal must complete for this fixture');
 
+          const removedPreview = await render(removedBytes);
+          assert.ok(!removedPreview.text.includes(targetText), 'original clipped Form text must be absent after save/reopen');
+
+          const replacementText = 'Intersecting clip replacement changed';
           const overlayDoc = await PDFDocument.load(removedBytes);
           const overlayPage = overlayDoc.getPage(0);
           const overlayFont = await overlayDoc.embedFont(StandardFonts.Helvetica);
           overlayPage.pushOperators(pushGraphicsState());
           appendIntersectingClips(overlayPage);
-          overlayPage.drawText(targetText, { x: 60, y: 700, size: run.textFontSize, font: overlayFont });
+          overlayPage.drawText(replacementText, { x: 60, y: 700, size: run.textFontSize, font: overlayFont });
           overlayPage.pushOperators(popGraphicsState());
 
           const after = await render(new Uint8Array(await overlayDoc.save()));
-          assert.ok(after.text.includes(targetText), 'replacement text must survive PDF.js reopen');
+          assert.ok(after.text.includes(replacementText), 'replacement text must survive PDF.js reopen');
+          assert.ok(!after.text.includes(targetText), 'original text must remain absent after replacement');
 
           let changedInsideIntersection = 0;
           let changedOutsideIntersection = 0;
