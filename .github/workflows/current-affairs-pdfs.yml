@@ -45,7 +45,7 @@ jobs:
       - name: Generate separate English Daily and Weekly PDFs
         run: python scripts/build_current_affairs_english_pdfs.py
       - name: Commit generated PDFs
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
