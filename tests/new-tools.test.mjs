@@ -83,7 +83,7 @@ test('Daily Shop Hisab supports local ledger, credit tracking, CSV and AI summar
  for(const type of ['sale','creditSale','purchase','creditPurchase','expense','customerReceipt','supplierPayment'])assert.ok(html.includes('value="'+type+'"'),'missing ledger type '+type);
  assert.ok(html.includes('localStorage'));assert.ok(html.includes('/api/shop-hisab-ai'));assert.ok(html.includes('textContent=data.answer'));
  const scripts=html.split('<script>');
- for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'daily-shop-hisab.html inline script '+i);}
+ for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'daily-shop-hisab.html inline script '+i});}
  const endpoint=read('functions/api/shop-hisab-ai.js');
  assert.ok(endpoint.includes('env.AI.run'));assert.ok(endpoint.includes('@cf/meta/llama-3.1-8b-instruct'));assert.ok(endpoint.includes('transactionCount'));
 });
