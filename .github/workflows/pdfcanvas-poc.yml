@@ -3048,6 +3048,138 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Test CropBox overlay placement and full-MediaBox pixel preservation
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+
+          const media = { width: 612, height: 792 };
+          const crop = { left: 100, bottom: 150, width: 400, height: 500 };
+          const cropTop = media.height - (crop.bottom + crop.height);
+          const cropRight = crop.left + crop.width;
+          const cropBottom = cropTop + crop.height;
+
+          const fixture = await PDFDocument.create();
+          const font = await fixture.embedFont(StandardFonts.Helvetica);
+          const page = fixture.addPage([media.width, media.height]);
+          page.drawText('CropBox original target', { x: 150, y: 600, size: 16, font });
+          page.drawText('CropBox unchanged control', { x: 150, y: 400, size: 14, font });
+          page.drawText('Outside CropBox preservation sentinel', { x: 40, y: 100, size: 12, font });
+          page.setCropBox(crop.left, crop.bottom, crop.width, crop.height);
+          const input = new Uint8Array(await fixture.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const target = engine.readPage(0, 0).find(run => run.text.includes('CropBox original target'));
+          assert.ok(target, 'CropBox target must be discoverable by PDFium');
+          assert.equal(target.editable, true, 'CropBox target must be editable for this regression');
+          const edited = engine.applyEdits([{
+            ...target,
+            newText: 'CropBox replacement result',
+            originalText: target.text,
+            background: '#ffffff'
+          }]);
+          assert.equal(edited.failed.length, 0, 'CropBox replacement must complete without edit errors');
+          engine.destroy();
+
+          async function expandCropForDiagnostic(bytes) {
+            const doc = await PDFDocument.load(bytes);
+            doc.getPage(0).setCropBox(0, 0, media.width, media.height);
+            return new Uint8Array(await doc.save({ useObjectStreams: true }));
+          }
+
+          async function renderAndExtract(bytes) {
+            const task = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+            const pdf = await task.promise;
+            try {
+              const renderedPage = await pdf.getPage(1);
+              const viewport = renderedPage.getViewport({ scale: 1 });
+              assert.equal(Math.round(viewport.width), media.width, 'diagnostic viewport must expose full MediaBox width');
+              assert.equal(Math.round(viewport.height), media.height, 'diagnostic viewport must expose full MediaBox height');
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await renderedPage.render({ canvas, canvasContext: context, viewport }).promise;
+              const content = await renderedPage.getTextContent();
+              return {
+                width: canvas.width,
+                height: canvas.height,
+                pixels: context.getImageData(0, 0, canvas.width, canvas.height).data,
+                textItems: content.items.filter(item => typeof item.str === 'string' && item.transform?.length === 6)
+              };
+            } finally {
+              await pdf.destroy();
+            }
+          }
+
+          const before = await renderAndExtract(await expandCropForDiagnostic(input));
+          const after = await renderAndExtract(await expandCropForDiagnostic(edited.bytes));
+          assert.equal(before.width, after.width, 'original and edited render widths must match');
+          assert.equal(before.height, after.height, 'original and edited render heights must match');
+
+          const beforeText = before.textItems.map(item => item.str).join(' ');
+          const afterText = after.textItems.map(item => item.str).join(' ');
+          assert.ok(beforeText.includes('CropBox original target'), 'original target must exist before replacement');
+          assert.ok(!afterText.includes('CropBox original target'), 'original target must be absent after replacement');
+          assert.ok(afterText.includes('CropBox replacement result'), 'replacement must survive PDF.js text extraction');
+          assert.ok(afterText.includes('CropBox unchanged control'), 'in-CropBox control text must remain present');
+          assert.ok(afterText.includes('Outside CropBox preservation sentinel'), 'outside-CropBox sentinel must remain present');
+
+          const replacementItem = after.textItems.find(item => item.str.includes('CropBox replacement result'));
+          assert.ok(replacementItem, 'PDF.js must expose replacement text geometry');
+          const replacementBaseline = [replacementItem.transform[4], replacementItem.transform[5]];
+          assert.ok(Math.abs(replacementBaseline[0] - 150) <= 1, 'replacement baseline X must remain at the expected MediaBox position');
+          assert.ok(Math.abs(replacementBaseline[1] - 600) <= 1, 'replacement baseline Y must remain at the expected MediaBox position');
+
+          let changedInsideCrop = 0;
+          let changedOutsideCrop = 0;
+          let changedControlRegion = 0;
+          let changedTargetRegion = 0;
+          for (let y = 0; y < before.height; y++) {
+            for (let x = 0; x < before.width; x++) {
+              const offset = (y * before.width + x) * 4;
+              const changed =
+                before.pixels[offset] !== after.pixels[offset] ||
+                before.pixels[offset + 1] !== after.pixels[offset + 1] ||
+                before.pixels[offset + 2] !== after.pixels[offset + 2] ||
+                before.pixels[offset + 3] !== after.pixels[offset + 3];
+              if (!changed) continue;
+
+              const insideCrop = x >= crop.left && x < cropRight && y >= cropTop && y < cropBottom;
+              if (insideCrop) changedInsideCrop++;
+              else changedOutsideCrop++;
+
+              if (x >= 140 && x < 460 && y >= 375 && y < 410) changedControlRegion++;
+              if (x >= 140 && x < 500 && y >= 170 && y < 215) changedTargetRegion++;
+            }
+          }
+
+          assert.ok(changedInsideCrop > 0, 'replacement must produce visible pixel changes inside CropBox');
+          assert.ok(changedTargetRegion > 0, 'replacement pixel changes must occur in the target region');
+          assert.equal(changedControlRegion, 0, 'unrelated in-CropBox control pixels must remain unchanged');
+          assert.equal(changedOutsideCrop, 0, 'zero changed pixels are allowed outside the original CropBox');
+
+          console.log(JSON.stringify({
+            result: 'PASS',
+            fixture: { mediaBox: media, cropBox: crop },
+            replacementBaseline: { x: replacementBaseline[0], y: replacementBaseline[1] },
+            changedInsideCrop,
+            changedTargetRegion,
+            changedControlRegion,
+            changedOutsideCrop,
+            outsideCropPolicy: 'zero pixel differences after expanding both diagnostic copies to full MediaBox',
+            editingPolicy: 'synthetic fixture only; general Form XObject editing remains disabled'
+          }, null, 2));
+          NODE
+
       - name: Verify fail-closed handling of encrypted and malformed PDFs
         working-directory: vendor/pdfcanvas
         run: |
@@ -3122,7 +3254,7 @@ jobs:
           | Two disjoint rectangular clip subpaths explicitly reproduced | New PDF.js pixel-diff regression; both regions must change and gap/outside must remain unchanged | Pending CI |
           | Two sequential intersecting rectangular clips explicitly reproduced | New PDF.js pixel-diff regression; intersection changes and all pixels outside remain unchanged | Pending CI |
           | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
-          | CropBox-offset coordinates | Assert PDFium horizontal origin and vertical text spacing against PDF.js viewport geometry; absolute glyph-box and overlay placement remain unverified | Pending CI |
+          | CropBox-offset coordinates and overlay placement | PDF.js full-MediaBox render; replacement baseline within 1 pt; control unchanged; zero changed pixels outside original CropBox | Verified for the synthetic fixture (only after this workflow succeeds) |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
           **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
