@@ -28,6 +28,43 @@ jobs:
           ref: f9c25060bb03317709e9471a74acd04423758c63
           path: vendor/pdfcanvas
 
+      - name: Check out exact EmbedPDF PDFium runtime source
+        uses: actions/checkout@v4
+        with:
+          repository: embedpdf/runtime
+          ref: 42388d3b4c9895d6672f5da357b1429678a0994c
+          path: vendor/embedpdf-runtime
+
+      - name: Verify pinned Form dirty-marking and serialization path
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+
+          const editSource = fs.readFileSync('vendor/embedpdf-runtime/fpdfsdk/fpdf_editpage.cpp', 'utf8');
+          const editStart = editSource.indexOf('FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,');
+          assert.notEqual(editStart, -1, 'pinned runtime must expose FPDFFormObj_RemoveObject');
+          const editEnd = editSource.indexOf('\n}', editStart);
+          assert.notEqual(editEnd, -1, 'could not isolate FPDFFormObj_RemoveObject implementation');
+          const removeBody = editSource.slice(editStart, editEnd);
+          assert.match(removeBody, /cform_page_object->SetDirty\\(true\\);/, 'removal must dirty the Form object that owns the removed child');
+
+          const generatorSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/edit/cpdf_pagecontentgenerator.cpp', 'utf8');
+          const formStart = generatorSource.indexOf('void CPDF_PageContentGenerator::ProcessForm(');
+          assert.notEqual(formStart, -1, 'pinned runtime must contain ProcessForm');
+          const formBody = generatorSource.slice(formStart, formStart + 2200);
+          assert.match(formBody, /form_xobject->HasDirtyStreams\\(\\)/, 'Form serialization must check dirty streams before reusing its XObject');
+          assert.match(formBody, /form_content_generator\\.GenerateContent\\(\\)/, 'dirty Form content must be regenerated');
+
+          console.log(JSON.stringify({
+            result: 'PINNED_SOURCE_AUDIT_PASS',
+            runtimeCommit: '42388d3b4c9895d6672f5da357b1429678a0994c',
+            removeObject: 'marks the Form object that directly owns the removed child dirty',
+            serialization: 'ProcessForm regenerates a Form XObject when its holder has dirty streams',
+            boundary: 'ancestor page-level Form dirty propagation is not performed by RemoveObject itself'
+          }, null, 2));
+          NODE
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
