@@ -2805,8 +2805,8 @@ jobs:
               ? 'INTERSECTING_CLIP_FIXTURE_PASS'
               : 'INTERSECTING_CLIP_REPRODUCTION_UNSUPPORTED',
             fixture: 'identity Form; two sequential rectangular clipping paths whose intersection is smaller than either source clip',
-            changedPixelsInsideIntersection,
-            changedPixelsOutsideIntersection,
+            changedPixelsInsideIntersection: changedInsideIntersection,
+            changedPixelsOutsideIntersection: changedOutsideIntersection,
             unrelatedControlPixelsChanged: changedControl,
             interpretation: 'A pass proves only this two-rectangle intersection fixture. Arbitrary clipping operators, transformed paths, even-odd rules, Bezier paths, and nested Form resource inheritance remain unverified.'
           };
