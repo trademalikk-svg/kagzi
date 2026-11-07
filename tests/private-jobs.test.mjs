@@ -14,12 +14,13 @@ test('public Private Jobs page is searchable without requiring login', () => {
     assert.match(page, new RegExp('id="' + id + '"'));
   }
   assert.match(page, /supabase-js@2/);
-  assert.match(page, /kagzi_private_jobs/);
-  assert.match(page, /Official Apply/i);
+  const script = read('private-jobs.js');
+  assert.match(script, /kagzi_private_jobs/);
+  assert.match(script, /Official Apply/i);
 });
 
 test('Private Jobs page distinguishes official, estimated and undisclosed income', () => {
-  const page = read('private-jobs.html');
+  const page = read('private-jobs.html') + read('private-jobs.js');
   for (const phrase of ['Monthly Salary', 'Annual CTC', 'In-hand', 'Estimated', 'Not Disclosed', 'Internship Stipend']) {
     assert.ok(page.toLowerCase().includes(phrase.toLowerCase()), 'missing salary label: ' + phrase);
   }
@@ -27,7 +28,7 @@ test('Private Jobs page distinguishes official, estimated and undisclosed income
 
 test('Private Jobs admin requires a session and explicit KAGZI admin allowlist', () => {
   const page = read('private-jobs-admin.html');
-  assert.match(page, /data-kagzi-protected="true"/);
+  assert.doesNotMatch(page, /data-kagzi-protected="true"/);
   assert.match(page, /signInWithPassword/);
   assert.match(page, /kagzi_library_admins/);
   assert.match(page, /kagzi_private_jobs/);
@@ -54,7 +55,7 @@ test('Private Jobs migration grants public read only to verified published recor
   assert.match(sql, /revoke all on public\.kagzi_private_job_sources from anon, authenticated/i);
 });
 
-test('public jobs route remains public while admin route is protected', () => {
+test('public jobs route and admin login entry are public while admin data is allowlist protected', () => {
   const publicPage = read('private-jobs.html');
   const adminPage = read('private-jobs-admin.html');
   const protectedPages = JSON.parse(read('.github/kagzi-html-pages.json'));
