@@ -48,7 +48,7 @@ button{border:0;border-radius:9px;background:var(--blue);color:white;padding:11p
 <div><label for="employmentType">Job Type</label><select id="employmentType"><option value="full_time">Full Time</option><option value="part_time">Part Time</option><option value="contract">Contract</option><option value="internship">Internship</option><option value="apprenticeship">Apprenticeship</option></select></div>
 </div>
 <div class="grid3">
-<div><label for="minimumAge">Minimum Age (if stated)</label><input id="minimumAge" type="number" min="14" max="100" inputmode="numeric"></div>
+<div><label for="minimumAge">Minimum Age (if stated)</label><input id="minimumAge" type="number" min="18" max="100" inputmode="numeric"></div>
 <div><label for="lastDate">Last Date</label><input id="lastDate" type="date"></div>
 <div><label for="salaryDisclosure">Salary Disclosure</label><select id="salaryDisclosure"><option value="not_disclosed">Not Disclosed</option><option value="official">Official</option><option value="estimated">Estimated</option></select></div>
 </div>
@@ -179,7 +179,21 @@ async function loadJobs(){
  const list=$('jobList');list.replaceChildren();const {data,error}=await supabase.from('kagzi_private_jobs').select('id,company_name,job_title,region,location,verification_status,is_published,last_date,salary_disclosure').order('created_at',{ascending:false}).limit(100);
  if(error){list.textContent='Jobs लोड नहीं हुईं: '+error.message;return;}
  if(!data?.length){list.textContent='अभी कोई Job record नहीं है।';return;}
- for(const job of data){const row=document.createElement('div');row.className='record';const text=document.createElement('span');text.textContent=job.company_name+' · '+job.job_title+' · '+job.region+' · '+job.verification_status+' · '+(job.is_published?'Published':'Draft')+' · '+(job.last_date||'No deadline');const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='Edit';edit.addEventListener('click',()=>fillJob(job));row.append(text,edit);list.append(row);}
+ for(const job of data){
+  const row=document.createElement('div');row.className='record';
+  const text=document.createElement('span');text.textContent=job.company_name+' · '+job.job_title+' · '+job.region+' · '+job.verification_status+' · '+(job.is_published?'Published':'Draft')+' · '+(job.last_date||'No deadline');
+  const actions=document.createElement('div');
+  const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='Edit';edit.addEventListener('click',()=>fillJob(job));
+  const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Close Job';close.disabled=!job.is_published;
+  close.addEventListener('click',async()=>{
+   if(!confirm('इस Job को public list से बंद करें? Record audit के लिए सुरक्षित रहेगा।'))return;
+   close.disabled=true;
+   const {error}=await supabase.from('kagzi_private_jobs').update({is_published:false,verification_status:'withheld',updated_at:new Date().toISOString()}).eq('id',job.id);
+   if(error){setStatus('jobStatus','Job बंद नहीं हुई: '+error.message);close.disabled=false;return;}
+   setStatus('jobStatus','Job public list से बंद कर दी गई है; record सुरक्षित है।');await loadJobs();
+  });
+  actions.append(edit,close);row.append(text,actions);list.append(row);
+ }
 }
 $('refreshJobs').addEventListener('click',loadJobs);
 $('sourceForm').addEventListener('submit',async event=>{
