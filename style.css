@@ -44,3 +44,5 @@ input,select,textarea,button{max-width:100%}
 
 /* Advanced Photo Editor live preview */
 .photo-preview-stage{position:relative;width:100%;margin:12px 0;overflow:hidden;border-radius:9px;background:#f5f7fc}.studio-preview .photo-preview-stage img{margin:0;max-height:460px}.photo-preview-stage #photoTextPreview{position:absolute;display:none;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:700;line-height:1.2;text-shadow:0 1px 3px rgba(0,0,0,.55);pointer-events:none;transform:translateY(-50%)}
+
+.photo-preview-stage #photoTextPreview{transform:none}
