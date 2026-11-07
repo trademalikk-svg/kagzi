@@ -126,3 +126,15 @@ References:
 **Version discrepancy:** the package metadata inspected identifies version `0.9.0`, while the README's status banner still says `0.8.x`. Treat the README as stale for versioning; pin an exact tested package version rather than using a floating semver range.
 
 **Decision unchanged:** no dependency has been added, no PDF engine has been integrated, and no runtime code has been modified. A local fixture harness and adversarial PDF tests are still required before adoption.
+
+
+## KAGZI editor integration boundary (2026-11-07)
+
+The isolated PDFcanvas fixture workflow now has a fail-closed runtime boundary:
+
+- `pdf-native-text-gate.js` exposes `window.KAGZIPdfNativeText.status()` and a `replaceText()` method that rejects with `KAGZI_NATIVE_TEXT_EDIT_DISABLED`.
+- The gate is loaded before `pdf-editor.js` on the experiment branch only. It does not load PDFium WASM, alter document bytes, or change the existing overlay editor.
+- The gate remains explicitly unavailable until a real editor integration proves replacement on save, reopen, and re-extraction for supported fixtures, with page geometry and unrelated content preserved.
+- `tests/pdf-native-text-gate.test.mjs` verifies the disabled status, that an unverified engine is never invoked, and that the gate loads before the editor controller. The PDFcanvas workflow runs this test on every push to the experiment branch.
+
+This is a safety integration checkpoint, not native text-editing feature delivery. The existing editor remains overlay-based. Do not enable or merge native editing based only on the dependency spike or synthetic fixture results.
