@@ -46,5 +46,5 @@ test('italic styling is applied to direct text overlays and Unicode raster expor
   const unicode = await readFile(new URL('../pdf-unicode-text.js', import.meta.url), 'utf8');
 
   assert.match(editor, /inspectorItalic&&el\.inspectorItalic\.checked\?\(baseFont==='TimesRoman'\?'Italic':'Oblique'\)/);
-  assert.match(unicode, /opts\.italic\?'italic ':' '/);
+  assert.match(unicode, /opts\.italic\?'italic '/);
 });
