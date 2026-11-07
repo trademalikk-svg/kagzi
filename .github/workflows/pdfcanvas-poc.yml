@@ -4000,7 +4000,7 @@ jobs:
 
   nested-form-runtime-prototype:
     name: Compile nested Form dirty-stream API prototype
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'prototype')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'prototype') || contains(github.event.head_commit.message, 'WASM API smoke')
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
