@@ -195,6 +195,27 @@ img,video,canvas,iframe{max-width:100%}
 @media(max-width:360px){.kagzi-jobs-grid{grid-template-columns:1fr}}
 </style>
 
+
+<style id="kagzi-colourful-feature-folders">
+/* Compact colourful folder tiles inspired by the Sarkari Naukri dashboard. */
+.kagzi-feature-folders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 20px}
+.kagzi-feature-folders .featured-library-compact{position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:10px;min-width:0;min-height:132px;margin:0!important;padding:15px!important;border:1px solid #dce5f4;border-radius:14px;background:linear-gradient(145deg,#fff,#f1f6ff);box-shadow:0 5px 15px rgba(16,45,91,.07);overflow:hidden}
+.kagzi-feature-folders .featured-library-compact:before{content:"";position:absolute;top:0;left:15px;width:44px;height:5px;border-radius:0 0 5px 5px;background:var(--folder-accent,#2864c5)}
+.kagzi-feature-folders .featured-library-main{display:flex;align-items:center;gap:10px;min-width:0}
+.kagzi-feature-folders .featured-library-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;margin-top:3px;border-radius:12px;background:var(--folder-tint,#e7efff);font-size:22px}
+.kagzi-feature-folders .featured-library-copy{min-width:0}
+.kagzi-feature-folders .featured-library-copy strong{display:block;color:#102b59;font:900 12px/1.35 Manrope,Arial,sans-serif;letter-spacing:.2px;overflow-wrap:anywhere}
+.kagzi-feature-folders .featured-library-copy span{display:block;margin-top:4px;color:#536782;font-size:10px;line-height:1.45}
+.kagzi-feature-folders .featured-library-link{align-self:flex-start;display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:7px 11px;border-radius:8px;background:var(--folder-accent,#2864c5);color:#fff!important;font-size:9px;line-height:1.2;font-weight:900;white-space:normal}
+.kagzi-feature-folders .featured-library-compact:nth-child(1){--folder-accent:#2864c5;--folder-tint:#e5efff;background:linear-gradient(145deg,#fff,#edf4ff)}
+.kagzi-feature-folders .featured-library-compact:nth-child(2){--folder-accent:#0d9274;--folder-tint:#ddf7ef;background:linear-gradient(145deg,#fff,#eafaf5)}
+.kagzi-feature-folders .featured-library-compact:nth-child(3){--folder-accent:#a36a0a;--folder-tint:#fff0cf;background:linear-gradient(145deg,#fff,#fff8e9)}
+.kagzi-feature-folders .featured-library-compact:nth-child(4){--folder-accent:#087eaa;--folder-tint:#ddf5ff;background:linear-gradient(145deg,#fff,#eaf8ff)}
+.kagzi-feature-folders .featured-library-compact:nth-child(5){--folder-accent:#7051b8;--folder-tint:#eee7ff;background:linear-gradient(145deg,#fff,#f4f0ff)}
+.kagzi-feature-folders .featured-library-compact:nth-child(6){--folder-accent:#d15c35;--folder-tint:#ffebe3;background:linear-gradient(145deg,#fff,#fff2ed)}
+@media(max-width:760px){.kagzi-feature-folders{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 16px}.kagzi-feature-folders .featured-library-compact{min-height:128px;padding:12px!important;gap:9px}.kagzi-feature-folders .featured-library-icon{flex-basis:36px;width:36px;height:36px;font-size:19px}.kagzi-feature-folders .featured-library-copy strong{font-size:10px}.kagzi-feature-folders .featured-library-copy span{font-size:9px}.kagzi-feature-folders .featured-library-link{font-size:8px;padding:7px 9px}}
+@media(max-width:360px){.kagzi-feature-folders{grid-template-columns:1fr}.kagzi-feature-folders .featured-library-compact{min-height:105px}}
+</style>
 <style id="kagzi-home-featured-order">
 /* Main KAGZI introduction leads; quick-access service cards follow it in a tighter layout. */
 .featured-library-compact{margin:8px 0!important;padding:9px 13px!important;border-radius:12px!important;min-height:0!important;gap:10px!important}
@@ -244,6 +265,7 @@ img,video,canvas,iframe{max-width:100%}
 <article class="vip-hero vip-hero-main"><div class="vip-hero-art"><span class="doc-sheet">🇮🇳</span><span class="doc-folder">✦</span><span class="doc-cloud">✓</span></div><div class="vip-hero-copy"><div class="vip-kicker">ONE PLATFORM · MANY POSSIBILITIES</div><h1>KAGZI AI</h1><h2>Jan Seva &amp; Education</h2><h3>सरकारी सेवाएँ, शिक्षा और डिजिटल सुविधाएँ</h3><p>जनसेवा, पढ़ाई और जरूरी दस्तावेज़ — अब एक ही मंच पर।</p><a class="vip-cta" href="#main-services">आज ही शुरुआत करें <span>→</span></a></div></article>
 <article class="vip-hero vip-hero-education"><div class="vip-hero-copy"><div class="vip-kicker">सेवा भी · शिक्षा भी</div><h2>आपका डिजिटल<br>सहयोगी मंच</h2><p>सरकारी योजनाओं की जानकारी पाएँ, पढ़ाई की सामग्री खोजें और उपयोगी दस्तावेज़ों तक पहुँचें।</p><a class="vip-cta" href="#main-services">सेवाएँ देखें <span>→</span></a></div><div class="vip-hero-art edu-art"><span class="edu-cap">✺</span><span class="edu-books">📚</span></div></article>
 </section>
+<div class="kagzi-feature-folders" aria-label="KAGZI quick access folders">
 <section class="featured-library featured-library-compact" aria-label="Featured Document Library">
   <div class="featured-library-main">
     <span class="featured-library-icon" aria-hidden="true">▤</span>
@@ -259,6 +281,7 @@ img,video,canvas,iframe{max-width:100%}
   <a class="featured-library-link" href="private-jobs.html">FIND PRIVATE JOBS ↗</a>
 </section>
 <section class="featured-library featured-library-compact" aria-label="Government Loan Schemes"><div class="featured-library-main"><span class="featured-library-icon" aria-hidden="true">🏦</span><div class="featured-library-copy"><strong>GOVERNMENT LOAN SCHEMES · AI GUIDE</strong><span>केंद्र + उत्तर प्रदेश · पात्रता, लाभ, दस्तावेज़, आवेदन प्रक्रिया और KAGZI AI सहायता</span></div></div><a class="featured-library-link" href="loan-schemes/index.html">EXPLORE LOAN SCHEMES ↗</a></section><section class="featured-library featured-library-compact" aria-label="Mobile and Bike EMI Check and Pay"><div class="featured-library-main"><span class="featured-library-icon" aria-hidden="true">💳</span><div class="featured-library-copy"><strong>MOBILE &amp; BIKE EMI · CHECK &amp; PAY</strong><span>अपनी finance company चुनें और official portal पर EMI देखें या भुगतान करें</span></div></div><a class="featured-library-link" href="emi-check-pay.html">OPEN EMI GUIDE ↗</a></section><section class="featured-library featured-library-compact" aria-label="Loan and Kist Manager"><div class="featured-library-main"><span class="featured-library-icon" aria-hidden="true">🧮</span><div class="featured-library-copy"><strong>LOAN &amp; KIST MANAGER</strong><span>Bike, car और personal loan EMI estimate, किस्त रिकॉर्ड और calendar reminder</span></div></div><a class="featured-library-link" href="loan-kist-manager.html">OPEN KIST MANAGER ↗</a></section><section class="featured-library featured-library-compact" aria-label="Government Form Assistant"><div class="featured-library-main"><span class="featured-library-icon" aria-hidden="true">🗂️</span><div class="featured-library-copy"><strong>GOVERNMENT FORM ASSISTANT</strong><span>सरकारी आवेदन की तैयारी, दस्तावेज़ checklist और official portal links</span></div></div><a class="featured-library-link" href="government-form-assistant.html">PREPARE FORM ↗</a></section>
+</div>
 
 <section class="vip-panel" id="document-studio" style="margin:18px 0;background:linear-gradient(115deg,#071735,#12366e);border:1px solid #d7ad4c;color:#fff">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
