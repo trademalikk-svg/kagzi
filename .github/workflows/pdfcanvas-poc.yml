@@ -2525,11 +2525,12 @@ jobs:
             }
           }
 
-          const targetText = 'Compound clip target crosses two regions';
+          const sourceText = 'TARGET: Compound clip text spans two regions';
+          const replacementText = 'REPLACEMENT: Compound clip text spans two regions';
           const source = await PDFDocument.create();
           const sourceFont = await source.embedFont(StandardFonts.Helvetica);
           const sourcePage = source.addPage([612, 792]);
-          sourcePage.drawText(targetText, { x: 60, y: 700, size: 16, font: sourceFont });
+          sourcePage.drawText(sourceText, { x: 60, y: 700, size: 16, font: sourceFont });
 
           const targetDoc = await PDFDocument.create();
           const [form] = await targetDoc.embedPages([sourcePage]);
@@ -2543,8 +2544,8 @@ jobs:
 
           const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
           const before = await render(input);
-          assert.ok(before.text.includes(targetText), 'compound-clipped text must be extractable');
-          const beforeTarget = before.textItems.find(item => item.str.includes(targetText));
+          assert.ok(before.text.includes(sourceText), 'compound-clipped text must be extractable');
+          const beforeTarget = before.textItems.find(item => item.str.includes(sourceText));
           assert.ok(beforeTarget, 'PDF.js must expose the original target text geometry');
 
           const engine = await PdfiumTextEngine.create(wasm, input);
@@ -2557,7 +2558,7 @@ jobs:
           assert.notEqual(formIndex, undefined, 'fixture must contain a Form XObject');
           const formPtr = module.FPDFPage_GetObject(pagePtr, formIndex);
           const childPtr = module.FPDFFormObj_GetObject(formPtr, 0);
-          const run = engine.readPage(0, 0).find(item => item.text.includes(targetText));
+          const run = engine.readPage(0, 0).find(item => item.text.includes(sourceText));
           assert.ok(run, 'compound-clipped target must be discoverable');
           const removed = Boolean(module.FPDFFormObj_RemoveObject(formPtr, childPtr));
           if (removed) module.FPDFPageObj_Destroy(childPtr);
@@ -2572,13 +2573,13 @@ jobs:
           const overlayFont = await overlayDoc.embedFont(StandardFonts.Helvetica);
           overlayPage.pushOperators(pushGraphicsState());
           appendCompoundClip(overlayPage);
-          overlayPage.drawText(targetText, { x: 60, y: 700, size: run.textFontSize, font: overlayFont });
+          overlayPage.drawText(replacementText, { x: 60, y: 700, size: run.textFontSize, font: overlayFont });
           overlayPage.pushOperators(popGraphicsState());
 
           const output = new Uint8Array(await overlayDoc.save());
           const after = await render(output);
-          assert.ok(after.text.includes(targetText), 'replacement text must survive PDF.js reopen');
-          const afterTarget = after.textItems.find(item => item.str.includes(targetText));
+          assert.ok(after.text.includes(replacementText), 'replacement text must survive PDF.js reopen');
+          const afterTarget = after.textItems.find(item => item.str.includes(replacementText));
           assert.ok(afterTarget, 'PDF.js must expose the replacement text geometry');
           const targetBand = {
             left: Math.min(beforeTarget.bounds.left, afterTarget.bounds.left),
