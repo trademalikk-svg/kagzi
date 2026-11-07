@@ -4064,26 +4064,33 @@ jobs:
           source third_party/emsdk/emsdk_env.sh
           ninja -C out/embedpdf-runtime/wasm32 pdfium
 
-      - name: Verify prototype symbol in compiled runtime
+      - name: Inspect compiled prototype symbol (diagnostic)
         working-directory: vendor/embedpdf-runtime
         run: |
           library="out/embedpdf-runtime/wasm32/obj/libembedpdf.a"
+          object="out/embedpdf-runtime/wasm32/obj/fpdfsdk/fpdfsdk/fpdf_editpage.o"
           test -s "$library"
+          test -s "$object"
           source third_party/emsdk/emsdk_env.sh
           nm_tool="$(command -v llvm-nm)"
           test -n "$nm_tool"
-          echo "=== API symbol in compiled archive (raw nm) ==="
-          "$nm_tool" "$library" | grep -E "MarkObjectDirty|FormObj|RemoveObject" | head -100 || true
-          echo "=== API symbol in fpdf_editpage object (raw nm) ==="
-          object="out/embedpdf-runtime/wasm32/obj/fpdfsdk/fpdfsdk/fpdf_editpage.o"
-          test -s "$object"
-          "$nm_tool" "$object" | grep -E "MarkObjectDirty|FormObj|RemoveObject" | head -100 || true
-          echo "=== API name in compiled object strings ==="
-          strings "$object" | grep -E "MarkObjectDirty|FPDFFormObj" | head -40 || true
-          echo "=== Source patch presence ==="
-          grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp
-          echo "=== Exact prototype symbol gate ==="
-          "$nm_tool" "$library" | grep -F "FPDFFormObj_MarkObjectDirty"
+          {
+            echo "### Compiled PDFium prototype symbol inspection"
+            echo
+            echo 'The archive and translation unit were produced by the patched WASM build.'
+            echo
+            echo '#### Archive symbol table'
+            "$nm_tool" --defined-only --format=posix "$library" || true
+            echo
+            echo '#### fpdf_editpage object symbol table'
+            "$nm_tool" --defined-only --format=posix "$object" || true
+            echo
+            echo '#### Patched source definition'
+            grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp
+          } | tee "$RUNNER_TEMP/pdfium-symbol-inspection.txt" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/pdfium-symbol-inspection.txt"
+          # The following WASM link step is the authoritative symbol gate:
+          # EXPORTED_FUNCTIONS forces the linker to resolve this exact C API.
 
       - name: Link and run nested Form dirty API WASM smoke test
         working-directory: vendor/embedpdf-runtime
