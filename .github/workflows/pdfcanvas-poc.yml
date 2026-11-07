@@ -552,11 +552,12 @@ jobs:
           engine.destroy();
           NODE
 
-      - name: Test Form XObject editability and round-trip
+      - name: Gate Form XObject replacement (separate discovery from verified edit)
         working-directory: vendor/pdfcanvas
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
+          import fs from 'node:fs';
           import { PDFDocument, StandardFonts } from 'pdf-lib';
           import { PdfiumTextEngine } from './dist/index.js';
 
@@ -582,42 +583,71 @@ jobs:
           const sentinel = runs.find(run => run.text.includes('Unrelated page sentinel'));
           assert.ok(sentinel, 'ordinary page text must be discoverable');
 
+          let gate = 'BLOCKED_NOT_DISCOVERED';
           let replacementAttempted = false;
           let replacementRoundTrip = false;
-          let classification = 'not discovered';
-          if (target) {
-            classification = target.editable ? 'engine marks Form XObject text editable; round-trip test attempted' : 'discovered but engine marks non-editable';
-            if (target.editable) {
-              replacementAttempted = true;
-              const edited = engine.applyEdits([{
-                ...target,
-                newText: 'Form XObject replacement text',
-                originalText: target.text,
-                background: '#ffffff'
-              }]);
-              if (edited.failed.length === 0) {
-                engine.destroy();
-                const verify = await PdfiumTextEngine.create(wasm, edited.bytes);
-                const after = verify.readPage(0, 0).map(run => run.text).join(' ');
-                replacementRoundTrip = after.includes('Form XObject replacement text') &&
-                  !after.includes('Form XObject original text') &&
-                  after.includes('Unrelated page sentinel');
-                verify.destroy();
-                console.log(JSON.stringify({ result: 'PASS', classification, replacementAttempted, replacementRoundTrip, policy: replacementRoundTrip ? 'candidate behavior observed; still requires visual render comparison' : 'block Form XObject replacement' }, null, 2));
-                assert.equal(replacementRoundTrip, true, 'Form XObject replacement must round-trip and preserve unrelated page text');
-                process.exit(0);
-              }
-              classification = 'engine marked editable but applyEdits reported failure';
+          let detail = 'Form XObject text was not returned by the reader.';
+          if (target && target.editable !== true) {
+            gate = 'BLOCKED_DISCOVERED_NOT_EDITABLE';
+            detail = 'Form XObject text was discovered, but the engine does not mark it editable.';
+          } else if (target?.editable === true) {
+            replacementAttempted = true;
+            const edited = engine.applyEdits([{
+              ...target,
+              newText: 'Form XObject replacement text',
+              originalText: target.text,
+              background: '#ffffff'
+            }]);
+            if (edited.failed.length === 0) {
+              engine.destroy();
+              const verify = await PdfiumTextEngine.create(wasm, edited.bytes);
+              const after = verify.readPage(0, 0).map(run => run.text).join(' ');
+              replacementRoundTrip = after.includes('Form XObject replacement text') &&
+                !after.includes('Form XObject original text') &&
+                after.includes('Unrelated page sentinel');
+              verify.destroy();
+              assert.equal(replacementRoundTrip, true,
+                'replacement must re-extract as new text, remove old text, and preserve unrelated page text');
+              gate = 'TEXT_ROUND_TRIP_VERIFIED_VISUAL_CHECK_PENDING';
+              detail = 'Text replacement round-trip and unrelated page-text preservation passed; rendered visual comparison is still required.';
+            } else {
+              gate = 'BLOCKED_APPLY_EDITS_FAILED';
+              detail = JSON.stringify(edited.failed);
             }
           }
-          engine.destroy();
-          console.log(JSON.stringify({
-            result: 'PASS',
-            classification,
+          if (!replacementAttempted || gate === 'BLOCKED_APPLY_EDITS_FAILED') engine.destroy();
+
+          const report = {
+            gate,
+            discovered: Boolean(target),
+            engineEditable: target?.editable === true,
             replacementAttempted,
             replacementRoundTrip,
-            policy: 'Form XObject content remains non-editable unless a verified replacement round-trip succeeds.'
-          }, null, 2));
+            unrelatedPageTextPreserved: Boolean(sentinel),
+            detail,
+            releasePolicy: gate === 'TEXT_ROUND_TRIP_VERIFIED_VISUAL_CHECK_PENDING'
+              ? 'Do not enable user-facing Form XObject editing until rendered visual comparison also passes.'
+              : 'Keep Form XObject content non-editable.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          const summary = [
+            '### Form XObject replacement gate',
+            '',
+            '| Check | Result |',
+            '|---|---|',
+            '| Gate | **' + gate + '** |',
+            '| Text discovered | ' + Boolean(target) + ' |',
+            '| Engine marks editable | ' + (target?.editable === true) + ' |',
+            '| Replacement attempted | ' + replacementAttempted + ' |',
+            '| Text round-trip verified | ' + replacementRoundTrip + ' |',
+            '| Unrelated page text found/preserved | ' + Boolean(sentinel) + ' |',
+            '',
+            detail,
+            '',
+            report.releasePolicy,
+            ''
+          ].join('\\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
           NODE
 
       - name: Classify text inside Form XObjects
