@@ -32,6 +32,11 @@ test('private company directory reserves all 51 company slots while loading', ()
   assert.match(privateJs, /container\.removeAttribute\(['"]aria-busy['"]\)/);
 });
 
+test('shared stylesheet loads after page styles on homepage and schemes page', () => {
+  assert.ok(homepage.indexOf('href="shared/cls-stability.css"') > homepage.lastIndexOf('</style>'));
+  assert.ok(schemes.indexOf('href="../shared/cls-stability.css"') > schemes.lastIndexOf('</style>'));
+});
+
 test('scheme AI controls use space reserved inside each card', () => {
   assert.match(sharedCss, /#schemeCards\s+\.scheme[^{]*\{[^}]*padding-bottom\s*:/s);
   assert.match(sharedCss, /\.scheme-ai-tools[^{]*\{[^}]*position\s*:\s*absolute/s);
