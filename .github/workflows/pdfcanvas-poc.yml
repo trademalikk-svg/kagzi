@@ -110,7 +110,7 @@ jobs:
           assert.ok(formApiSection.includes('FPDFFormObj_RemoveObject('), 'public header must expose Form child removal');
           assert.ok(!formApiHeaderHasInsertion(formHeader), 'pinned public API must not claim Form child insertion or Form-specific generation');
           function formApiHeaderHasInsertion(header) {
-            return /FPDFFormObj_(?:InsertObject|GenerateContent)\\s*\\(/.test(header);
+            return /FPDFFormObj_(?:InsertObject|GenerateContent)\s*\(/.test(header);
           }
 
           const pageGenerateStart = editSource.indexOf('FPDFPage_GenerateContent(FPDF_PAGE page)');
