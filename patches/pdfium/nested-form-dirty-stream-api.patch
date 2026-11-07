@@ -1,0 +1,103 @@
+diff --git a/core/fpdfapi/page/cpdf_pageobjectholder.h b/core/fpdfapi/page/cpdf_pageobjectholder.h
+index 0000000..0000000 100644
+--- a/core/fpdfapi/page/cpdf_pageobjectholder.h
++++ b/core/fpdfapi/page/cpdf_pageobjectholder.h
+@@ -128,6 +128,10 @@ class CPDF_PageObjectHolder {
+   void AddImageMaskBoundingBox(const CFX_FloatRect& box);
+   bool HasDirtyStreams() const { return !dirty_streams_.empty(); }
+   std::set<int32_t> TakeDirtyStreams();
++  // Mark the content stream containing |page_object| dirty, if it is a
++  // direct member of this holder and came from a parsed content stream.
++  bool MarkDirtyStreamForPageObject(CPDF_PageObject* page_object);
+ 
+   std::optional<ByteString> GraphicsMapSearch(const GraphicsData& gd);
+   void GraphicsMapInsert(const GraphicsData& gd, const ByteString& str);
+diff --git a/core/fpdfapi/page/cpdf_pageobjectholder.cpp b/core/fpdfapi/page/cpdf_pageobjectholder.cpp
+index 0000000..0000000 100644
+--- a/core/fpdfapi/page/cpdf_pageobjectholder.cpp
++++ b/core/fpdfapi/page/cpdf_pageobjectholder.cpp
+@@ -434,6 +434,23 @@ std::unique_ptr<CPDF_PageObject> CPDF_PageObjectHolder::RemovePageObject(
+   return result;
+ }
+ 
++bool CPDF_PageObjectHolder::MarkDirtyStreamForPageObject(
++    CPDF_PageObject* pPageObj) {
++  auto it = std::ranges::find_if(page_object_list_,
++                                 pdfium::MatchesUniquePtr(pPageObj));
++  if (it == std::end(page_object_list_)) {
++    return false;
++  }
++
++  const int32_t content_stream = pPageObj->GetContentStream();
++  if (content_stream < 0) {
++    return false;
++  }
++
++  dirty_streams_.insert(content_stream);
++  return true;
++}
++
+ bool CPDF_PageObjectHolder::ErasePageObjectAtIndex(size_t index) {
+   if (index >= page_object_list_.size()) {
+     return false;
+diff --git a/fpdfsdk/fpdf_editpage.cpp b/fpdfsdk/fpdf_editpage.cpp
+index 0000000..0000000 100644
+--- a/fpdfsdk/fpdf_editpage.cpp
++++ b/fpdfsdk/fpdf_editpage.cpp
+@@ -1195,6 +1195,31 @@ FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index) {
+       pObjectList->GetPageObjectByIndex(index));
+ }
+ 
++FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
++FPDFFormObj_MarkObjectDirty(FPDF_PAGEOBJECT form_object,
++                            FPDF_PAGEOBJECT page_object) {
++  CPDF_PageObject* cform_page_object =
++      CPDFPageObjectFromFPDFPageObject(form_object);
++  if (!cform_page_object) {
++    return false;
++  }
++
++  CPDF_FormObject* form_obj = cform_page_object->AsForm();
++  if (!form_obj || !form_obj->form()) {
++    return false;
++  }
++
++  CPDF_PageObject* child_object =
++      CPDFPageObjectFromFPDFPageObject(page_object);
++  if (!child_object ||
++      !form_obj->form()->MarkDirtyStreamForPageObject(child_object)) {
++    return false;
++  }
++
++  cform_page_object->SetDirty(true);
++  return true;
++}
++
+ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+ FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,
+                          FPDF_PAGEOBJECT page_object) {
+diff --git a/public/fpdf_edit.h b/public/fpdf_edit.h
+index 0000000..0000000 100644
+--- a/public/fpdf_edit.h
++++ b/public/fpdf_edit.h
+@@ -1710,6 +1710,20 @@ FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
+ FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index);
+ 
++// Experimental API.
++//
++// Mark the content stream containing |page_object| dirty for regeneration
++// when FPDFPage_GenerateContent() is called on the owning page.
++//
++//   form_object - handle to the Form XObject containing the child.
++//   page_object - direct child page object whose parsed content stream should
++//                 be regenerated after mutation.
++//
++// Returns TRUE only when |page_object| is a direct child with a valid content
++// stream index in |form_object|. This does not insert or remove page objects.
++FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
++FPDFFormObj_MarkObjectDirty(FPDF_PAGEOBJECT form_object,
++                            FPDF_PAGEOBJECT page_object);
++
+ // Experimental API.
+ //
+ // Remove |page_object| from |form_object|.
