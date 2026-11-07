@@ -2,16 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('mobile text inspector is a side drawer instead of a page section', async () => {
+test('mobile text inspector is placed above the PDF workspace in normal page flow', async () => {
   const workspace = await readFile(new URL('../pdf-editor-workspace.js', import.meta.url), 'utf8');
   const css = await readFile(new URL('../pdf-editor-workspace.css', import.meta.url), 'utf8');
 
-  assert.match(workspace, /is-mobile-drawer/);
-  assert.match(workspace, /is-open/);
-  assert.match(css, /\.pdf-inspector\.is-mobile-drawer/);
-  assert.match(css, /position:\s*fixed/);
-  assert.match(css, /right:\s*0/);
-  assert.match(css, /#pdfInspector\.is-mobile-drawer:not\(\.is-open\)/);
+  assert.match(workspace, /shell\.insertBefore\(inspector, workspace\)/);
+  assert.doesNotMatch(workspace, /is-mobile-drawer/);
+  assert.doesNotMatch(css, /translateX\(calc\(100% - 48px\)\)/);
+  assert.match(css, /\.editor-shell > #pdfInspector/);
 });
 
 test('live text preview expands to fit replacement text and paints it above the PDF text layer', async () => {
