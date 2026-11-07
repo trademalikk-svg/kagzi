@@ -65,7 +65,7 @@
   showResend(false);submit.disabled=true;submit.textContent='Please wait…';
   try{
    if(mode==='signup'){
-    const {data,error}=await client.auth.signUp({email,password,options:{data:{}}});
+    const {data,error}=await client.auth.signUp({email,password,options:{data:{},emailRedirectTo:location.origin+'/auth.html?mode=login&redirect='+encodeURIComponent(safeRedirect)}});
     if(error)throw error;
     if(data.session){setMessage('Account बन गया और verify हो गया। KAGZI खोल रहे हैं…');location.replace(safeRedirect);return;}
     pendingEmail=email;showOtp(true);showResend(true);$('authOtp').focus();

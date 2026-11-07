@@ -33,9 +33,9 @@ test('public sitemap includes new landing pages and subject books', async () => 
   for (const path of [
     'education-pdfs', 'education-pdfs-en', 'jan-seva-en',
     'document-editing', 'document-editing-en',
-    'history-book.html', 'geography-book.html', 'up-gk-book.html',
-    'economy-book.html', 'science-book.html', 'environment-book.html',
-    'math-reasoning-book.html', 'hindi-book.html', 'mcq-pyq-book.html',
+    'history-book', 'geography-book', 'up-gk-book',
+    'economy-book', 'science-book', 'environment-book',
+    'math-reasoning-book', 'hindi-book', 'mcq-pyq-book',
     'study-material/english/'
   ]) assert.ok(sitemap.includes('https://kagzi-8cy.pages.dev/' + path), path);
 });

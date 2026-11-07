@@ -1,0 +1,17 @@
+name: KAGZI public access tests
+on:
+  push:
+    branches: [fix/public-free-access-preview-2026-11-08]
+  pull_request:
+    branches: [main]
+jobs:
+  public-access:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --check auth-guard.js
+      - run: node --check auth.js
+      - run: node --test tests/public-free-access.test.mjs tests/auth-gate.test.mjs tests/paid-only-auth.test.mjs tests/paid-pdf-checkout.test.mjs tests/pdf-editor-buffer-ownership.test.mjs

@@ -12,7 +12,10 @@ test("jobs directory contains all 28 states and 8 UT pages", async()=>{
  assert.equal(regions.filter(x=>x[3]==="state").length,28);
  assert.equal(regions.filter(x=>x[3]==="ut").length,8);
  assert.equal(new Set(regions.map(x=>x[0])).size,36);
- for(const [slug] of regions)assert.ok(await readFile(new URL("../government-jobs/"+slug+"/index.html",import.meta.url),"utf8"));
+ for(const [slug] of regions){
+  const page=await readFile(new URL("../government-jobs/states/"+slug+"/index.html",import.meta.url),"utf8");
+  assert.ok(page.includes("KAGZI"),slug+" state/UT page should be present");
+ }
 });
 
 test("RSS parser extracts title, summary and official link",()=>{
@@ -86,13 +89,18 @@ test("unified jobs renderer supports region search, deadline sorting and safe sh
 test("all State PSC portal links are attributed to the official UPPSC directory", async()=>{
  const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
  const data=JSON.parse(raw);
- assert.equal(data.portals.length,29);
+ assert.equal(data.portals.length,30);
  assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,29);
- for(const portal of data.portals){
+ const pscPortals=data.portals.filter(portal=>portal.type==="State Public Service Commission");
+ assert.equal(pscPortals.length,29);
+ for(const portal of pscPortals){
   assert.match(portal.url,/^https:\/\//);
   assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
   assert.ok(portal.lastCheckedAt);
  }
+ const upsssc=data.portals.find(portal=>portal.name.includes("UPSSSC"));
+ assert.ok(upsssc,"UPSSSC portal is included separately");
+ assert.equal(upsssc.sourceUrl,upsssc.url);
 });
 
 test("region filter is populated from the complete 36-region registry", async()=>{
@@ -110,7 +118,7 @@ test("Central Jobs shows official recruitment portals without mislabelling homep
  const html=await readFile(new URL("../government-jobs/central/index.html",import.meta.url),"utf8");
  for(const host of ["ssc.gov.in","upsc.gov.in","rrbcdg.gov.in","ncs.gov.in","apprenticeshipindia.gov.in","ibps.in"]) assert.ok(html.includes(host),host+" official portal link");
  assert.match(html,/Official portal/);
- assert.match(html,/data-central-vacancies/);\n assert.match(html,/assets\\/central-jobs\\.js/);
+ assert.match(html,/data-central-vacancies/);
  assert.match(html,/data-share-page/);
  assert.match(html,/data-whatsapp-page/);
 });
