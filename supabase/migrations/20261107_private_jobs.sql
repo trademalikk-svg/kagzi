@@ -12,7 +12,7 @@ create table if not exists public.kagzi_private_jobs (
   experience_level text not null default 'both' check (experience_level in ('fresher','experienced','both','internship')),
   category text not null default 'other',
   employment_type text not null default 'full_time' check (employment_type in ('full_time','part_time','contract','internship','apprenticeship')),
-  minimum_age integer,
+  minimum_age integer check (minimum_age is null or minimum_age >= 18),
   salary_min_inr bigint check (salary_min_inr is null or salary_min_inr >= 0),
   salary_max_inr bigint check (salary_max_inr is null or salary_max_inr >= 0),
   salary_period text check (salary_period is null or salary_period in ('monthly','annual','stipend')),
