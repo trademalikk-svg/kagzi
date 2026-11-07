@@ -47,8 +47,10 @@ export async function onRequestPost({ request, env }) {
     );
     const signed = await signedResponse.json().catch(() => ({}));
     if (!signedResponse.ok || !signed.signedURL) return json({ error: "Secure PDF link नहीं बन पाया।" }, 502);
-    const supabaseBase = String(env.SUPABASE_URL).replace(/\\/$/, "");
-    const url = /^https?:\\/\\//i.test(signed.signedURL)\n      ? signed.signedURL\n      : supabaseBase + (signed.signedURL.startsWith("/storage/v1/") ? signed.signedURL : "/storage/v1" + (signed.signedURL.startsWith("/") ? signed.signedURL : "/" + signed.signedURL));
+    const supabaseBase = String(env.SUPABASE_URL).replace(/\/$/, "");
+    const url = /^https?:\/\//i.test(signed.signedURL)
+      ? signed.signedURL
+      : supabaseBase + (signed.signedURL.startsWith("/storage/v1/") ? signed.signedURL : "/storage/v1" + (signed.signedURL.startsWith("/") ? signed.signedURL : "/" + signed.signedURL));
     return json({ signed_url: url, expires_in: 60 });
   } catch (error) {
     return json({ error: error.message || "Secure download अभी उपलब्ध नहीं है।" }, 500);
