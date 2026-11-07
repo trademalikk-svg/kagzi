@@ -52,6 +52,7 @@ test('Private Jobs migration grants public read only to verified published recor
   assert.match(sql, /annual_ctc_min_inr/i);
   assert.match(sql, /in_hand_min_inr/i);
   assert.match(sql, /source_permission_status/i);
+  assert.match(sql, /minimum_age integer check \(minimum_age is null or minimum_age >= 18\)/i);
   assert.match(sql, /revoke all on public\.kagzi_private_job_sources from anon, authenticated/i);
 });
 
@@ -69,4 +70,10 @@ test('admin can close a job without deleting its audit record', () => {
   assert.match(page, /Close Job/);
   assert.match(page, /verification_status:\s*'withheld'/);
   assert.match(page, /is_published:\s*false/);
+});
+
+test('homepage links to the separate Private Jobs directory', () => {
+  const home = read('index.html');
+  assert.match(home, /href="private-jobs.html">Private Jobs/);
+  assert.match(home, /FIND PRIVATE JOBS/);
 });
