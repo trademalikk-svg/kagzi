@@ -11,6 +11,10 @@ def _valid_item(item: dict) -> bool:
     url = item.get("url", "")
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower()
+    try:
+        date.fromisoformat(item.get("date", ""))
+    except ValueError:
+        return False
     return (
         parsed.scheme == "https"
         and (host == "pib.gov.in" or host.endswith(".pib.gov.in"))
