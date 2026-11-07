@@ -138,3 +138,12 @@ The isolated PDFcanvas fixture workflow now has a fail-closed runtime boundary:
 - `tests/pdf-native-text-gate.test.mjs` verifies the disabled status, that an unverified engine is never invoked, and that the gate loads before the editor controller. The PDFcanvas workflow runs this test on every push to the experiment branch.
 
 This is a safety integration checkpoint, not native text-editing feature delivery. The existing editor remains overlay-based. Do not enable or merge native editing based only on the dependency spike or synthetic fixture results.
+
+### Nested Form serialization follow-up (2026-11-07)
+
+The nested-nested fixture was rerun with an additional serialization probe: after removing the deepest text child, the test marks the outer ancestor Form dirty by writing back its exact existing matrix through `FPDFPageObj_SetMatrix`, then calls `FPDFPage_GenerateContent` and saves/reopens the PDF.
+
+Observed result: child removal returned true, ancestor dirty-marking and page content generation returned true, but PDF.js still extracted the original nested text after reopen. This rules out the simple hypothesis that only the outer Form's dirty flag was missing. The nested-nested path remains blocked; do not treat successful API return values as proof of serialized mutation.
+
+The probe is isolated to the experiment workflow and does not alter the editor runtime or production branch. Further investigation must inspect the serialized Form XObject streams and resource references before attempting another mutation strategy.
+
