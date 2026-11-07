@@ -52,3 +52,11 @@ test('typing test exposes live speed, time, accuracy, mistakes and Hindi-English
  assert.match(html,/WPM/);assert.match(html,/CPM/);assert.match(html,/setInterval\(tick/);assert.match(html,/function compare\(/);assert.match(html,/function stop\(/);assert.match(html,/Intl\.Segmenter/);
  assert.match(html,/value="hi"/);assert.match(html,/value="en"/);
 });
+
+test('online calculators recalculate live when any input changes',()=>{
+ const html=read('online-calculators.html');
+ for(const fn of ['calcAge','calcPercent','calcGst','calcEmi','calcDate'])assert.match(html,new RegExp('function '+fn+'\\\\('));
+ assert.match(html,/addEventListener\\('input',fn\\)/);
+ assert.match(html,/addEventListener\\('change',fn\\)/);
+ for(const id of ['dob','ageAt','obtained','total','baseAmount','gstRate','principal','interest','months','dateStart','dateEnd'])assert.ok(html.includes("['"+id+"'" )||html.includes("'"+id+"',"),'live listener missing '+id);
+});
