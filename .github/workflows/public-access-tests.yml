@@ -12,4 +12,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node --test tests/public-free-access.test.mjs
+      - run: node --check auth-guard.js
+      - run: node --check auth.js
+      - run: node --test tests/public-free-access.test.mjs tests/auth-gate.test.mjs tests/paid-only-auth.test.mjs tests/paid-pdf-checkout.test.mjs
