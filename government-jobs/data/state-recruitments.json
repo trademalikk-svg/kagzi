@@ -17,7 +17,9 @@
       "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
       "applyVerified": true,
       "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "शैक्षिक योग्यता, आयु सीमा और श्रेणी-वार छूट पद/विज्ञापन के अनुसार अलग हैं। आधिकारिक Notification में पात्रता जाँचें।",
+      "feeDetails": "श्रेणी-वार आवेदन शुल्क की पुष्टि आधिकारिक Notification / Apply Portal पर करें।"
     },
     {
       "id": "uppsc-misc-2026-a5-e1",
@@ -34,7 +36,9 @@
       "applyUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
       "applyVerified": true,
       "sourceUrl": "https://uppsc.pariksha.nic.in/CandidatePages/Notifications.aspx",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "शैक्षिक योग्यता, आयु सीमा और श्रेणी-वार छूट पद/विज्ञापन के अनुसार अलग हैं। आधिकारिक Notification में पात्रता जाँचें।",
+      "feeDetails": "श्रेणी-वार आवेदन शुल्क की पुष्टि आधिकारिक Notification / Apply Portal पर करें।"
     },
     {
       "id": "rrb-ntpc-ug-cen-07-2026",
@@ -51,7 +55,9 @@
       "applyUrl": "https://www.rrbapply.gov.in/#/auth/home",
       "applyVerified": true,
       "sourceUrl": "https://www.rrbapply.gov.in/",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "शैक्षिक योग्यता, आयु सीमा और श्रेणी-वार छूट पद/विज्ञापन के अनुसार अलग हैं। आधिकारिक Notification में पात्रता जाँचें।",
+      "feeDetails": "श्रेणी-वार आवेदन शुल्क की पुष्टि आधिकारिक Notification / Apply Portal पर करें।"
     },
     {
       "id": "isro-ursc-04-2026",
@@ -68,7 +74,9 @@
       "applyUrl": "https://cdn.digialm.com/EForms/configuredHtml/1258/102567/istcBOtjGQvBFFaOvU/Index.html",
       "applyVerified": true,
       "sourceUrl": "https://www.isro.gov.in/Careers.html",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "शैक्षिक योग्यता, आयु सीमा और श्रेणी-वार छूट पद/विज्ञापन के अनुसार अलग हैं। आधिकारिक Notification में पात्रता जाँचें।",
+      "feeDetails": "श्रेणी-वार आवेदन शुल्क की पुष्टि आधिकारिक Notification / Apply Portal पर करें।"
     },
     {
       "id": "isro-sdsc-shar-03-2026",
@@ -85,7 +93,10 @@
       "applyUrl": "https://apps.shar.gov.in/Recruitment/advtPost.jsp",
       "applyVerified": true,
       "sourceUrl": "https://apps.shar.gov.in/Recruitment/",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "पद के अनुसार अलग-अलग योग्यता: Technical/Scientific Assistant, Technician, Nurse, Driver, MTS आदि के लिए संबंधित शैक्षिक प्रमाणपत्र, ITI/Diploma/डिग्री या लाइसेंस/अनुभव की शर्त लागू हो सकती है। पोस्ट-कोड के अनुसार विज्ञापन देखें।",
+      "feeDetails": "Technical Assistant / Scientific Assistant / Library Assistant / Nurse: ₹750; Technician / Draughtsman / Fireman / Driver / MTS: ₹500 (पोस्ट-कोड के अनुसार आधिकारिक Apply पेज पर राशि देखें)।",
+      "feeSourceUrl": "https://apps.shar.gov.in/Recruitment/advtPost.jsp"
     },
     {
       "id": "indian-bank-apprentice-2026-27",
@@ -102,7 +113,10 @@
       "applyUrl": "https://ibpsreg.ibps.in/inbraoct26/",
       "applyVerified": true,
       "sourceUrl": "https://ibpsreg.ibps.in/inbraoct26/",
-      "lastCheckedAt": "2026-11-07"
+      "lastCheckedAt": "2026-11-07",
+      "eligibilityDetails": "किसी मान्यता प्राप्त विश्वविद्यालय से किसी भी विषय में Graduation; आयु 20–28 वर्ष (01-11-2026 के अनुसार), लागू श्रेणी छूट सहित। स्थानीय भाषा पढ़ना/लिखना/बोलना/समझना आवश्यक।",
+      "feeDetails": "General / OBC / EWS: ₹800 + GST; SC / ST / PwBD: ₹175 + GST. अंतिम राशि आवेदन पोर्टल पर जाँचें।",
+      "eligibilitySourceUrl": "https://ibpsreg.ibps.in/inbraoct26/"
     }
   ],
   "portals": [
