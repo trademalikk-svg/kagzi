@@ -1572,6 +1572,84 @@ jobs:
           assert.equal(changedControl, 0, 'same-line control pixels must remain unchanged');
           NODE
 
+      - name: Diagnose transformed Form XObject coordinate mappings
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import { PDFDocument, StandardFonts, degrees } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const source = await PDFDocument.create();
+          const font = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Transformed form coordinate probe', { x: 60, y: 700, size: 16, font });
+          const sourceBytes = await source.save();
+          const sourceDoc = await PDFDocument.load(sourceBytes);
+
+          const target = await PDFDocument.create();
+          const [form] = await target.embedPages([sourceDoc.getPage(0)]);
+          const cases = [
+            { name: 'identity', options: { x: 0, y: 0, width: 612, height: 792 } },
+            { name: 'scaled', options: { x: 30, y: 40, width: 306, height: 396 } },
+            { name: 'rotated', options: { x: 40, y: 50, width: 612, height: 792, rotate: degrees(15) } }
+          ];
+          for (const item of cases) {
+            const page = target.addPage([700, 900]);
+            page.drawPage(form, item.options);
+          }
+          const bytes = new Uint8Array(await target.save({ useObjectStreams: true }));
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const m = engine.m;
+          const hasMatrixApi = typeof m.FPDFPageObj_GetMatrix === 'function';
+          const reports = [];
+
+          for (let pageIndex = 0; pageIndex < cases.length; pageIndex += 1) {
+            const pagePtr = m.FPDF_LoadPage(engine.docPtr, pageIndex);
+            const formPtr = m.FPDFPage_GetObject(pagePtr, 0);
+            const childCount = m.FPDFFormObj_CountObjects(formPtr);
+            const childPtr = childCount > 0 ? m.FPDFFormObj_GetObject(formPtr, 0) : 0;
+            const readMatrix = ptr => {
+              if (!hasMatrixApi || !ptr) return null;
+              const mem = m.pdfium.wasmExports.malloc(24);
+              if (!mem) return null;
+              try {
+                if (!m.FPDFPageObj_GetMatrix(ptr, mem)) return null;
+                return Array.from({ length: 6 }, (_, i) => m.HEAPF32[(mem >> 2) + i]);
+              } finally {
+                m.pdfium.wasmExports.free(mem);
+              }
+            };
+            const runs = engine.readPage(pageIndex, 0);
+            reports.push({
+              case: cases[pageIndex].name,
+              pageObjectType: m.FPDFPageObj_GetType(formPtr),
+              nestedObjectCount: childCount,
+              formMatrix: readMatrix(formPtr),
+              nestedTextMatrix: readMatrix(childPtr),
+              extractedRuns: runs.map(run => ({
+                text: run.text,
+                x: Number(run.x.toFixed(2)),
+                y: Number(run.y.toFixed(2)),
+                width: Number(run.w.toFixed(2)),
+                height: Number(run.h.toFixed(2)),
+                editable: run.editable,
+                memberCount: run.members?.length ?? 0
+              }))
+            });
+            m.FPDF_ClosePage(pagePtr);
+          }
+          engine.destroy();
+
+          console.log(JSON.stringify({
+            result: 'DIAGNOSTIC',
+            matrixApiAvailable: hasMatrixApi,
+            cases: reports,
+            interpretation: 'Use these observed page/Form/text matrices to define transform-aware replacement coordinates. No transformed Form XObject edits are enabled by this diagnostic.',
+            policy: 'Synthetic fixtures only; no production documents are changed.'
+          }, null, 2));
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
