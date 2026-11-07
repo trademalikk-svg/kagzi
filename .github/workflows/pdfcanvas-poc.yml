@@ -3006,8 +3006,19 @@ jobs:
               module.pdfium.wasmExports.free(ptrOut);
             }
           };
-          const ancestorMarkedDirty = removed && markAncestorFormDirty(outerPtr, outerMatrix);
-          const generated = removed && ancestorMarkedDirty && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          // FPDFFormObj_RemoveObject in newer PDFium marks the Form object
+          // that owns the edited child dirty. Reproduce that behavior for the
+          // nested Form object (middlePtr), then mark the page-level outer Form
+          // dirty so page generation traverses the Form chain.
+          const markObjectDirty = objectPtr => {
+            const wasActive = Boolean(module.FPDFPageObj_GetIsActive(objectPtr));
+            if (!module.FPDFPageObj_SetIsActive(objectPtr, !wasActive)) return false;
+            return Boolean(module.FPDFPageObj_SetIsActive(objectPtr, wasActive));
+          };
+          const middleMarkedDirty = removed && markObjectDirty(middlePtr);
+          const outerMarkedDirty = middleMarkedDirty && markObjectDirty(outerPtr);
+          const generated = removed && middleMarkedDirty && outerMarkedDirty &&
+            Boolean(module.FPDFPage_GenerateContent(pagePtr));
           const removedBytes = engine.save();
           module.FPDF_ClosePage(pagePtr);
           engine.destroy();
