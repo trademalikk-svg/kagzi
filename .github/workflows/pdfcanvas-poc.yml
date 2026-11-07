@@ -1109,7 +1109,7 @@ jobs:
           page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
           const input = new Uint8Array(await target.save({ useObjectStreams: true }));
 
-          async function probe(generatePageContent) {
+          async function probe(generatePageContent, markFormDirty = false) {
             const engine = await PdfiumTextEngine.create(wasm, input);
             const module = engine.m;
             const exports = module.pdfium.wasmExports;
@@ -1122,6 +1122,13 @@ jobs:
             new Uint8Array(exports.memory.buffer).set(utf16, textPtr);
             const setTextResult = module.FPDFText_SetText(childPtr, textPtr);
             exports.free(textPtr);
+            const formDirtyMarkResult = markFormDirty
+              ? (() => {
+                  const wasActive = Boolean(module.FPDFPageObj_GetIsActive(formPtr));
+                  return Boolean(module.FPDFPageObj_SetIsActive(formPtr, !wasActive)) &&
+                    Boolean(module.FPDFPageObj_SetIsActive(formPtr, wasActive));
+                })()
+              : null;
             const pageGenerateResult = generatePageContent
               ? module.FPDFPage_GenerateContent(pagePtr)
               : null;
@@ -1134,6 +1141,7 @@ jobs:
             verify.destroy();
             return {
               setTextResult: Boolean(setTextResult),
+              formDirtyMarkResult: formDirtyMarkResult === null ? 'not called' : Boolean(formDirtyMarkResult),
               pageGenerateResult: pageGenerateResult === null ? 'not called' : Boolean(pageGenerateResult),
               replacementFoundAfterReopen: extracted.includes(replacement),
               originalStillFoundAfterReopen: extracted.includes('Nested form original text'),
@@ -1143,14 +1151,16 @@ jobs:
 
           const withoutPageGeneration = await probe(false);
           const withPageGeneration = await probe(true);
+          const withFormDirtyGeneration = await probe(true, true);
           const report = {
             result: 'DIAGNOSTIC',
             fixture: 'single text object nested one level inside a Form XObject',
             withoutPageGeneration,
             withPageGeneration,
-            interpretation: withPageGeneration.replacementFoundAfterReopen
-              ? 'Nested child mutation survives save after page content generation; proceed to visual and unrelated-object preservation tests.'
-              : 'Nested child mutation does not survive save/re-open through the page-level generation path; do not enable editing until a safe Form stream serialization path is identified.',
+            withFormDirtyGeneration,
+            interpretation: withFormDirtyGeneration.replacementFoundAfterReopen
+              ? 'Nested child text replacement survived save/reopen when the containing Form was explicitly marked dirty before page content generation. This is a fixture-only dirty-propagation diagnostic; visual and unrelated-object preservation tests remain required.'
+              : 'Nested child text replacement did not survive save/reopen even when the containing Form was explicitly marked dirty; do not enable editing until a safe Form stream serialization path is identified.',
             policy: 'Disposable test PDFs only. No production files or user documents are changed.'
           };
           console.log(JSON.stringify(report, null, 2));
