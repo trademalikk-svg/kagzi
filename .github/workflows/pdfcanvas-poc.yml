@@ -52,7 +52,7 @@ jobs:
           const objectSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/page/cpdf_pageobject.cpp', 'utf8');
           const activeStart = objectSource.indexOf('void CPDF_PageObject::SetIsActive(bool value)');
           assert.notEqual(activeStart, -1, 'pinned runtime must contain CPDF_PageObject::SetIsActive');
-          const activeEnd = objectSource.indexOf('\\n}', activeStart);
+          const activeEnd = objectSource.indexOf('\n}', activeStart);
           assert.notEqual(activeEnd, -1, 'could not isolate SetIsActive implementation');
           const activeBody = objectSource.slice(activeStart, activeEnd);
           assert.ok(activeBody.includes('dirty_ = true;'), 'changing active state must mark the page object dirty');
