@@ -552,6 +552,42 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Classify CropBox coordinate handling
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const doc = await PDFDocument.create();
+          const font = await doc.embedFont(StandardFonts.Helvetica);
+          const page = doc.addPage([612, 792]);
+          page.drawText('CropBox coordinate sentinel', { x: 150, y: 600, size: 16, font });
+          page.drawText('Outside crop control sentinel', { x: 40, y: 100, size: 12, font });
+          page.setCropBox(100, 150, 400, 500);
+          const bytes = new Uint8Array(await doc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const runs = engine.readPage(0, 0);
+          const target = runs.find(run => run.text.includes('CropBox coordinate sentinel'));
+          const outside = runs.find(run => run.text.includes('Outside crop control sentinel'));
+          assert.ok(target, 'text inside CropBox must remain discoverable');
+          const result = {
+            result: 'PASS',
+            fixture: 'non-zero CropBox origin; 400x500 visible region on 612x792 MediaBox',
+            mediaBox: page.getMediaBox(),
+            cropBox: page.getCropBox(),
+            insideCropText: { text: target.text, x: target.x, y: target.y, width: target.w, height: target.h, editable: target.editable },
+            outsideCropTextDiscovered: Boolean(outside),
+            classification: 'discovery only; coordinates require comparison with a browser-rendered page before native replacement is allowed',
+            policy: 'No replacement is attempted for CropBox coordinates.'
+          };
+          console.log(JSON.stringify(result, null, 2));
+          engine.destroy();
+          NODE
+
       - name: Verify fail-closed handling of encrypted and malformed PDFs
         working-directory: vendor/pdfcanvas
         run: |
