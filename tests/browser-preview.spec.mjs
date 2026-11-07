@@ -10,7 +10,7 @@ test.describe('KAGZI anonymous access and browser regression', () => {
     await expect(page.getByRole('link', { name: /paid library/i }).first()).toBeVisible();
   });
 
-  for (const route of ['/pdf-editor.html', '/photo-tools.html', '/jan-seva.html', '/modules.html', '/add-text-notes-to-pdf-guide.html']) {
+  for (const route of ['/pdf-editor.html', '/photo-tools.html', '/jan-seva.html', '/modules.html', '/add-text-notes-to-pdf-guide.html', '/compress-photo-to-20kb-50kb.html', '/extract-hindi-text-from-image-ocr-guide.html', '/free-pdf-merge.html', '/gov-documents.html', '/jpg-to-pdf.html', '/mobile-scan-to-pdf-guide.html', '/passport-size-photo-maker.html', '/pdf-compress.html', '/pdf-tools.html', '/prepare-documents-for-online-forms-guide.html', '/split-pdf-pages-guide.html']) {
     test(route + ' is accessible without authentication', async ({ page }) => {
       await page.goto(baseURL + route, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('body')).toBeVisible();
