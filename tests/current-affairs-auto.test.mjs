@@ -60,3 +60,10 @@ test('PDF workflow builds branch preview on pull requests without pushing to mai
  assert.ok(workflow.includes("if: github.ref == 'refs/heads/main'"));
  assert.match(workflow,/scripts\/current_affairs_pdf_content\.py/);
 });
+
+test('Current Affairs PR verification builds real Hindi PDF previews',()=>{
+ const workflow=read('.github/workflows/current-affairs-tests.yml');
+ assert.match(workflow,/playwright install --with-deps chromium/);
+ assert.match(workflow,/python scripts\/build_current_affairs_pdfs\.py/);
+ assert.match(workflow,/contents: read/);
+});
