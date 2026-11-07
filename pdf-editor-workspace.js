@@ -36,7 +36,6 @@
         if (window.matchMedia('(max-width: 650px)').matches) {
           if (inspector.parentElement !== shell) shell.insertBefore(inspector, workspace);
         } else {
-          inspector.classList.remove('is-mobile-drawer', 'is-open');
           if (inspector.parentElement !== workspace) workspace.appendChild(inspector);
         }
       };
