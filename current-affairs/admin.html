@@ -34,6 +34,16 @@ button{border:0;border-radius:10px;padding:12px 17px;background:var(--blue);colo
 <div class="setting"><div><b>Yearly</b><div class="tier">वार्षिक PDF और archive</div></div><select id="yearly"><option value="free">Free</option><option value="paid">Paid</option></select></div>
 </div>
 <button id="saveBtn">Save Access Settings</button><button id="logoutBtn" class="secondary">Logout</button><div id="saveStatus" class="status" role="status"></div></section>
+<section class="card hidden" id="paidUploadPanel"><div class="muted">PRIVATE STORAGE · ADMIN ONLY</div><h1>Paid PDF Upload</h1>
+<p class="muted">यहाँ अपलोड की गई PDF केवल kagzi-paid-pdfs Private Bucket में जाएगी। यह public URL नहीं बनाएगी। Upload के बाद edition My Paid Library में entitlement मिलने पर ही खुलेगी।</p>
+<label for="paidTitle">PDF Title</label><input id="paidTitle" maxlength="200" placeholder="November 2026 Monthly Current Affairs · Hindi">
+<label for="paidDescription">Description</label><input id="paidDescription" maxlength="2000" placeholder="Edition details">
+<label for="paidPrice">Price (INR)</label><input id="paidPrice" type="number" min="0" step="1" value="30">
+<label for="paidPdf">PDF File · Maximum 50 MB</label><input id="paidPdf" type="file" accept="application/pdf,.pdf">
+<button id="paidUploadBtn" type="button">Upload to Private Library</button>
+<button id="paidRefreshBtn" type="button" class="secondary">Refresh Paid Editions</button>
+<div id="paidUploadStatus" class="status" role="status"></div><div id="paidResourceList" class="status"></div></section>
+
 </main>
 <script type="module">
 import { supabase } from "../kagzi-supabase.js";
@@ -44,7 +54,7 @@ async function checkAdmin(){
  if(error||!user){$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
  const {data:admin,error:adminError}=await supabase.from("kagzi_library_admins").select("user_id").eq("user_id",user.id).maybeSingle();
  if(adminError||!admin){$("loginStatus").textContent="इस अकाउंट को Admin अनुमति नहीं है।";await supabase.auth.signOut();$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
- adminUser=user;$("loginPanel").classList.add("hidden");$("settingsPanel").classList.remove("hidden");await loadSettings();
+ adminUser=user;$("loginPanel").classList.add("hidden");$("settingsPanel").classList.remove("hidden");$("paidUploadPanel").classList.remove("hidden");await loadSettings();await loadPaidResources();
 }
 async function loadSettings(){
  $("saveStatus").textContent="Settings लोड हो रही हैं…";
@@ -70,6 +80,44 @@ $("saveBtn").addEventListener("click",async()=>{
  }catch(e){$("saveStatus").textContent="सेव नहीं हुआ: "+e.message;}
  finally{$("saveBtn").disabled=false;}
 });
+
+async function loadPaidResources(){
+ const status=$("paidUploadStatus"),list=$("paidResourceList");
+ status.textContent="Paid editions लोड हो रही हैं…";list.textContent="";
+ const {data,error}=await supabase.from("kagzi_paid_resources").select("id,title,description,price_inr,is_active,created_at").order("created_at",{ascending:false});
+ if(error){status.textContent="Paid editions लोड नहीं हुईं: "+error.message;return;}
+ if(!data||!data.length){list.textContent="अभी कोई Paid PDF अपलोड नहीं है।";status.textContent="Private bucket तैयार है।";return;}
+ list.textContent=data.map(x=>(x.is_active?"ACTIVE":"INACTIVE")+" · "+x.title+" · ₹"+x.price_inr+" · "+new Date(x.created_at).toLocaleDateString("en-IN")).join("\n");
+ status.textContent=data.length+" Paid edition record(s).";
+}
+$("paidRefreshBtn").addEventListener("click",loadPaidResources);
+$("paidUploadBtn").addEventListener("click",async()=>{
+ const button=$("paidUploadBtn"),status=$("paidUploadStatus"),file=$("paidPdf").files[0];
+ if(!adminUser){status.textContent="Admin session नहीं मिला।";return;}
+ const title=$("paidTitle").value.trim(),description=$("paidDescription").value.trim(),price=Number($("paidPrice").value);
+ if(!title||title.length>200){status.textContent="PDF Title आवश्यक है (अधिकतम 200 अक्षर)।";return;}
+ if(!file){status.textContent="पहले PDF file चुनें।";return;}
+ if(file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){status.textContent="केवल PDF file स्वीकार है।";return;}
+ if(file.size<=0||file.size>50*1024*1024){status.textContent="PDF का आकार 1 byte से 50 MB के बीच होना चाहिए।";return;}
+ if(!Number.isInteger(price)||price<0){status.textContent="Price एक पूर्णांक INR राशि होनी चाहिए।";return;}
+ button.disabled=true;status.textContent="Private Storage में upload हो रहा है…";
+ const safeName=file.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").slice(-100)||"edition.pdf";
+ const storagePath="editions/"+crypto.randomUUID()+"-"+safeName;
+ let uploaded=false;
+ try{
+  const {error:uploadError}=await supabase.storage.from("kagzi-paid-pdfs").upload(storagePath,file,{contentType:"application/pdf",upsert:false,cacheControl:"3600"});
+  if(uploadError)throw uploadError;uploaded=true;
+  const {error:insertError}=await supabase.from("kagzi_paid_resources").insert({title,description,storage_path:storagePath,price_inr:price,is_active:true});
+  if(insertError)throw insertError;
+  status.textContent="Private PDF upload और Paid Library record सफल। कोई public PDF URL नहीं बनाया गया।";
+  $("paidTitle").value="";$("paidDescription").value="";$("paidPdf").value="";
+  await loadPaidResources();
+ }catch(e){
+  if(uploaded)await supabase.storage.from("kagzi-paid-pdfs").remove([storagePath]);
+  status.textContent="Upload पूरा नहीं हुआ: "+(e.message||"Unknown error");
+ }finally{button.disabled=false;}
+});
+
 $("logoutBtn").addEventListener("click",async()=>{await supabase.auth.signOut();adminUser=null;await checkAdmin();});
 await checkAdmin();
 </script></body></html>
