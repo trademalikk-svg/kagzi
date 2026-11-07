@@ -552,6 +552,44 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Classify text inside Form XObjects
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const source = await PDFDocument.create();
+          const font = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Text nested inside Form XObject', { x: 60, y: 700, size: 16, font });
+          const embeddedSource = await source.save();
+
+          const target = await PDFDocument.create();
+          const [embeddedPage] = await target.embedPages([await PDFDocument.load(embeddedSource).then(doc => doc.getPage(0))]);
+          const page = target.addPage([612, 792]);
+          page.drawPage(embeddedPage, { x: 0, y: 0, width: 612, height: 792 });
+          page.drawText('Ordinary page content sentinel', { x: 60, y: 650, size: 12, font: await target.embedFont(StandardFonts.Helvetica) });
+          const bytes = new Uint8Array(await target.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const runs = engine.readPage(0, 0);
+          const formText = runs.some(run => run.text.includes('Text nested inside Form XObject'));
+          const ordinaryText = runs.some(run => run.text.includes('Ordinary page content sentinel'));
+          assert.ok(ordinaryText, 'ordinary page content should remain discoverable');
+          console.log(JSON.stringify({
+            result: 'PASS',
+            fixture: 'embedded page drawn as a Form XObject plus ordinary page text',
+            formObjectTextDiscovered: formText,
+            ordinaryPageTextDiscovered: ordinaryText,
+            classification: formText ? 'Form XObject text discovered; still not editable until separate safe replacement round-trip test passes' : 'Form XObject text unsupported by this reader path; preserve as non-editable content',
+            policy: 'No Form XObject replacement is attempted.'
+          }, null, 2));
+          engine.destroy();
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
