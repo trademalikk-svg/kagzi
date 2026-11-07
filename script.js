@@ -90,6 +90,7 @@ window.kagziPhotoInputChanged=function(input){
  photoPreview.hidden=true;
  $('#photoPreviewEmpty').hidden=false;
  photoOriginalWidth=photoOriginalHeight=0;
+ photoBgBlobState.cutout=null;photoBgBlobState.processing=false;passportDownload.disabled=true;$('#removePhotoBackground').disabled=true;
  if(photoObjectUrl){URL.revokeObjectURL(photoObjectUrl);photoObjectUrl='';}
  if(!file){
   if(passportName)passportName.textContent='No photo selected. Choose a JPG, PNG or WebP image.';
