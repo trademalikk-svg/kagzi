@@ -26,9 +26,10 @@ function loadScanner(getUserMedia) {
     getElementById: id => nodes.get(id) || null,
     addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); }
   };
-  const window = { addEventListener() {}, KAGZIPdfOcrRecognize: async () => ({ text: '', confidence: 0, words: [] }) };
+  const windowListeners = new Map();
+  const window = { addEventListener(name, callback) { windowListeners.set(name, callback); }, KAGZIPdfOcrRecognize: async () => ({ text: '', confidence: 0, words: [] }) };
   vm.runInNewContext(source, { window, document, navigator: { mediaDevices: { getUserMedia } }, setTimeout, Blob, URL });
-  return { nodes, listeners };
+  return { nodes, listeners, windowListeners };
 }
 
 test('camera startup is single-flight while permission is pending and restores the control afterward', async () => {
@@ -71,4 +72,23 @@ test('unsupported camera browsers keep the Open camera control usable', async ()
   await app.listeners.get('openCameraScanner:click')();
   assert.equal(button.disabled, false);
   assert.match(app.nodes.get('scannerStatus').textContent, /Camera API is unavailable/i);
+});
+
+test('closing the scanner while permission is pending stops a late stream instead of reopening the camera', async () => {
+  const gate = deferred();
+  let stopped = 0;
+  const mediaStream = { getTracks: () => [{ stop() { stopped += 1; } }] };
+  const app = loadScanner(() => gate.promise);
+  const openButton = app.nodes.get('openCameraScanner');
+  const opening = app.listeners.get('openCameraScanner:click')();
+  assert.equal(openButton.disabled, true);
+  app.windowListeners.get('pagehide')();
+  assert.equal(openButton.disabled, false, 'closing the page scanner must release the disabled control');
+  gate.resolve(mediaStream);
+  await opening;
+  assert.equal(stopped, 1, 'a stream arriving after close must have every track stopped');
+  assert.equal(app.nodes.get('cameraPreview').srcObject, null, 'a late stream must not be attached to the preview');
+  assert.equal(app.nodes.get('cameraPreview').hidden, true);
+  assert.equal(app.nodes.get('captureScan').disabled, true);
+  assert.match(app.nodes.get('scannerStatus').textContent, /Camera closed/i);
 });
