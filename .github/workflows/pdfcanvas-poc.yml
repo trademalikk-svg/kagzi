@@ -723,7 +723,7 @@ jobs:
               '',
               'Visual replacement comparison remains pending. Keep this content non-editable.',
               ''
-            ].join('\\n');
+            ].join('\n');
             await import('node:fs').then(({ default: fs }) => fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary));
             process.exit(0);
           }
@@ -801,7 +801,7 @@ jobs:
             '| Unrelated page visuals | pixel-identical |',
             '',
             'Visual comparison passed for this fixture only. This does not enable general Form XObject editing.'
-          ].join('\\n');
+          ].join('\n');
           const fs = await import('node:fs');
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
           NODE
