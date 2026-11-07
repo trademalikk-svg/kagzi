@@ -20,6 +20,19 @@ export async function onRequestPost({ request, env }) {
       return json({ error: "यह Paid PDF अभी खरीदने के लिए उपलब्ध नहीं है।" }, 404);
     }
 
+    const entitlementQuery = new URLSearchParams({
+      select: "id,expires_at",
+      user_id: "eq." + user.id,
+      resource_id: "eq." + resource.id,
+      status: "eq.active",
+      limit: "1"
+    });
+    const entitlementResponse = await adminRequest(env, "/rest/v1/kagzi_paid_entitlements?" + entitlementQuery);
+    if (!entitlementResponse.ok) return json({ error: "मौजूदा PDF access जाँचा नहीं जा सका।" }, 502);
+    const existingEntitlements = await entitlementResponse.json();
+    const alreadyOwned = (existingEntitlements || []).some(item => !item.expires_at || new Date(item.expires_at).getTime() > Date.now());
+    if (alreadyOwned) return json({ error: "यह PDF आपके अकाउंट में पहले से उपलब्ध है। My Paid Library खोलें।" }, 409);
+
     const amount = resource.price_inr * 100;
     if (!Number.isSafeInteger(amount)) return json({ error: "PDF की कीमत मान्य नहीं है।" }, 400);
     const receipt = "kagzi_" + crypto.randomUUID().replace(/-/g, "").slice(0, 24);
