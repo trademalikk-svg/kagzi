@@ -58,7 +58,7 @@ test.describe('KAGZI anonymous access and browser regression', () => {
     const savedBytes = await import('node:fs/promises').then(fs => fs.readFile(savedPath));
 
     const reopened = await page.evaluate(async (bytes) => {
-      const pdf = await window.PDFLib.PDFDocument.load(bytes);
+      const pdf = await window.PDFLib.PDFDocument.load(new Uint8Array(bytes));
       return { pageCount: pdf.getPageCount(), size: bytes.length };
     }, Array.from(savedBytes));
     expect(reopened.pageCount).toBe(1);
@@ -73,7 +73,8 @@ test.describe('KAGZI anonymous access and browser regression', () => {
     await expect(page.locator('#editorStatus')).toContainText('kagzi-regression-edited.pdf', { timeout: 20000 });
 
     const extractedText = await page.evaluate(async () => {
-      const pdf = await window.pdfjsLib.getDocument({ data: await (await fetch(document.querySelector('#pdfFileInput').files[0] ? URL.createObjectURL(document.querySelector('#pdfFileInput').files[0]) : '')).arrayBuffer() }).promise;
+      const file = document.querySelector('#pdfFileInput').files[0];
+      const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
       const page = await pdf.getPage(1);
       const content = await page.getTextContent();
       const value = content.items.map(item => item.str).join(' ');
