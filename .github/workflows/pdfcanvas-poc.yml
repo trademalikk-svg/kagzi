@@ -4000,7 +4000,7 @@ jobs:
 
   nested-form-runtime-prototype:
     name: Compile and test nested Form dirty-stream API prototype
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'prototype') || contains(github.event.head_commit.message, 'WASM API smoke')
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/experiment/pdfcanvas-poc'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
