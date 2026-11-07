@@ -19,12 +19,12 @@ async function recognizeSource(source,label){
  }catch(error){ocrStatus('OCR failed: '+(error.message||'unknown error'));return null;}
 }
 async function openCamera(){
+ if(!navigator.mediaDevices?.getUserMedia){status('Camera API is unavailable. Open this page over HTTPS in a supported browser.');return;}
  if(openingCamera)return;
  openingCamera=true;
  const button=byId('openCameraScanner');
  if(button)button.disabled=true;
  const video=byId('cameraPreview');
- if(!navigator.mediaDevices?.getUserMedia){status('Camera API is unavailable. Open this page over HTTPS in a supported browser.');return;}
  try{
   if(stream)closeCamera();
   stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
