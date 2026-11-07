@@ -12,9 +12,9 @@ test('Jan Seva and PDF Editor remain public pages',()=>{
  }
 });
 
-test('login is requested only for explicitly marked paid items',()=>{
+test('login is requested only when a paid item is clicked',()=>{
  const guard=read('auth-guard.js');
  assert.match(guard,/target\.closest\('\[data-paid-item\]'\)/);
  assert.doesNotMatch(guard,/\.module-card|data-requires-auth|jan-seva\|pdf-tools/);
- assert.match(guard,/body\.dataset\.kagziAuthScope!=='membership'/);
+ assert.match(guard,/if\(!document\.body\|\|document\.body\.dataset\.kagziProtected!=='true'\)return/);
 });
