@@ -48,3 +48,13 @@ test('italic styling is applied to direct text overlays and Unicode raster expor
   assert.match(editor, /inspectorItalic&&el\.inspectorItalic\.checked\?\(baseFont==='TimesRoman'\?'Italic':'Oblique'\)/);
   assert.match(unicode, /opts\.italic\?'italic '/);
 });
+
+
+test('new text tool shows and positions a live preview before placement', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+
+  assert.match(editor, /function paintPendingTextPreview\(\)/);
+  assert.match(editor, /pendingTextPreview\.textContent=value/);
+  assert.match(editor, /el\.editorOverlay\.addEventListener\('pointermove'/);
+  assert.match(editor, /paintPendingTextPreview\(\);status\('नया टेक्स्ट लिखें/);
+});
