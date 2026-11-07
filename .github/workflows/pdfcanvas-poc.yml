@@ -735,7 +735,8 @@ jobs:
             background: '#ffffff'
           }]);
           engine.destroy();
-          if (edited.failed.length > 0 || edited.bytes === input) {
+          const outputUnchanged = edited.bytes.length === input.length && edited.bytes.every((value, index) => value === input[index]);
+          if (edited.failed.length > 0 || outputUnchanged) {
             console.log(JSON.stringify({
               result: 'BLOCKED',
               reason: 'PDFium applyEdits did not produce a replacement PDF',
