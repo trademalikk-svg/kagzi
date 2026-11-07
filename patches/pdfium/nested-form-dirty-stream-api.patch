@@ -45,7 +45,7 @@ diff --git a/fpdfsdk/fpdf_editpage.cpp b/fpdfsdk/fpdf_editpage.cpp
        pObjectList->GetPageObjectByIndex(index));
  }
  
-+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
++extern "C" FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 +FPDFFormObj_MarkObjectDirty(FPDF_PAGEOBJECT form_object,
 +                            FPDF_PAGEOBJECT page_object) {
 +  CPDF_PageObject* cform_page_object =
