@@ -20,8 +20,11 @@ button.secondary{background:#edf1fa;color:var(--ink)}button:disabled{opacity:.55
 .check{display:flex;gap:10px;align-items:flex-start;font-weight:500;line-height:1.5}.check input{width:auto;margin-top:3px}
 @media(max-width:560px){.grid{grid-template-columns:1fr}header{padding:13px}}
 </style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
 </head>
-<body>
+<body data-kagzi-protected="true">
 <header><strong>KAGZI · LIBRARY ADMIN</strong><a href="education.html">← Learning Hub</a></header>
 <main class="wrap">
 <section class="card" id="loginPanel">
