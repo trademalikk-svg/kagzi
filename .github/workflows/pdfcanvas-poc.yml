@@ -2922,6 +2922,7 @@ jobs:
           | Clipped Form without clip reproduction | 824 changed pixels escaped the original clipping region | Blocked |
           | Rectangular clip explicitly reproduced | New PDF.js pixel-diff regression; must show 0 changed pixels outside clip | Pending CI |
           | Triangular non-rectangular clip explicitly reproduced | New PDF.js pixel-diff regression; must show 0 changed pixels outside polygon | Pending CI |
+          | Two disjoint rectangular clip subpaths explicitly reproduced | New PDF.js pixel-diff regression; both regions must change and gap/outside must remain unchanged | Pending CI |
           | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
           | CropBox-offset coordinates | Discovery only; no replacement attempted | Pending |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
