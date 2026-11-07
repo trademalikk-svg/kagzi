@@ -1940,7 +1940,7 @@ jobs:
             formMatrix: fm,
             textMatrix: tm,
             combinedMatrix: combined,
-            overlay: { x: combined[4], y: combined[5], size: run.textFontSize * rotation, angle },
+            overlay: { x: combined[4], y: combined[5], size: run.textFontSize * scale, angle },
             replacementFound,
             originalRemoved,
             changedPixelsInsideTargetBounds: changedInside,
