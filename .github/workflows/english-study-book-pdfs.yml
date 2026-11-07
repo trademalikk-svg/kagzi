@@ -20,7 +20,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: english-study-book-pdf-build
+  group: study-book-pdf-build
   cancel-in-progress: false
 jobs:
   build-pdfs:
