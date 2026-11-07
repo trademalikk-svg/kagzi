@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 UPMSP_URL = "https://www.upmsp.edu.in/"
 CBSE_CIRCULARS_URL = "https://www.cbse.gov.in/cbsenew/examination_Circular.html"
+CBSE_HOME_URL = "https://www.cbse.gov.in/cbsenew/cbse.html"
 UPMSP_FILE = ROOT / "board-updates/data/up-board.json"
 CBSE_FILE = ROOT / "board-updates/data/cbse.json"
 ALLOWED_HOSTS = {
@@ -98,10 +99,10 @@ def official_url(board: str, base_url: str, candidate: str) -> str:
     return url
 
 
-def _parse_rows(html: str, board: str, checked_at: str) -> list[dict]:
+def _parse_rows(html: str, board: str, checked_at: str, source_url: str | None = None) -> list[dict]:
     parser = TableParser()
     parser.feed(html)
-    base_url = UPMSP_URL if board == "up-board" else CBSE_CIRCULARS_URL
+    base_url = source_url or (UPMSP_URL if board == "up-board" else CBSE_CIRCULARS_URL)
     authority = "उत्तर प्रदेश माध्यमिक शिक्षा परिषद (UPMSP)" if board == "up-board" else "Central Board of Secondary Education (CBSE)"
     found = []
     for row in parser.rows:
@@ -147,12 +148,12 @@ def _parse_rows(html: str, board: str, checked_at: str) -> list[dict]:
     return found
 
 
-def parse_upmsp_html(html: str, checked_at: str) -> list[dict]:
-    return _parse_rows(html, "up-board", checked_at)
+def parse_upmsp_html(html: str, checked_at: str, source_url: str | None = None) -> list[dict]:
+    return _parse_rows(html, "up-board", checked_at, source_url)
 
 
-def parse_cbse_html(html: str, checked_at: str) -> list[dict]:
-    return _parse_rows(html, "cbse", checked_at)
+def parse_cbse_html(html: str, checked_at: str, source_url: str | None = None) -> list[dict]:
+    return _parse_rows(html, "cbse", checked_at, source_url)
 
 
 def merge_items(existing: list[dict], fresh: list[dict]) -> list[dict]:
@@ -200,11 +201,19 @@ def write_json_atomic(path: Path, payload: dict) -> None:
         raise
 
 
-def update_board_file(board: str, source_url: str, path: Path, parser, checked_at: str) -> int:
-    html = fetch_html(source_url)
-    fresh = parser(html, checked_at)
+def update_board_file(board: str, source_urls: str | list[str], path: Path, parser, checked_at: str) -> int:
+    urls = [source_urls] if isinstance(source_urls, str) else list(source_urls)
+    fresh = []
+    errors = []
+    for source_url in urls:
+        try:
+            html = fetch_html(source_url)
+            fresh.extend(parser(html, checked_at, source_url))
+        except Exception as exc:
+            errors.append(f"{source_url}: {exc}")
     if not fresh:
-        raise ValueError(f"No dated official notices could be parsed from {source_url}; preserving existing archive")
+        detail = "; ".join(errors) if errors else "no dated official rows found"
+        raise ValueError(f"No dated official notices could be parsed; preserving existing archive ({detail})")
     existing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"items": []}
     items = merge_items(existing.get("items", []), fresh)
     payload = {
@@ -223,7 +232,7 @@ def main() -> int:
     failures = []
     jobs = [
         ("up-board", UPMSP_URL, UPMSP_FILE, parse_upmsp_html),
-        ("cbse", CBSE_CIRCULARS_URL, CBSE_FILE, parse_cbse_html),
+        ("cbse", [CBSE_CIRCULARS_URL, CBSE_HOME_URL], CBSE_FILE, parse_cbse_html),
     ]
     for board, url, path, parser in jobs:
         try:
