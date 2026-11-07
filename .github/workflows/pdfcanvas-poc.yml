@@ -2189,7 +2189,7 @@ jobs:
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
-          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PDFDocument, StandardFonts, degrees } from 'pdf-lib';
           import { PdfiumTextEngine } from './dist/index.js';
 
           globalThis.DOMMatrix ??= DOMMatrix;
@@ -2323,7 +2323,7 @@ jobs:
                 x: combined[4],
                 y: combined[5],
                 size: run.textFontSize * scale,
-                rotate: { type: 'degrees', angle },
+                rotate: degrees(angle),
                 font: await overlayDoc.embedFont(StandardFonts.Helvetica)
               });
               const output = new Uint8Array(await overlayDoc.save());
