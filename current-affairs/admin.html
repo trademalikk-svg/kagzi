@@ -51,9 +51,9 @@ const $=id=>document.getElementById(id);
 let adminUser=null;
 async function checkAdmin(){
  const {data:{user},error}=await supabase.auth.getUser();
- if(error||!user){$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
+ if(error||!user){$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");$("paidUploadPanel").classList.add("hidden");return;}
  const {data:admin,error:adminError}=await supabase.from("kagzi_library_admins").select("user_id").eq("user_id",user.id).maybeSingle();
- if(adminError||!admin){$("loginStatus").textContent="इस अकाउंट को Admin अनुमति नहीं है।";await supabase.auth.signOut();$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");return;}
+ if(adminError||!admin){$("loginStatus").textContent="इस अकाउंट को Admin अनुमति नहीं है।";await supabase.auth.signOut();$("loginPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");$("paidUploadPanel").classList.add("hidden");return;}
  adminUser=user;$("loginPanel").classList.add("hidden");$("settingsPanel").classList.remove("hidden");$("paidUploadPanel").classList.remove("hidden");await loadSettings();await loadPaidResources();
 }
 async function loadSettings(){
