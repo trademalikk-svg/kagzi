@@ -124,3 +124,21 @@ test('official NPCI career page is included in the public company directory', ()
   const sources = JSON.parse(read('private-job-sources.json'));
   assert.ok(sources.some(source => source.company === 'NPCI' && source.url.includes('careers.npci.org.in')));
 });
+
+test('all 51 companies have a detailed sector eligibility profile shown on the public page', () => {
+  const sources = JSON.parse(read('private-job-sources.json'));
+  const profiles = JSON.parse(read('private-company-profiles.json'));
+  const page = read('private-jobs.html');
+  const script = read('private-jobs.js');
+  assert.equal(sources.length, 51);
+  for (const source of sources) {
+    const profile = profiles[source.sector];
+    assert.ok(profile, 'missing company profile for ' + source.company + ' / ' + source.sector);
+    assert.ok(profile.about && profile.hiring_areas && profile.qualification_guide && profile.experience_guide);
+    assert.ok(profile.fresher_note && profile.role_specific_note);
+  }
+  assert.match(page, /Company Eligibility & Details/);
+  assert.match(script, /private-company-profiles\.json/);
+  assert.match(script, /Qualification Guide/);
+  assert.match(script, /Fresher/);
+});
