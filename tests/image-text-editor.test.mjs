@@ -29,3 +29,9 @@ test('mobile editor keeps the text controls visible before the canvas preview', 
   const css = await readFile(new URL('../image-text-editor.css', import.meta.url), 'utf8');
   assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.side\s*\{[^}]*order:\s*-1/s);
 });
+
+test('OCR overlay hides all unselected outlines and highlights only the selected line', async () => {
+  const css = await readFile(new URL('../image-text-editor.css', import.meta.url), 'utf8');
+  assert.match(css, /\.ocr-box\{border:1px solid transparent!important;background:transparent!important;\}/);
+  assert.match(css, /\.ocr-box\.selected\{border:2px solid #[0-9a-f]{6}!important;background:/i);
+});
