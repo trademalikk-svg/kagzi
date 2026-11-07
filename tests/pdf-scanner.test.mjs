@@ -38,9 +38,9 @@ test('camera startup is single-flight while permission is pending and restores t
   const app = loadScanner(() => { requests += 1; return gate.promise; });
   const button = app.nodes.get('openCameraScanner');
   const first = app.listeners.get('openCameraScanner:click')();
-  assert.equal(button.disabled, true, 'disable Open camera while the permission request is pending');
   const second = app.listeners.get('openCameraScanner:click')();
   assert.equal(requests, 1, 'a rapid second tap must not create another camera stream');
+  assert.equal(button.disabled, true, 'disable Open camera while the permission request is pending');
   gate.resolve(mediaStream);
   await Promise.all([first, second]);
   assert.equal(button.disabled, false, 'allow the user to reopen or restart the camera afterward');
