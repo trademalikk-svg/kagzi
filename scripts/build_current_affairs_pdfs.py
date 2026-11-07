@@ -6,7 +6,7 @@ import json
 import shutil
 
 from playwright.sync_api import sync_playwright
-from scripts.current_affairs_pdf_content import build_pib_digest_fragment
+from current_affairs_pdf_content import build_pib_digest_fragment
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "current-affairs-book-source.html"
@@ -49,8 +49,9 @@ def main():
 
     daily_dated = DAY_DIR / f"KAGZI-Daily-Current-Affairs-{today}.pdf"
     daily_latest = DAY_DIR / "KAGZI-Daily-Current-Affairs-Latest.pdf"
-    week_month = today[:7]
-    weekly_dated = WEEK_DIR / f"KAGZI-Weekly-Current-Affairs-{week_month}.pdf"
+    iso = datetime.now(ZoneInfo("Asia/Kolkata")).date().isocalendar()
+    week_id = f"{iso.year}-W{iso.week:02d}"
+    weekly_dated = WEEK_DIR / f"KAGZI-Weekly-Current-Affairs-{week_id}.pdf"
     weekly_latest = WEEK_DIR / "KAGZI-Weekly-Current-Affairs-Latest.pdf"
 
     DAY_DIR.mkdir(parents=True, exist_ok=True)
