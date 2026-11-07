@@ -57,9 +57,9 @@ test('typing test exposes live speed, time, accuracy, mistakes and Hindi-English
 
 test('online calculators recalculate live when any input changes',()=>{
  const html=read('online-calculators.html');
- for(const fn of ['calcAge','calcPercent','calcGst','calcEmi','calcDate'])assert.match(html,new RegExp('function '+fn+'\\\\('));
- assert.match(html,/addEventListener\\('input',fn\\)/);
- assert.match(html,/addEventListener\\('change',fn\\)/);
+ for(const fn of ['calcAge','calcPercent','calcGst','calcEmi','calcDate'])assert.ok(html.includes('function '+fn+'('),'missing calculator '+fn);
+ assert.ok(html.includes("addEventListener('input',fn)"));
+ assert.ok(html.includes("addEventListener('change',fn)"));
  for(const id of ['dob','ageAt','obtained','total','baseAmount','gstRate','principal','interest','months','dateStart','dateEnd'])assert.ok(html.includes("['"+id+"'" )||html.includes("'"+id+"',"),'live listener missing '+id);
 });
 
@@ -71,7 +71,7 @@ test('Invoice & GST Bill Maker is a public browser-based tool with printable PDF
  assert.ok(html.includes('rel="canonical"'));
  for(const id of ['billType','billNo','billDate','supplyType','sellerName','sellerGstin','customerName','customerGstin','items','addItem','discount','previewItems','previewTotals','printBill','resetBill'])assert.ok(html.includes('id="'+id+'"'),'missing invoice control '+id);
  assert.match(html,/CGST/);assert.match(html,/SGST/);assert.match(html,/IGST/);assert.match(html,/window\.print\(\)/);
- assert.match(html,/function update\\(/);assert.match(html,/addEventListener\\('input',update\\)/);
+ assert.ok(html.includes('function update(){'));assert.ok(html.includes("addEventListener('input',update)"));
  const scripts=html.split('<script>');
  for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'invoice-bill-maker.html inline script '+i});}
 });
