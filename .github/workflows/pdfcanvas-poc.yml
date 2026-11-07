@@ -108,10 +108,9 @@ jobs:
           const formApiSection = formHeader.slice(formApiStart, formApiEnd + 1200);
           assert.ok(formApiSection.includes('FPDFFormObj_GetObject('), 'public header must expose Form child lookup');
           assert.ok(formApiSection.includes('FPDFFormObj_RemoveObject('), 'public header must expose Form child removal');
-          assert.ok(!formApiHeaderHasInsertion(formHeader), 'pinned public API must not claim Form child insertion or Form-specific generation');
-          function formApiHeaderHasInsertion(header) {
-            return /FPDFFormObj_(?:InsertObject|GenerateContent)\s*\(/.test(header);
-          }
+          assert.ok(!formHeader.includes('FPDFFormObj_InsertObject(') &&
+            !formHeader.includes('FPDFFormObj_GenerateContent('),
+            'pinned public API must not claim Form child insertion or Form-specific generation');
 
           const pageGenerateStart = editSource.indexOf('FPDFPage_GenerateContent(FPDF_PAGE page)');
           assert.notEqual(pageGenerateStart, -1, 'public page content generation implementation must exist');
