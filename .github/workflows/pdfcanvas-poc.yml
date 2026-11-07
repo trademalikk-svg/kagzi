@@ -100,13 +100,34 @@ jobs:
           assert.ok(holderRemoveBody.includes('dirty_streams_.insert(content_stream);'),
             'removing a child must mark its containing content stream dirty');
 
+          const formHeader = fs.readFileSync('vendor/embedpdf-runtime/public/fpdf_edit.h', 'utf8');
+          const formApiStart = formHeader.indexOf('FPDFFormObj_CountObjects(FPDF_PAGEOBJECT form_object)');
+          const formApiEnd = formHeader.indexOf('FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,', formApiStart);
+          assert.notEqual(formApiStart, -1, 'public header must declare Form child traversal');
+          assert.notEqual(formApiEnd, -1, 'public header must declare Form child removal');
+          const formApiSection = formHeader.slice(formApiStart, formApiEnd + 1200);
+          assert.ok(formApiSection.includes('FPDFFormObj_GetObject('), 'public header must expose Form child lookup');
+          assert.ok(formApiSection.includes('FPDFFormObj_RemoveObject('), 'public header must expose Form child removal');
+          assert.ok(!formApiHeaderHasInsertion(formHeader), 'pinned public API must not claim Form child insertion or Form-specific generation');
+          function formApiHeaderHasInsertion(header) {
+            return /FPDFFormObj_(?:InsertObject|GenerateContent)\\s*\\(/.test(header);
+          }
+
+          const pageGenerateStart = editSource.indexOf('FPDFPage_GenerateContent(FPDF_PAGE page)');
+          assert.notEqual(pageGenerateStart, -1, 'public page content generation implementation must exist');
+          const pageGenerateBody = editSource.slice(pageGenerateStart, pageGenerateStart + 420);
+          assert.ok(pageGenerateBody.includes('CPDF_PageContentGenerator CG(pPage);') &&
+            pageGenerateBody.includes('CG.GenerateContent();'),
+            'public generation entry point accepts a page and delegates to the page content generator');
+
           console.log(JSON.stringify({
             result: 'PINNED_SOURCE_AUDIT_PASS',
             runtimeCommit: '42388d3b4c9895d6672f5da357b1429678a0994c',
             removeObject: 'marks the Form object that directly owns the removed child dirty',
-            serialization: 'ProcessForm regenerates a Form XObject when its holder has dirty streams',
+            serialization: 'FPDFPage_GenerateContent runs the page generator; ProcessForm recursively regenerates child Form streams when their holders have dirty streams',
             resourceResolution: 'Form-local Resources -> parent Form Resources -> page Resources',
-            boundary: 'source audit proves fallback selection; real fixture coverage is still required for nested resource combinations'
+            apiBoundary: 'Form child lookup/removal are public; no Form child insertion or Form-specific GenerateContent API is declared. Nested SetText marks the text object dirty but not its owning Form holder content stream.',
+            boundary: 'nested in-Form replacement remains unsupported by this public API; use remove-and-page-overlay fallback only where separate visual fixtures pass'
           }, null, 2));
           NODE
 
