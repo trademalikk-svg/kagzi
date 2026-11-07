@@ -4,9 +4,18 @@ on:
     branches: [main]
     paths:
       - 'current-affairs-book.html'
+      - 'current-affairs-book-source.html'
       - 'scripts/build_current_affairs_pdfs.py'
       - 'scripts/build_current_affairs_english_pdfs.py'
       - 'current-affairs/english/source.html'
+      - '.github/workflows/current-affairs-pdfs.yml'
+  pull_request:
+    paths:
+      - 'current-affairs-book-source.html'
+      - 'scripts/build_current_affairs_pdfs.py'
+      - 'scripts/build_current_affairs_english_pdfs.py'
+      - 'scripts/current_affairs_pdf_content.py'
+      - 'current-affairs/data/items.json'
       - '.github/workflows/current-affairs-pdfs.yml'
   workflow_dispatch:
 permissions:
@@ -20,7 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           persist-credentials: true
       - uses: actions/setup-python@v5
         with:
@@ -37,6 +45,7 @@ jobs:
       - name: Generate separate English Daily and Weekly PDFs
         run: python scripts/build_current_affairs_english_pdfs.py
       - name: Commit generated PDFs
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

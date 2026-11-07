@@ -53,7 +53,10 @@ import { supabase } from "../kagzi-supabase.js";
   const showGroup=(title,items)=>'<section class="group"><h2>'+esc(title)+' <span class="muted">('+items.length+')</span></h2>'+items.map(card).join("")+'</section>';
   fetch("data/items.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Archive file not available");return r.json()}).then(data=>{
     const items=(data.items||[]).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.date||"")&&x.title&&x.url).sort((a,b)=>b.date.localeCompare(a.date));
-    document.getElementById("status").textContent="अंतिम सफल अपडेट: "+(data.updated_at||"तारीख उपलब्ध नहीं")+" · "+items.length+" आधिकारिक रिकॉर्ड · समय क्षेत्र IST";
+    const updatedAt=data.updated_at||"तारीख उपलब्ध नहीं";
+    const updateMillis=Date.parse(updatedAt);
+    const stale=Number.isFinite(updateMillis)&&Date.now()-updateMillis>36*60*60*1000?" · चेतावनी: अंतिम सफल अपडेट 36 घंटे से पुराना है":"";
+    document.getElementById("status").textContent="अंतिम सफल अपडेट: "+updatedAt+" · स्रोत: "+(data.source_name||"PIB Hindi RSS")+" · "+items.length+" आधिकारिक रिकॉर्ड · समय क्षेत्र IST"+stale;
     const periods=document.getElementById("periods"),content=document.getElementById("content");
     let groups=[];
     if(view==="daily"){

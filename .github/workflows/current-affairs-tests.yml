@@ -7,6 +7,9 @@ on:
       - ".github/kagzi-html-pages.json"
       - "current-affairs/**"
       - "scripts/update_current_affairs.py"
+      - "scripts/build_current_affairs_pdfs.py"
+      - "scripts/current_affairs_pdf_content.py"
+      - "current-affairs-book-source.html"
       - "tests/**"
       - ".github/workflows/current-affairs-*.yml"
       - "package.json"
@@ -39,3 +42,12 @@ jobs:
         run: npm test
       - name: Run Python parser tests
         run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Install PDF browser dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Build Hindi Daily and Weekly PDF preview
+        run: python scripts/build_current_affairs_pdfs.py
