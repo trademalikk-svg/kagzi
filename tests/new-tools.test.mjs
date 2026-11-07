@@ -5,9 +5,9 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
 const pages=[
- ['resume-cv-maker.html','Resume & CV Maker',['cvPreview','printCv']],
- ['hindi-english-typing-tools.html','Hindi & English Typing Tools',['editor','toHindi']],
- ['online-calculators.html','Online Calculators',['ageBtn','emiBtn']]
+ ['resume-cv-maker.html','Free Resume & CV Maker',['cvPreview','printCv']],
+ ['hindi-english-typing-tools.html','Hindi English Typing Tool Online',['editor','toHindi']],
+ ['online-calculators.html','Free Online Calculators',['ageBtn','emiBtn']]
 ];
 test('new tools have SEO metadata and public routes',()=>{
  for(const [path,title,ids] of pages){
