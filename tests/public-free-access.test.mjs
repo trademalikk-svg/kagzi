@@ -1,31 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {execFileSync} from 'node:child_process';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
-const htmlPages=()=>execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
 
-test('legacy protected markers do not block free/public pages',()=>{
+test('shared guard enforces only explicit protected-page markers and explicit paid items',()=>{
  const guard=read('auth-guard.js');
- assert.match(guard,/body\.dataset\.kagziAuthScope!=='membership'/);
- assert.doesNotMatch(guard,/body\.dataset\.kagziProtected/);
+ assert.match(guard,/body\.dataset\.kagziProtected!=='true'/);
+ assert.match(guard,/target\.closest\('\[data-paid-item\]'\)/);
+ assert.match(guard,/if\(!await hasSession\(\)\)location\.replace\(loginUrl\(\)\)/);
 });
 
-test('only the private paid library has a page-level membership gate',()=>{
- const pages=htmlPages();
- assert.ok(pages.length>=100);
- for(const path of pages){
-  const html=read(path);
-  if(path==='current-affairs/my-library.html'){
-   assert.match(html,/<body[^>]*data-kagzi-auth-scope="membership"/i);
-  }else{
-   assert.doesNotMatch(html,/<body[^>]*data-kagzi-auth-scope="membership"/i,path+' must remain public');
-  }
+test('free tools and public catalogue routes do not carry a page-level login gate',()=>{
+ for(const path of ['index.html','pdf-editor.html','photo-tools.html','jan-seva.html','modules.html','paid-library.html','education.html','study-material.html','history-book.html','geography-book.html','up-gk-book.html','economy-book.html','science-book.html','environment-book.html','math-reasoning-book.html','hindi-book.html','mcq-pyq-book.html','current-affairs/index.html','current-affairs/day/index.html','current-affairs/weekly/index.html','current-affairs/monthly/index.html','current-affairs/yearly/index.html','current-affairs/english/index.html','current-affairs/archive.html']){
+  assert.doesNotMatch(read(path),/<body\b[^>]*data-kagzi-protected=["']true["']/i,path+' must remain public');
  }
 });
 
-test('main header and public CTA do not send visitors to login or signup',()=>{
+test('private paid library, Current Affairs admin and protected workspace routes retain authentication',()=>{
+ for(const path of ['current-affairs/my-library.html','current-affairs/admin.html','reader.html','document-studio.html','office.html']){
+  assert.match(read(path),/<body\b[^>]*data-kagzi-protected=["']true["']/i,path+' must remain protected');
+ }
+});
+
+test('homepage directs visitors to the paid catalogue without requiring signup first',()=>{
  const home=read('index.html');
  assert.doesNotMatch(home,/<div class="vip-auth">/);
  assert.doesNotMatch(home,/auth\.html\?mode=(?:login|signup)/i);
