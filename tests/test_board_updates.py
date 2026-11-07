@@ -52,5 +52,15 @@ class BoardUpdateParserTests(unittest.TestCase):
         self.assertEqual(MODULE.parse_cbse_html("<html><body>maintenance</body></html>", "2026-11-07"), [])
 
 
+
+    def test_parses_cbse_latest_page_with_its_own_relative_document_base(self):
+        html = """<table><tr><td>06/11/2026</td><td>Date Sheet for Class X and Class XII Board Examinations, 2027</td>
+        <td><a href="/files/date-sheet-2027.pdf">Download</a></td></tr></table>"""
+        items = MODULE.parse_cbse_html(html, "2026-11-07", MODULE.CBSE_HOME_URL)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["category"], "date-sheet")
+        self.assertEqual(items[0]["sourceUrl"], MODULE.CBSE_HOME_URL)
+        self.assertEqual(items[0]["documentUrl"], "https://www.cbse.gov.in/files/date-sheet-2027.pdf")
+
 if __name__ == "__main__":
     unittest.main()
