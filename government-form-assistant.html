@@ -39,9 +39,9 @@ voter:["आयु/जन्मतिथि का प्रमाण","साम
 job:["आधिकारिक भर्ती notification","शैक्षणिक योग्यता प्रमाणपत्र और marksheets","आयु प्रमाण","आरक्षण प्रमाणपत्र, यदि लागू हो","फोटो और हस्ताक्षर निर्धारित format में","आवेदन शुल्क/छूट और अंतिम तारीख की पुष्टि"]
 };
 const $=id=>document.getElementById(id),sel=$("formType"),box=$("checklist");
-function draw(){const list=data[sel.value]||[];box.innerHTML=list.map((t,i)=>'<label class="item"><input type="checkbox" data-check="'+sel.value+'-'+i+'"><span>'+t+'<small>यह सामान्य तैयारी सूची है; अंतिम सूची official portal पर देखें।</small></span></label>').join("")}
-sel.addEventListener("change",draw);draw();
-$("printList").addEventListener("click",()=>window.print());$("clearList").addEventListener("click",()=>box.querySelectorAll("input").forEach(x=>x.checked=false));
+function draw(){const list=data[sel.value]||[];let saved={};try{saved=JSON.parse(localStorage.getItem("kagzi_form_assistant_checks")||"{}")}catch(e){}box.innerHTML=list.map((t,i)=>'<label class="item"><input type="checkbox" data-check="'+sel.value+'-'+i+'" '+(saved[sel.value+"-"+i]?"checked":"")+'><span>'+t+'<small>यह सामान्य तैयारी सूची है; अंतिम सूची official portal पर देखें।</small></span></label>').join("")}
+sel.addEventListener("change",draw);box.addEventListener("change",e=>{if(!e.target.matches("input[type=checkbox]"))return;let saved={};try{saved=JSON.parse(localStorage.getItem("kagzi_form_assistant_checks")||"{}")}catch(err){}saved[e.target.dataset.check]=e.target.checked;localStorage.setItem("kagzi_form_assistant_checks",JSON.stringify(saved))});draw();
+$("printList").addEventListener("click",()=>window.print());$("clearList").addEventListener("click",()=>{box.querySelectorAll("input").forEach(x=>x.checked=false);let saved={};try{saved=JSON.parse(localStorage.getItem("kagzi_form_assistant_checks")||"{}")}catch(e){}box.querySelectorAll("input").forEach(x=>delete saved[x.dataset.check]);localStorage.setItem("kagzi_form_assistant_checks",JSON.stringify(saved))});
 $("saveNotes").addEventListener("click",()=>{localStorage.setItem("kagzi_form_assistant_notes", $("notes").value);$("noteStatus").textContent="Notes इस device पर सेव हो गए।"});
 $("clearNotes").addEventListener("click",()=>{$("notes").value="";localStorage.removeItem("kagzi_form_assistant_notes");$("noteStatus").textContent="Notes हटाए गए।"});
 try{$("notes").value=localStorage.getItem("kagzi_form_assistant_notes")||""}catch(e){}
