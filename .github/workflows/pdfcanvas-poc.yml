@@ -2320,7 +2320,7 @@ jobs:
 
           const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
           const before = await render(input);
-          assert.ok(before.text.includes('Nonrectangular clipped Form target'));
+          assert.ok(before.text.includes('TARGET: Form text inside triangle'));
 
           const engine = await PdfiumTextEngine.create(wasm, input);
           const module = engine.m;
@@ -2332,7 +2332,7 @@ jobs:
           assert.notEqual(formIndex, undefined);
           const formPtr = module.FPDFPage_GetObject(pagePtr, formIndex);
           const childPtr = module.FPDFFormObj_GetObject(formPtr, 0);
-          const run = engine.readPage(0, 0).find(item => item.text.includes('Nonrectangular clipped Form target'));
+          const run = engine.readPage(0, 0).find(item => item.text.includes('TARGET: Form text inside triangle'));
           assert.ok(run, 'clipped target must be discoverable');
           const removed = Boolean(module.FPDFFormObj_RemoveObject(formPtr, childPtr));
           if (removed) module.FPDFPageObj_Destroy(childPtr);
