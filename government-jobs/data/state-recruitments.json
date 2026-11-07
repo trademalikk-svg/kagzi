@@ -398,6 +398,15 @@
       "url": "https://pscwbapplication.in/",
       "sourceUrl": "https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx",
       "lastCheckedAt": "2026-11-07"
+    },
+    {
+      "regionSlug": "uttar-pradesh",
+      "regionName": "Uttar Pradesh",
+      "name": "Uttar Pradesh Subordinate Services Selection Commission (UPSSSC)",
+      "type": "State Subordinate Services Selection Commission",
+      "url": "https://upsssc.gov.in/",
+      "sourceUrl": "https://upsssc.gov.in/",
+      "lastCheckedAt": "2026-11-07"
     }
   ]
 }
