@@ -22,8 +22,8 @@ test("shared assistant attaches voice and AI actions to every listed scheme card
 });
 
 test("scheme AI prompts are bounded and tell the model not to invent missing eligibility or dates", () => {
-  assert.match(script, /MAX_CONTEXT = 850/);
-  assert.match(script, /MAX_QUESTION = 520/);
+  assert.match(script, /MAX_CONTEXT = 650/);
+  assert.match(script, /MAX_QUESTION = 350/);
   assert.match(script, /अप्रमाणित|उपलब्ध नहीं|अनुपलब्ध/);
   assert.match(script, /अंतिम नियम आधिकारिक पोर्टल पर जाँचें/);
 });
