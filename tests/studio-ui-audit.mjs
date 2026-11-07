@@ -31,3 +31,11 @@ test('shared studio layout has mobile responsive rules', () => {
   assert.match(css, /@media\(max-width:850px\)/);
   assert.match(css, /@media\(max-width:520px\)/);
 });
+
+test('Advanced Photo Editor exposes live adjustments and text overlay', () => {
+  for (const id of ['photoAdjust','photoBrightness','photoContrast','photoSaturation','photoGrayscale','photoBlur','photoText','photoTextSize','photoTextColor','photoTextFont','photoTextX','photoTextY','photoTextPreview']) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  for (const feature of ['photoFilterCss','updatePhotoPreviewEffects','ctx.filter=photoFilterCss()','overlayText.split']) assert.ok(script.includes(feature), feature);
+  assert.match(html, /<b>PDF &amp; Photo Editor<\/b>/);
+});
