@@ -34,7 +34,6 @@
     if (workspace && inspector && shell && toolbar) {
       const placeInspector = () => {
         if (window.matchMedia('(max-width: 650px)').matches) {
-          inspector.classList.remove('is-mobile-drawer', 'is-open');
           if (inspector.parentElement !== shell) shell.insertBefore(inspector, workspace);
         } else {
           inspector.classList.remove('is-mobile-drawer', 'is-open');
