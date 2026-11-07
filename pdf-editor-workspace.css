@@ -123,3 +123,5 @@
   }
   .editor-shell > #pdfInspector #applyTextEdit { min-height: 44px !important; }
 }
+
+.inspector-fit-warning{display:block;padding:8px 9px;border:1px solid #e5a4a4;border-radius:7px;background:#fff4f4;color:#a32626;font-size:11px;font-weight:700;line-height:1.45}.inspector-fit-warning[hidden]{display:none!important}
