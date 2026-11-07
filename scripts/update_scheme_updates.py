@@ -21,7 +21,7 @@ def child_text(node,wanted):
         if local_name(child.tag)==wanted.lower(): return (child.text or "").strip()
     return ""
 def clean(value):
-    return re.sub(r"\\s+"," ",html.unescape(re.sub(r"<[^>]*>"," ",value or ""))).strip()
+    return re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]*>"," ",value or ""))).strip()
 def official(url):
     try:
         p=urlparse(url)
@@ -48,7 +48,7 @@ def write_atomic(path,payload):
     fd,tmp=tempfile.mkstemp(prefix=path.name+".",suffix=".tmp",dir=str(path.parent))
     try:
         with os.fdopen(fd,"w",encoding="utf-8") as f:
-            json.dump(payload,f,ensure_ascii=False,indent=2); f.write("\\n"); f.flush(); os.fsync(f.fileno())
+            json.dump(payload,f,ensure_ascii=False,indent=2); f.write("\n"); f.flush(); os.fsync(f.fileno())
         os.replace(tmp,path)
     except Exception:
         try: os.unlink(tmp)
