@@ -2477,3 +2477,24 @@ jobs:
             independentStructuralValidation: 'qpdf rejected malformed fixture'
           }, null, 2));
           NODE
+
+      - name: Summarize Form XObject support boundaries
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ### Form XObject support boundary
+
+          | Fixture / operation | Evidence | Status |
+          |---|---|---|
+          | Identity-transform Form replacement | Text round-trip and PDF.js pixel-preservation checks | Verified for the synthetic fixture |
+          | 50% scaled + translated Form | Matrix composition; 123 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
+          | 15° rotated Form | PDF.js text round-trip; 482 target pixels changed, 0 outside, control unchanged | Verified for the synthetic fixture |
+          | Clipped Form | 824 changed pixels escaped the original clipping region | Blocked |
+          | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
+          | CropBox-offset coordinates | Discovery only; no replacement attempted | Pending |
+          | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
+
+          **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
+
+          All work remains on `experiment/pdfcanvas-poc`. Production branch and deployment were not changed.
+          EOF
