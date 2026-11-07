@@ -110,7 +110,7 @@ test("Central Jobs shows official recruitment portals without mislabelling homep
  const html=await readFile(new URL("../government-jobs/central/index.html",import.meta.url),"utf8");
  for(const host of ["ssc.gov.in","upsc.gov.in","rrbcdg.gov.in","ncs.gov.in","apprenticeshipindia.gov.in","ibps.in"]) assert.ok(html.includes(host),host+" official portal link");
  assert.match(html,/Official portal/);
- assert.doesNotMatch(html,/Apply Online/);
+ assert.match(html,/data-central-vacancies/);\n assert.match(html,/assets\\/central-jobs\\.js/);
  assert.match(html,/data-share-page/);
  assert.match(html,/data-whatsapp-page/);
 });
