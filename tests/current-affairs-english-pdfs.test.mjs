@@ -17,7 +17,9 @@ test('English Current Affairs generates one independent PDF for each date plus w
  assert.ok(generator.includes('section[id^="daily-"]'), 'English weekly PDF collects dated daily sections');
  assert.ok(generator.includes('article.news'), 'English weekly PDF includes full daily news articles');
  assert.ok(generator.includes('weekly-daily-roundup'), 'English weekly PDF adds a dated news digest');
- assert.ok(generator.includes('#daily-6-nov .quiz'), 'English weekly PDF extracts daily MCQs');
+ assert.ok(generator.includes('section[id^="daily-"]'), 'English weekly PDF extracts practice questions from every dated section');
+ assert.ok(source.includes('Daily Practice Questions — 5 November 2026'));
+ assert.ok(source.includes('Daily Practice Questions — 4 November 2026'));
  assert.ok(generator.includes('weekly_mcq'), 'English weekly PDF adds the MCQ section to weekly output');
  assert.ok(!generator.includes('current-affairs" / "day"'));
 });
