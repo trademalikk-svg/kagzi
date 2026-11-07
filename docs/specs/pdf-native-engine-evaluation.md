@@ -141,9 +141,23 @@ This is a safety integration checkpoint, not native text-editing feature deliver
 
 ### Nested Form serialization follow-up (2026-11-07)
 
-The nested-nested fixture was rerun with an additional serialization probe: after removing the deepest text child, the test marks the outer ancestor Form dirty by writing back its exact existing matrix through `FPDFPageObj_SetMatrix`, then calls `FPDFPage_GenerateContent` and saves/reopens the PDF.
+The first dirty-flag probe marked only the page-level outer Form dirty by writing back its unchanged matrix. That was insufficient: the deepest child was removed in memory, but the original text remained after save/reopen.
 
-Observed result: child removal returned true, ancestor dirty-marking and page content generation returned true, but PDF.js still extracted the original nested text after reopen. This rules out the simple hypothesis that only the outer Form's dirty flag was missing. The nested-nested path remains blocked; do not treat successful API return values as proof of serialized mutation.
+A second diagnostic reproduced the dirty propagation needed at both levels:
+- After removing the deepest text child from the inner Form, mark the Form object that owns that child (`middlePtr`) dirty.
+- Mark the page-level outer Form object dirty as well.
+- Call `FPDFPage_GenerateContent`, save, reopen, and verify text extraction plus PDF.js pixel differences.
 
-The probe is isolated to the experiment workflow and does not alter the editor runtime or production branch. Further investigation must inspect the serialized Form XObject streams and resource references before attempting another mutation strategy.
+For this isolated synthetic nested-nested fixture, the second probe passed:
+- Replacement text found after reopen.
+- Original text absent after reopen.
+- 124 changed pixels inside the combined target bounds.
+- 0 changed pixels outside those bounds.
+- 0 changes to the same-line control.
+
+This points to dirty propagation at each Form-object level as the missing serialization trigger. The upstream PDFium implementation of `FPDFFormObj_RemoveObject` now marks the Form object that owns the removed child dirty; the older pinned WASM behavior needs this path verified against its exact implementation/version before any dependency change. The diagnostic uses an active-state toggle solely to emulate dirty marking; it is not an approved production mutation strategy.
+
+**Support boundary:** nested-nested replacement is now verified for this one synthetic fixture when both Form levels are explicitly marked dirty. This does not establish general nested Form support, arbitrary resource inheritance, clipping, or preservation across real-world PDFs. Keep the runtime native-edit gate closed until the pinned engine provides a supported dirty-propagation path and the broader fixture matrix passes.
+
+The probe remains isolated to the experiment workflow and does not alter the editor runtime or production branch.
 
