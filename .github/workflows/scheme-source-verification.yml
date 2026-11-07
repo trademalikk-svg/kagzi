@@ -1,5 +1,11 @@
 name: KAGZI Scheme Eligibility and Benefit Source Verification
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify_scheme_sources.py'
+      - 'government-schemes/data/verification-sources.json'
+      - '.github/workflows/scheme-source-verification.yml'
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:

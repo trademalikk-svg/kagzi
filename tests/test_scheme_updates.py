@@ -3,11 +3,11 @@ import unittest
 from pathlib import Path
 from scripts.update_scheme_updates import parse_feed, update
 
-XML=b"""<?xml version="1.0"?><rss><channel>
+XML="""<?xml version="1.0"?><rss><channel>
 <item><title>प्रधानमंत्री किसान योजना के लाभार्थियों के लिए सूचना</title><link>https://pib.gov.in/PressReleasePage.aspx?PRID=123</link><description>किसान योजना के बारे में आधिकारिक सूचना</description><pubDate>Sat, 07 Nov 2026 08:00:00 +0530</pubDate></item>
 <item><title>Unrelated sports update</title><link>https://pib.gov.in/PressReleasePage.aspx?PRID=124</link><description>Sports</description><pubDate>Sat, 07 Nov 2026 08:00:00 +0530</pubDate></item>
 <item><title>Fake redirect item</title><link>https://example.com/notice</link><description>scheme beneficiary</description><pubDate>Sat, 07 Nov 2026 08:00:00 +0530</pubDate></item>
-</channel></rss>"""
+</channel></rss>""".encode("utf-8")
 
 class SchemeUpdatesTests(unittest.TestCase):
     def test_only_official_scheme_related_items_are_selected(self):
