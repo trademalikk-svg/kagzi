@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAGZI Private Jobs Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--ink:#172033;--muted:#68738a;--line:#e4e9f2;--blue:#315efb;--bg:#f4f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,"Noto Sans Devanagari",Arial,sans-serif}
+header{background:#071831;color:white;padding:15px max(18px,calc((100% - 980px)/2));display:flex;justify-content:space-between;gap:14px;align-items:center}header a{color:#f1d18a;text-decoration:none}
+.wrap{width:min(980px,calc(100% - 26px));margin:24px auto}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:19px;margin-bottom:15px;box-shadow:0 5px 18px #17203308}
+h1{font-size:25px;margin:4px 0 8px}h2{font-size:19px;margin:0 0 10px}.muted{font-size:12px;color:var(--muted)}
+label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px}input,select,textarea{width:100%;padding:11px;border:1px solid #d9e1ed;border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-size:13px}textarea{min-height:75px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+button{border:0;border-radius:9px;background:var(--blue);color:white;padding:11px 15px;font:inherit;font-size:12px;font-weight:850;cursor:pointer;margin:12px 8px 0 0}button.secondary{background:#eaf0fa;color:#253b63}button:disabled{opacity:.55;cursor:not-allowed}
+.hidden{display:none!important}.status{white-space:pre-wrap;font-size:12px;margin-top:12px;color:#344761}.notice{background:#fff7e5;border-left:4px solid #d7a33b;padding:12px;border-radius:8px;font-size:12px;color:#5f4b24}
+.check{display:flex;align-items:flex-start;gap:8px;font-weight:600}.check input{width:auto;margin-top:3px}
+.records{display:grid;gap:8px}.record{border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:12px}.record button{margin:0}
+@media(max-width:650px){.grid,.grid3{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.record{align-items:flex-start;flex-direction:column}}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+</head>
+<body>
+<header><b>KAGZI · PRIVATE JOBS ADMIN</b><a href="private-jobs.html">← Public Jobs Page</a></header>
+<main class="wrap">
+<section class="card" id="loginPanel"><p class="muted">SECURE ADMIN ACCESS</p><h1>Admin Login</h1>
+<label for="email">Admin Email</label><input id="email" type="email" autocomplete="username">
+<label for="password">Password</label><input id="password" type="password" autocomplete="current-password">
+<button id="loginBtn" type="button">Login</button><p id="loginStatus" class="status" role="status"></p>
+</section>
+<div id="adminPanel" class="hidden">
+<section class="card">
+<p class="muted">JOB CONTENT MANAGEMENT</p><h1>Add / Edit Private Job</h1>
+<p class="notice">केवल कंपनी के official career page या official recruitment notice से पुष्टि की गई जानकारी दर्ज करें। किसी source की सामग्री को पूरा प्रकाशित करने से पहले उसकी reuse permission जाँचें। केवल “link only” अनुमति होने पर विस्तृत job विवरण प्रकाशित न करें।</p>
+<form id="jobForm">
+<input type="hidden" id="jobId">
+<div class="grid"><div><label for="companyName">Company Name</label><input id="companyName" maxlength="180" required></div><div><label for="jobTitle">Job Title</label><input id="jobTitle" maxlength="180" required></div></div>
+<label for="summary">Short Job Summary</label><textarea id="summary" maxlength="1600"></textarea>
+<div class="grid3">
+<div><label for="region">Region</label><select id="region"><option value="all_india">All India</option><option value="uttar_pradesh">Uttar Pradesh</option><option value="other_state">Other State</option></select></div>
+<div><label for="location">Location</label><input id="location" maxlength="160" value="All India"></div>
+<div><label for="category">Category</label><select id="category"><option value="other">Other</option><option value="it">IT / Software</option><option value="banking">Banking / Finance</option><option value="factory">Factory / Manufacturing</option><option value="sales">Sales / Marketing</option><option value="healthcare">Healthcare</option><option value="customer_support">Customer Support</option><option value="internship">Internship</option></select></div>
+</div>
+<div class="grid3">
+<div><label for="qualification">Qualification</label><input id="qualification" maxlength="240" placeholder="10th / 12th / Graduate / ITI"></div>
+<div><label for="experienceLevel">Experience</label><select id="experienceLevel"><option value="both">Fresher + Experienced</option><option value="fresher">Fresher</option><option value="experienced">Experienced</option><option value="internship">Internship</option></select></div>
+<div><label for="employmentType">Job Type</label><select id="employmentType"><option value="full_time">Full Time</option><option value="part_time">Part Time</option><option value="contract">Contract</option><option value="internship">Internship</option><option value="apprenticeship">Apprenticeship</option></select></div>
+</div>
+<div class="grid3">
+<div><label for="minimumAge">Minimum Age (if stated)</label><input id="minimumAge" type="number" min="18" max="100" inputmode="numeric"></div>
+<div><label for="lastDate">Last Date</label><input id="lastDate" type="date"></div>
+<div><label for="salaryDisclosure">Salary Disclosure</label><select id="salaryDisclosure"><option value="not_disclosed">Not Disclosed</option><option value="official">Official</option><option value="estimated">Estimated</option></select></div>
+</div>
+<h2 style="margin-top:18px">Salary & Income (INR)</h2>
+<div class="grid3">
+<div><label for="salaryPeriod">Salary Period</label><select id="salaryPeriod"><option value="">Not specified</option><option value="monthly">Monthly</option><option value="annual">Annual</option><option value="stipend">Internship Stipend</option></select></div>
+<div><label for="salaryMin">Salary Minimum</label><input id="salaryMin" type="number" min="0" step="1" inputmode="numeric"></div>
+<div><label for="salaryMax">Salary Maximum</label><input id="salaryMax" type="number" min="0" step="1" inputmode="numeric"></div>
+</div>
+<div class="grid">
+<div><label for="annualCtcMin">Annual CTC Minimum</label><input id="annualCtcMin" type="number" min="0" step="1" inputmode="numeric"></div>
+<div><label for="annualCtcMax">Annual CTC Maximum</label><input id="annualCtcMax" type="number" min="0" step="1" inputmode="numeric"></div>
+<div><label for="inHandMin">In-hand Minimum / Month</label><input id="inHandMin" type="number" min="0" step="1" inputmode="numeric"></div>
+<div><label for="inHandMax">In-hand Maximum / Month</label><input id="inHandMax" type="number" min="0" step="1" inputmode="numeric"></div>
+</div>
+<label for="salaryNote">Salary Note / Method</label><input id="salaryNote" maxlength="500" placeholder="Official pay range / estimate basis / not disclosed">
+<div class="grid">
+<div><label for="applicationUrl">Official Apply URL (HTTPS)</label><input id="applicationUrl" type="url" required placeholder="https://company.example/careers/apply"></div>
+<div><label for="sourceName">Source Publisher</label><input id="sourceName" maxlength="180" required></div>
+</div>
+<div class="grid">
+<div><label for="sourceUrl">Official Source URL (HTTPS)</label><input id="sourceUrl" type="url" required></div>
+<div><label for="sourceTermsUrl">Source Terms / Licence URL</label><input id="sourceTermsUrl" type="url"></div>
+</div>
+<div class="grid">
+<div><label for="sourcePermissionStatus">Content Permission</label><select id="sourcePermissionStatus"><option value="pending_review">Pending Review</option><option value="link_only">Link Only</option><option value="licensed">Licensed Reuse</option><option value="written_permission">Written Permission</option><option value="disallowed">Disallowed</option></select></div>
+<div><label for="verificationStatus">Verification</label><select id="verificationStatus"><option value="pending">Pending</option><option value="verified">Verified</option><option value="needs_recheck">Needs Recheck</option><option value="expired">Expired</option><option value="withheld">Withheld</option></select></div>
+</div>
+<label class="check"><input id="publishJob" type="checkbox"><span>Publish this job after checking the official source, application link, deadline and permission.</span></label>
+<button id="saveJob" type="submit">Save Job</button><button id="resetJob" class="secondary" type="button">Clear Form</button>
+</form><p id="jobStatus" class="status" role="status"></p>
+</section>
+<section class="card">
+<p class="muted">OFFICIAL CAREER PAGE DIRECTORY</p><h2>Company Source Registry</h2>
+<p class="notice">Daily review frequency केवल preference है; automated daily scanning अभी चालू नहीं है। Automated retrieval तभी जोड़ा जाएगा जब source terms स्पष्ट अनुमति दें। Publicly viewable pages अपने-आप scraping या republication की अनुमति नहीं देतीं।</p>
+<form id="sourceForm">
+<div class="grid"><div><label for="sourceCompany">Company Name</label><input id="sourceCompany" required maxlength="180"></div><div><label for="sourcePublisher">Publisher</label><input id="sourcePublisher" required maxlength="180"></div></div>
+<div class="grid"><div><label for="careersUrl">Official Careers URL</label><input id="careersUrl" type="url" required></div><div><label for="termsUrl">Terms / Licence URL</label><input id="termsUrl" type="url"></div></div>
+<div class="grid3">
+<div><label for="sourceType">Source Type</label><select id="sourceType"><option value="official_career_page">Official Career Page</option><option value="rss">RSS</option><option value="api">API</option><option value="open_data">Open Data</option><option value="manual">Manual Review</option></select></div>
+<div><label for="permissionStatus">Permission Status</label><select id="permissionStatus"><option value="pending_review">Pending Review</option><option value="link_only">Link Only</option><option value="automated_fetch_allowed">Automated Fetch Allowed</option><option value="republish_allowed">Republish Allowed</option><option value="disallowed">Disallowed</option></select></div>
+<div><label for="checkFrequency">Review Frequency</label><select id="checkFrequency"><option value="manual">Manual</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select></div>
+</div>
+<div class="grid">
+<label class="check"><input id="automatedFetchAllowed" type="checkbox"><span>Terms permit automated fetching</span></label>
+<label class="check"><input id="republishAllowed" type="checkbox"><span>Terms permit content republication</span></label>
+</div>
+<label for="adminNotes">Admin Notes</label><textarea id="adminNotes" maxlength="1200"></textarea>
+<button type="submit" id="saveSource">Save Company Source</button>
+</form><p id="sourceStatus" class="status" role="status"></p><div id="sourceList" class="records"></div>
+</section>
+<section class="card">
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h2>Current Job Listings</h2><button id="refreshJobs" class="secondary" type="button">Refresh</button></div>
+<div id="jobList" class="records"></div><button id="logoutBtn" class="secondary" type="button">Logout</button>
+</section>
+</div>
+</main>
+<script type="module">
+import { supabase } from './kagzi-supabase.js';
+const $=id=>document.getElementById(id);
+let adminUser=null;
+const setStatus=(id,message)=>$(id).textContent=message;
+const httpsUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:null}catch{return null}};
+const optionalNumber=id=>$(id).value.trim()===''?null:Number($(id).value);
+const optionalDate=id=>$(id).value||null;
+async function checkAdmin(){
+ const {data:{user},error}=await supabase.auth.getUser();
+ if(error||!user){$('adminPanel').classList.add('hidden');$('loginPanel').classList.remove('hidden');return;}
+ const {data:admin,error:adminError}=await supabase.from('kagzi_library_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ if(adminError||!admin){setStatus('loginStatus','इस अकाउंट को KAGZI Admin अनुमति नहीं है।');await supabase.auth.signOut();return;}
+ adminUser=user;$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');await Promise.all([loadJobs(),loadSources()]);
+}
+$('loginBtn').addEventListener('click',async()=>{setStatus('loginStatus','Login जाँच रहे हैं…');const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){setStatus('loginStatus','Login विफल: '+error.message);return;}await checkAdmin();});
+function resetJob(){ $('jobForm').reset();$('jobId').value='';$('region').value='all_india';$('experienceLevel').value='both';$('employmentType').value='full_time';$('salaryDisclosure').value='not_disclosed';$('sourcePermissionStatus').value='pending_review';$('verificationStatus').value='pending'; }
+$('resetJob').addEventListener('click',resetJob);
+function jobPayload(){
+ const applicationUrl=httpsUrl($('applicationUrl').value.trim()),sourceUrl=httpsUrl($('sourceUrl').value.trim());
+ if(!applicationUrl||!sourceUrl)throw new Error('Apply और Source URL दोनों HTTPS होने चाहिए।');
+ const termsRaw=$('sourceTermsUrl').value.trim(),termsUrl=termsRaw?httpsUrl(termsRaw):null;
+ if(termsRaw&&!termsUrl)throw new Error('Source Terms URL HTTPS होना चाहिए।');
+ const permission=$('sourcePermissionStatus').value,verified=$('verificationStatus').value==='verified';
+ const publish=$('publishJob').checked;
+ if(publish&&(!verified||!['licensed','written_permission'].includes(permission)))throw new Error('Publish करने के लिए Verified status और Licensed / Written Permission आवश्यक है।');
+ const lastDate=optionalDate('lastDate');
+ if(publish&&lastDate&&lastDate<new Date().toISOString().slice(0,10))throw new Error('पुरानी Last Date वाली नौकरी Publish नहीं की जा सकती।');
+ const disclosure=$('salaryDisclosure').value;
+ return {
+  company_name:$('companyName').value.trim(),job_title:$('jobTitle').value.trim(),summary:$('summary').value.trim(),
+  region:$('region').value,location:$('location').value.trim()||'All India',qualification:$('qualification').value.trim(),
+  experience_level:$('experienceLevel').value,category:$('category').value,employment_type:$('employmentType').value,
+  minimum_age:optionalNumber('minimumAge'),last_date:lastDate,
+  salary_min_inr:disclosure==='not_disclosed'?null:optionalNumber('salaryMin'),
+  salary_max_inr:disclosure==='not_disclosed'?null:optionalNumber('salaryMax'),
+  salary_period:$('salaryPeriod').value||null,
+  annual_ctc_min_inr:disclosure==='not_disclosed'?null:optionalNumber('annualCtcMin'),
+  annual_ctc_max_inr:disclosure==='not_disclosed'?null:optionalNumber('annualCtcMax'),
+  in_hand_min_inr:disclosure==='not_disclosed'?null:optionalNumber('inHandMin'),
+  in_hand_max_inr:disclosure==='not_disclosed'?null:optionalNumber('inHandMax'),
+  salary_disclosure:disclosure,salary_note:$('salaryNote').value.trim(),salary_source_url:disclosure==='not_disclosed'?null:sourceUrl,
+  application_url:applicationUrl,source_name:$('sourceName').value.trim(),source_url:sourceUrl,
+  source_terms_url:termsUrl,
+  source_permission_status:permission,source_checked_at:new Date().toISOString(),
+  verification_status:$('verificationStatus').value,is_published:publish,
+  published_at:publish?new Date().toISOString():null,created_by:adminUser.id,updated_at:new Date().toISOString()
+ };
+}
+$('jobForm').addEventListener('submit',async event=>{
+ event.preventDefault();$('saveJob').disabled=true;setStatus('jobStatus','Job record सेव हो रहा है…');
+ try{
+  const payload=jobPayload(),id=$('jobId').value;
+  const query=id?supabase.from('kagzi_private_jobs').update(payload).eq('id',id):supabase.from('kagzi_private_jobs').insert(payload);
+  const {error}=await query;if(error)throw error;
+  setStatus('jobStatus','Job record सेव हो गया। Public page पर केवल verified और permission-cleared listings दिखाई देंगी।');resetJob();await loadJobs();
+ }catch(error){setStatus('jobStatus','सेव नहीं हुआ: '+error.message);}finally{$('saveJob').disabled=false;}
+});
+function fillJob(job){
+ $('jobId').value=job.id;$('companyName').value=job.company_name||'';$('jobTitle').value=job.job_title||'';$('summary').value=job.summary||'';
+ $('region').value=job.region||'all_india';$('location').value=job.location||'';$('category').value=job.category||'other';
+ $('qualification').value=job.qualification||'';$('experienceLevel').value=job.experience_level||'both';$('employmentType').value=job.employment_type||'full_time';
+ $('minimumAge').value=job.minimum_age??'';$('lastDate').value=job.last_date||'';
+ $('salaryDisclosure').value=job.salary_disclosure||'not_disclosed';$('salaryPeriod').value=job.salary_period||'';
+ $('salaryMin').value=job.salary_min_inr??'';$('salaryMax').value=job.salary_max_inr??'';$('annualCtcMin').value=job.annual_ctc_min_inr??'';$('annualCtcMax').value=job.annual_ctc_max_inr??'';
+ $('inHandMin').value=job.in_hand_min_inr??'';$('inHandMax').value=job.in_hand_max_inr??'';$('salaryNote').value=job.salary_note||'';
+ $('applicationUrl').value=job.application_url||'';$('sourceName').value=job.source_name||'';$('sourceUrl').value=job.source_url||'';
+ $('sourceTermsUrl').value=job.source_terms_url||'';$('sourcePermissionStatus').value=job.source_permission_status||'pending_review';
+ $('verificationStatus').value=job.verification_status||'pending';$('publishJob').checked=!!job.is_published;
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+async function loadJobs(){
+ const list=$('jobList');list.replaceChildren();const {data,error}=await supabase.from('kagzi_private_jobs').select('id,company_name,job_title,region,location,verification_status,is_published,last_date,salary_disclosure').order('created_at',{ascending:false}).limit(100);
+ if(error){list.textContent='Jobs लोड नहीं हुईं: '+error.message;return;}
+ if(!data?.length){list.textContent='अभी कोई Job record नहीं है।';return;}
+ for(const job of data){
+  const row=document.createElement('div');row.className='record';
+  const text=document.createElement('span');text.textContent=job.company_name+' · '+job.job_title+' · '+job.region+' · '+job.verification_status+' · '+(job.is_published?'Published':'Draft')+' · '+(job.last_date||'No deadline');
+  const actions=document.createElement('div');
+  const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='Edit';edit.addEventListener('click',()=>fillJob(job));
+  const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Close Job';close.disabled=!job.is_published;
+  close.addEventListener('click',async()=>{
+   if(!confirm('इस Job को public list से बंद करें? Record audit के लिए सुरक्षित रहेगा।'))return;
+   close.disabled=true;
+   const {error}=await supabase.from('kagzi_private_jobs').update({is_published:false,verification_status:'withheld',updated_at:new Date().toISOString()}).eq('id',job.id);
+   if(error){setStatus('jobStatus','Job बंद नहीं हुई: '+error.message);close.disabled=false;return;}
+   setStatus('jobStatus','Job public list से बंद कर दी गई है; record सुरक्षित है।');await loadJobs();
+  });
+  actions.append(edit,close);row.append(text,actions);list.append(row);
+ }
+}
+$('refreshJobs').addEventListener('click',loadJobs);
+$('sourceForm').addEventListener('submit',async event=>{
+ event.preventDefault();$('saveSource').disabled=true;setStatus('sourceStatus','Company source सेव हो रहा है…');
+ try{
+  const careers=httpsUrl($('careersUrl').value.trim());if(!careers)throw new Error('Careers URL HTTPS होना चाहिए।');
+  const terms=$('termsUrl').value.trim()?httpsUrl($('termsUrl').value.trim()):null;if($('termsUrl').value.trim()&&!terms)throw new Error('Terms URL HTTPS होना चाहिए।');
+  const permission=$('permissionStatus').value,auto=$('automatedFetchAllowed').checked,republish=$('republishAllowed').checked;
+  if(auto&&!['automated_fetch_allowed','republish_allowed'].includes(permission))throw new Error('Automated fetch के लिए source terms में अनुमति दर्ज होना आवश्यक है।');
+  if(republish&&permission!=='republish_allowed')throw new Error('Republishing के लिए स्पष्ट republish permission आवश्यक है।');
+  const payload={company_name:$('sourceCompany').value.trim(),publisher:$('sourcePublisher').value.trim(),careers_url:careers,source_type:$('sourceType').value,terms_url:terms,permission_status:permission,automated_fetch_allowed:auto,republish_allowed:republish,attribution_required:true,check_frequency:$('checkFrequency').value,is_active:true,admin_notes:$('adminNotes').value.trim(),created_by:adminUser.id,updated_at:new Date().toISOString()};
+  const {error}=await supabase.from('kagzi_private_job_sources').insert(payload);if(error)throw error;
+  setStatus('sourceStatus','Company source registry में सेव हो गया।');$('sourceForm').reset();await loadSources();
+ }catch(error){setStatus('sourceStatus','सेव नहीं हुआ: '+error.message);}finally{$('saveSource').disabled=false;}
+});
+async function loadSources(){
+ const list=$('sourceList');list.replaceChildren();const {data,error}=await supabase.from('kagzi_private_job_sources').select('company_name,careers_url,permission_status,check_frequency,automated_fetch_allowed').order('company_name').limit(100);
+ if(error){list.textContent='Source list लोड नहीं हुई: '+error.message;return;}
+ if(!data?.length){list.textContent='अभी company career sources नहीं जोड़े गए हैं।';return;}
+ for(const source of data){const row=document.createElement('div');row.className='record';const text=document.createElement('span');text.textContent=source.company_name+' · '+source.permission_status+' · '+source.check_frequency+' · '+(source.automated_fetch_allowed?'Auto fetch permitted':'Manual only');const link=document.createElement('a');link.href=source.careers_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open official page ↗';row.append(text,link);list.append(row);}
+}
+$('logoutBtn').addEventListener('click',async()=>{await supabase.auth.signOut();location.replace('auth.html?mode=login');});
+checkAdmin();
+</script>
+</body></html>

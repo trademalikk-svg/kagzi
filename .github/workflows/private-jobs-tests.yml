@@ -1,0 +1,40 @@
+name: KAGZI Private Jobs Tests
+
+on:
+  pull_request:
+    paths:
+      - "private-jobs.html"
+      - "private-jobs-admin.html"
+      - "private-jobs.js"
+      - "private-jobs.css"
+      - "supabase/migrations/*private_jobs*.sql"
+      - "tests/private-jobs.test.mjs"
+      - ".github/kagzi-html-pages.json"
+      - "index.html"
+      - "package.json"
+  push:
+    branches: [main]
+    paths:
+      - "private-jobs.html"
+      - "private-jobs-admin.html"
+      - "private-jobs.js"
+      - "private-jobs.css"
+      - "supabase/migrations/*private_jobs*.sql"
+      - "tests/private-jobs.test.mjs"
+      - ".github/kagzi-html-pages.json"
+      - "index.html"
+      - "package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run Private Jobs regression tests
+        run: node --test tests/private-jobs.test.mjs
