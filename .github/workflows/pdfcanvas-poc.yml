@@ -4038,7 +4038,9 @@ jobs:
         env:
           PDF_RUNTIME_SYNC: auto
           PDF_RUNTIME_TARGET_OS_LIST: emscripten
-        run: scripts/embedpdf-runtime/ensure-deps.sh
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          scripts/embedpdf-runtime/ensure-deps.sh
 
       - name: Apply nested Form dirty-stream API prototype
         run: |
@@ -4047,7 +4049,9 @@ jobs:
 
       - name: Build patched PDFium WASM static library
         working-directory: vendor/embedpdf-runtime
-        run: scripts/embedpdf-runtime/build-target.sh wasm32
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          scripts/embedpdf-runtime/build-target.sh wasm32
 
       - name: Verify prototype symbol in compiled runtime
         working-directory: vendor/embedpdf-runtime
@@ -4061,6 +4065,7 @@ jobs:
       - name: Link and run nested Form dirty API WASM smoke test
         working-directory: vendor/embedpdf-runtime
         run: |
+          source third_party/emsdk/emsdk_env.sh
           em++ "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
             -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
             out/embedpdf-runtime/wasm32/obj/libembedpdf.a \
