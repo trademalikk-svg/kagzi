@@ -161,3 +161,21 @@ This points to dirty propagation at each Form-object level as the missing serial
 
 The probe remains isolated to the experiment workflow and does not alter the editor runtime or production branch.
 
+
+## Exact pinned PDFium dirty-propagation source audit (2026-11-07)
+
+The dependency chain is now resolved to the source revision used to build the exact locked WASM package:
+
+- `pdfcanvas@0.9.0` resolves `@embedpdf/pdfium@2.15.1` in its lockfile.
+- The `@embedpdf/pdfium@2.15.1` release metadata points to `embedpdf/runtime` commit `42388d3b4c9895d6672f5da357b1429678a0994c`.
+- In that exact runtime source, `FPDFFormObj_RemoveObject` calls `cform_page_object->SetDirty(true)` after removing the child. This marks the Form object that directly owns the removed child; it does not walk and dirty every ancestor Form object.
+- In the same pinned source, `CPDF_PageContentGenerator::ProcessForm` checks `form_xobject->HasDirtyStreams()` and regenerates the Form content stream when dirty. The containing page/Form must itself be processed for that check to run.
+
+This source-level explanation matches the fixture evidence: removal dirties the Form containing the child, while the containing page-level Form also needs a dirty trigger so the serializer reaches the nested Form and regenerates its stream. The diagnostic active-state toggle in the fixture is only a test probe; it is not approved as a production API strategy.
+
+The isolated PDFcanvas workflow now checks out the exact runtime source commit and asserts these implementation details on each experiment-branch run. This is a source-regression guard, not proof that all nested Forms, resources, clipping combinations, or real-world PDFs are supported. General Form XObject editing remains disabled.
+
+Pinned source references:
+- https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/fpdfsdk/fpdf_editpage.cpp
+- https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/core/fpdfapi/edit/cpdf_pagecontentgenerator.cpp
+- https://github.com/embedpdf/embed-pdf-viewer/blob/176ec6daac51458c9e80733b9c92a66a3bc5e2d1/packages/engine/runtime/engine-runtime-build.json
