@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="KAGZI की Paid PDF Library — पहले Login करें, फिर सुरक्षित भुगतान करके अपनी PDF खोलें।">
+<meta name="theme-color" content="#111a35">
+<title>KAGZI · Paid PDF Library</title>
+<style>
+:root{--ink:#172033;--muted:#68748a;--line:#e4e9f2;--bg:#f4f6fb;--blue:#315efb;--navy:#111a35;--green:#087443}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,"Noto Sans Devanagari",sans-serif}
+header{background:var(--navy);color:#fff;padding:16px 0}header a{color:#d7dcff;text-decoration:none}.wrap{width:min(1000px,calc(100% - 28px));margin:auto}
+.hero{padding:30px 0 18px}.eyebrow{font-size:11px;letter-spacing:1.4px;font-weight:900;color:#9b741e}.hero h1{font-size:clamp(28px,5vw,40px);line-height:1.2;margin:7px 0}.muted{color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.step,.item,.empty{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px}.step b{display:block;color:#19366c}.step small{color:var(--muted)}
+.notice{padding:13px 15px;background:#edf2ff;border-left:4px solid var(--blue);border-radius:10px;font-size:13px;margin:16px 0}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:18px 0}.item h2{font-size:19px;margin:3px 0 6px}.price{font-size:22px;font-weight:900;color:#102b61}.item p{color:var(--muted);font-size:14px}.buy,.secondary{display:inline-block;border:0;border-radius:10px;padding:10px 15px;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.buy{background:var(--blue);color:#fff}.secondary{background:#e8edfa;color:#263b75}.buy:disabled{opacity:.55;cursor:wait}.meta{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.empty{grid-column:1/-1;color:var(--muted)}footer{padding:25px 0;color:var(--muted);font-size:12px}
+@media(max-width:650px){.steps{grid-template-columns:1fr}.list{grid-template-columns:1fr}.hero{padding-top:22px}}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+</head>
+<body>
+<header><div class="wrap"><b>KAGZI · PAID PDF LIBRARY</b>　<a href="/">← Home</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">PRIVATE PDF COLLECTION</div><h1>Paid PDF Library</h1><p class="muted">अपनी जरूरत की PDF चुनें। पहले अकाउंट में Login करें, फिर भुगतान करें। Payment verify होने के बाद PDF आपकी My Paid Library में उपलब्ध होगी।</p>
+<div class="actions"><a class="secondary" href="/auth.html?redirect=paid-library.html">Login / Signup</a><a class="secondary" href="/current-affairs/my-library.html">My Paid Library</a></div></section>
+<section class="steps" aria-label="खरीदने की प्रक्रिया">
+<div class="step"><b>1 · Login / Signup</b><small>पहले KAGZI अकाउंट में प्रवेश करें।</small></div>
+<div class="step"><b>2 · Secure Payment</b><small>Razorpay के सुरक्षित checkout से भुगतान करें।</small></div>
+<div class="step"><b>3 · Verified PDF Access</b><small>Payment verify होने पर PDF Library में खुलेगी।</small></div>
+</section>
+<p class="notice" role="note">Payment verify होने से पहले PDF का private download link जारी नहीं होगा। Payment असफल या अधूरा रहने पर access नहीं मिलेगा।</p>
+<p id="status" class="notice" role="status">Paid PDFs लोड हो रही हैं…</p>
+<section id="catalogue" class="list" aria-live="polite"></section>
+</main>
+<footer><div class="wrap">© 2026 KAGZI · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a></div></footer>
+<script type="module">
+import { supabase } from "./kagzi-supabase.js";
+const statusEl=document.getElementById("status"),catalogue=document.getElementById("catalogue");
+const say=value=>statusEl.textContent=value;
+let resources=[];
+let signedInUser=null;
+let sessionToken=null;
+function cardFor(resource,owned){
+ const card=document.createElement("article");card.className="item";
+ const title=document.createElement("h2");title.textContent=resource.title;
+ const description=document.createElement("p");description.textContent=resource.description||"KAGZI की सुरक्षित PDF edition";
+ const price=document.createElement("div");price.className="price";price.textContent="₹"+resource.price_inr;
+ const meta=document.createElement("div");meta.className="meta";meta.textContent="INR · Secure checkout";
+ const button=document.createElement("button");button.type="button";button.className=owned?"secondary":"buy";button.textContent=owned?"पहले खरीदी गई · My Library खोलें":"पहले Login करें / खरीदें";
+ button.addEventListener("click",()=>owned?location.assign("/current-affairs/my-library.html"):beginPurchase(resource,button));
+ card.append(title,description,price,meta,button);return card;
+}
+async function load(){
+ catalogue.replaceChildren();say("Paid PDFs लोड हो रही हैं…");
+ try{
+  const [{data:{user},error:authError},{data,error}] = await Promise.all([
+   supabase.auth.getUser(),
+   supabase.from("kagzi_paid_resources").select("id,title,description,price_inr,is_active,created_at").eq("is_active",true).gt("price_inr",0).order("created_at",{ascending:false})
+  ]);
+  if(authError)throw authError;if(error)throw error;
+  signedInUser=user||null;
+  if(user){const session=await supabase.auth.getSession();sessionToken=session.data.session?.access_token||null;}
+  const {data:ownedRows,error:ownedError}=user?await supabase.from("kagzi_paid_entitlements").select("resource_id,status,expires_at").eq("user_id",user.id).eq("status","active"): {data:[],error:null};
+  if(ownedError)throw ownedError;
+  const now=Date.now(),owned=new Set((ownedRows||[]).filter(x=>!x.expires_at||new Date(x.expires_at).getTime()>now).map(x=>x.resource_id));
+  resources=data||[];
+  if(!resources.length){catalogue.innerHTML='<div class="empty">अभी कोई Paid PDF प्रकाशित नहीं है। Admin द्वारा PDF अपलोड होने पर यहाँ दिखाई देगी।</div>';say("Catalogue तैयार है। अभी खरीदने योग्य PDF उपलब्ध नहीं है।");return;}
+  resources.forEach(resource=>catalogue.append(cardFor(resource,owned.has(resource.id))));
+  const requested=new URLSearchParams(location.search).get("resource");
+  if(requested){const item=resources.find(x=>x.id===requested);if(item){const target=[...catalogue.children][resources.indexOf(item)];target?.scrollIntoView({behavior:"smooth",block:"center"});}}
+  say(resources.length+" Paid PDF edition उपलब्ध हैं।");
+ }catch(error){say(error.message||"Paid PDF catalogue लोड नहीं हुआ।");}
+}
+function loadRazorpay(){
+ return new Promise((resolve,reject)=>{
+  if(window.Razorpay){resolve(true);return;}
+  const script=document.createElement("script");script.src="https://checkout.razorpay.com/v1/checkout.js";script.onload=()=>resolve(true);script.onerror=()=>reject(new Error("Secure payment window लोड नहीं हुआ।"));document.head.append(script);
+ });
+}
+async function beginPurchase(resource,button){
+ if(!signedInUser||!sessionToken){
+  const redirect="/paid-library.html?resource="+encodeURIComponent(resource.id);
+  location.assign("/auth.html?mode=login&redirect="+encodeURIComponent(redirect));return;
+ }
+ button.disabled=true;button.textContent="Payment order बनाया जा रहा है…";
+ try{
+  const create=await fetch("/api/payments/create-order",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+sessionToken},body:JSON.stringify({resource_id:resource.id})});
+  const order=await create.json();if(!create.ok)throw new Error(order.error||"Payment order नहीं बन पाया।");
+  await loadRazorpay();
+  const checkout=new window.Razorpay({
+   key:order.key_id,amount:order.amount,currency:order.currency,name:order.name,description:order.description,order_id:order.order_id,
+   prefill:{email:signedInUser.email||""},theme:{color:"#315efb"},
+   handler:async response=>{
+    button.textContent="Payment verify हो रहा है…";
+    try{
+     const verified=await fetch("/api/payments/verify",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+sessionToken},body:JSON.stringify(response)});
+     const result=await verified.json();if(!verified.ok||!result.verified)throw new Error(result.error||"Payment verify नहीं हुआ।");
+     say("Payment verify हो गया। आपकी PDF अब My Paid Library में उपलब्ध है।");
+     location.assign("/current-affairs/my-library.html");
+    }catch(error){say(error.message||"Payment verification pending है। Refresh करके My Paid Library देखें।");button.disabled=false;button.textContent="Payment फिर जाँचें";}
+   },
+   modal:{ondismiss:()=>{button.disabled=false;button.textContent="फिर कोशिश करें";}}
+  });
+  checkout.on("payment.failed",event=>{say(event.error?.description||"Payment पूरा नहीं हुआ। PDF access नहीं दिया गया।");button.disabled=false;button.textContent="फिर कोशिश करें";});
+  checkout.open();button.textContent="Payment window खुला है…";
+ }catch(error){say(error.message||"Checkout अभी उपलब्ध नहीं है।");button.disabled=false;button.textContent="फिर कोशिश करें";}
+}
+load();
+</script>
+</body></html>
