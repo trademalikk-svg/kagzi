@@ -8,6 +8,7 @@ on:
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
       - "tests/pdf-ocr.test.mjs"
+      - "tests/pdf-scanner.test.mjs"
       - "pdf-export.js"
       - "tests/pdf-export.test.mjs"
       - "pdf-editor.html"
@@ -29,6 +30,7 @@ on:
       - "pdf-ocr.js"
       - "pdf-scanner.js"
       - "tests/pdf-editor-workspace.test.mjs"
+      - "tests/pdf-scanner.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -54,6 +56,8 @@ jobs:
         run: node --check pdf-editor-workspace.js
       - name: Test multilingual OCR worker behavior
         run: node --test tests/pdf-ocr.test.mjs
+      - name: Test camera startup and retry behavior
+        run: node --test tests/pdf-scanner.test.mjs
       - name: Test safe PDF export behavior
         run: node --test tests/pdf-export.test.mjs
       - name: Check PDF export helper syntax
@@ -68,7 +72,7 @@ jobs:
         run: node --check image-text-editor.js
       - name: Test image OCR line normalization
         run: node --test tests/image-text-editor.test.mjs
-      - name: Check server adapter JavaScript syntax
+      - name: Check server adapter syntax
         run: node --check pdf-server-adapter.js
       - name: Check editor page references
         run: |
