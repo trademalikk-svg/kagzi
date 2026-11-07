@@ -3343,7 +3343,7 @@ jobs:
               }
               return { width: item.width, height: item.height };
             } finally {
-              await pdf.destroy();
+              await loadingTask.destroy();
             }
           }
 
