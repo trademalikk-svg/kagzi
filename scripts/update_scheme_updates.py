@@ -70,8 +70,11 @@ def fetch():
         return res.read(5_000_000)
 def main():
     incoming=parse_feed(fetch())
+    if not incoming:
+        print("No new scheme-related official PIB releases; keeping the previous archive unchanged.")
+        return
     result=update(incoming)
-    print(f"Published {len(incoming)} new/updated official scheme-related PIB entries; {len(result['items'])} retained.")
+    print(f"Published {len(incoming)} official scheme-related PIB entries; {len(result['items'])} retained.")
 if __name__=="__main__":
     try: main()
     except Exception as exc:
