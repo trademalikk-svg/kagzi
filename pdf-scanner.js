@@ -32,6 +32,7 @@ async function openCamera(){
   if(requestId!==cameraRequestId){acquiredStream.getTracks().forEach(track=>track.stop());return;}
   stream=acquiredStream;
   video.srcObject=stream;video.hidden=false;await video.play();
+  if(requestId!==cameraRequestId)return;
   byId('captureScan').disabled=false;byId('closeCameraScanner').disabled=false;
   status('Camera ready. Place the page in view and tap Capture page.');
  }catch(error){
