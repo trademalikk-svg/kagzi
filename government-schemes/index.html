@@ -166,4 +166,4 @@ function run(){let shown=0;const query=q.value.trim().toLocaleLowerCase(),catego
 q.addEventListener("input",run);cat.addEventListener("change",run);stateSelect.addEventListener("change",run);document.getElementById("clearSearch").addEventListener("click",()=>{q.value="";cat.value="";stateSelect.value="";scope="all";scopeButtons.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.scope==="all")));run()});scopeButtons.forEach(b=>b.addEventListener("click",()=>{scope=b.dataset.scope;scopeButtons.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));run()}));run();
 })();
 </script>
-</body></html>
+<script src="scheme-ai-voice.js"></script></body></html>
