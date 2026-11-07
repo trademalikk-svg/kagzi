@@ -8,7 +8,8 @@
 #include "public/fpdf_save.h"
 #include "public/fpdf_text.h"
 
-extern int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
+extern "C" {
+int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
                                  uint32_t pdf_size,
                                  int page_index,
                                  const uint32_t* target,
@@ -17,7 +18,8 @@ extern int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
                                  uint32_t replacement_length,
                                  unsigned char** output_bytes,
                                  uint32_t* output_size);
-extern void kagzi_pdf_free(unsigned char* bytes);
+void kagzi_pdf_free(unsigned char* bytes);
+}
 
 #define PDF_CAPACITY 8192
 #define OUTPUT_CAPACITY 16384
