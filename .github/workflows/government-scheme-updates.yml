@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Test scheme update parser
-        run: python -m unittest tests.test_scheme_updates
+        run: python -m unittest discover -s tests -p 'test_scheme_updates.py'
       - name: Collect official PIB scheme releases
         run: python scripts/update_scheme_updates.py
       - name: Commit updated scheme feed
