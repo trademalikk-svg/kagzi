@@ -47,14 +47,14 @@ jobs:
           const editEnd = editSource.indexOf('\n}', editStart);
           assert.notEqual(editEnd, -1, 'could not isolate FPDFFormObj_RemoveObject implementation');
           const removeBody = editSource.slice(editStart, editEnd);
-          assert.match(removeBody, /cform_page_object->SetDirty\\(true\\);/, 'removal must dirty the Form object that owns the removed child');
+          assert.ok(removeBody.includes('cform_page_object->SetDirty(true);'), 'removal must dirty the Form object that owns the removed child');
 
           const generatorSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/edit/cpdf_pagecontentgenerator.cpp', 'utf8');
           const formStart = generatorSource.indexOf('void CPDF_PageContentGenerator::ProcessForm(');
           assert.notEqual(formStart, -1, 'pinned runtime must contain ProcessForm');
           const formBody = generatorSource.slice(formStart, formStart + 2200);
-          assert.match(formBody, /form_xobject->HasDirtyStreams\\(\\)/, 'Form serialization must check dirty streams before reusing its XObject');
-          assert.match(formBody, /form_content_generator\\.GenerateContent\\(\\)/, 'dirty Form content must be regenerated');
+          assert.ok(formBody.includes('form_xobject->HasDirtyStreams()'), 'Form serialization must check dirty streams before reusing its XObject');
+          assert.ok(formBody.includes('form_content_generator.GenerateContent()'), 'dirty Form content must be regenerated');
 
           console.log(JSON.stringify({
             result: 'PINNED_SOURCE_AUDIT_PASS',
