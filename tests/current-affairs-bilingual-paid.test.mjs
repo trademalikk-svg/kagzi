@@ -36,3 +36,14 @@ test('English paid monthly/yearly source content is explicitly marked incomplete
   assert.match(source, /calendar month closes/);
   assert.match(source, /after 31 December 2026/);
 });
+
+test('admin paid PDF uploader targets private storage and validates the file', () => {
+  const admin = read('current-affairs/admin.html');
+  assert.match(admin, /supabase\.storage\.from\("kagzi-paid-pdfs"\)\.upload/);
+  assert.match(admin, /supabase\.from\("kagzi_paid_resources"\)\.insert/);
+  assert.match(admin, /file\.size>50\*1024\*1024/);
+  assert.match(admin, /file\.type!=="application\/pdf"/);
+  assert.match(admin, /kagzi_library_admins/);
+  assert.doesNotMatch(admin, /createPublicUrl/);
+  assert.match(admin, /paidUploadPanel/);
+});
