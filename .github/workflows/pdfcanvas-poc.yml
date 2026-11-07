@@ -2620,6 +2620,22 @@ jobs:
             }
           }
 
+          const countInk = (rendered, band) => {
+            let count = 0;
+            for (let y = 0; y < rendered.height; y += 1) {
+              for (let x = 0; x < rendered.width; x += 1) {
+                if (!pixelIntersectsRect(x, y, band)) continue;
+                const p = (y * rendered.width + x) * 4;
+                if (rendered.pixels[p] < 250 || rendered.pixels[p + 1] < 250 || rendered.pixels[p + 2] < 250) count += 1;
+              }
+            }
+            return count;
+          };
+          const beforeInkInFirstRegion = countInk(before, firstRegionBand);
+          const beforeInkInSecondRegion = countInk(before, secondRegionBand);
+          const afterInkInFirstRegion = countInk(after, firstRegionBand);
+          const afterInkInSecondRegion = countInk(after, secondRegionBand);
+
           const report = {
             result: changedInFirstRegion > 0 && changedInSecondRegion > 0 &&
               changedOutsideClip === 0 && changedControl === 0
@@ -2628,6 +2644,10 @@ jobs:
             fixture: 'identity Form; two disjoint rectangular subpaths reproduced around page-level overlay',
             changedPixelsInFirstRegion: changedInFirstRegion,
             changedPixelsInSecondRegion: changedInSecondRegion,
+            beforeInkInFirstRegion,
+            beforeInkInSecondRegion,
+            afterInkInFirstRegion,
+            afterInkInSecondRegion,
             changedPixelsOutsideCompoundClip: changedOutsideClip,
             pdfJsTargetTextBand: Object.fromEntries(Object.entries(targetBand).map(([key, value]) => [key, Math.round(value * 100) / 100])),
             unrelatedControlPixelsChanged: changedControl,
