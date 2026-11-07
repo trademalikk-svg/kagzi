@@ -4098,11 +4098,13 @@ jobs:
         run: |
           source third_party/emsdk/emsdk_env.sh
           em++ "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
+            "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" \
             -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
             out/embedpdf-runtime/wasm32/obj/libembedpdf.a \
             -o "$RUNNER_TEMP/nested-form-dirty-api-smoke.js" \
             -sMODULARIZE=1 \
-            -sEXPORTED_FUNCTIONS='["_main","_FPDFFormObj_MarkObjectDirty"]' \
+            -sALLOW_MEMORY_GROWTH=1 \
+            -sEXPORTED_FUNCTIONS='["_main","_FPDFFormObj_MarkObjectDirty","_kagzi_pdf_replace_text","_kagzi_pdf_free","_malloc","_free"]' \
             -sEXPORTED_RUNTIME_METHODS='["ccall"]'
           node -e 'const createModule = require(process.argv[1]); Promise.resolve(typeof createModule === "function" ? createModule() : createModule).then(m => { const result = m.ccall("main", "number", [], []); if (result !== 0) { console.error("Nested Form Save/Reopen test failed with code " + result); process.exit(1); } console.log("WASM API linked; nested replacement survived Save/Reopen; original text removed; page control preserved"); }).catch(error => { console.error(error); process.exit(1); });' \
             "$RUNNER_TEMP/nested-form-dirty-api-smoke.js"
