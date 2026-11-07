@@ -14,8 +14,11 @@ header{background:#111a35;color:#fff;padding:16px 0}header a{color:#d7dcff;text-
 .list{display:grid;gap:12px;margin:18px 0}.item{background:white;border:1px solid var(--line);border-radius:15px;padding:17px}.item h2{font-size:19px;margin:4px 0}.meta{font-size:13px;color:var(--muted)}.download{display:inline-block;margin-top:12px;background:var(--green);color:#fff;padding:9px 13px;border-radius:9px;text-decoration:none;font-weight:800}.empty{padding:22px;background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--muted)}
 footer{padding:24px 0;color:var(--muted);font-size:12px}
 </style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
 </head>
-<body>
+<body data-kagzi-protected="true">
 <header><div class="wrap"><b>KAGZI · MY LIBRARY</b>　<a href="./">← Current Affairs</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="muted">YOUR ACCOUNT · PRIVATE DOWNLOADS</div><h1>मेरी Paid Library</h1><p class="muted">यहाँ केवल आपके खाते को दिए गए Paid PDFs दिखाई देंगे।</p></section>

@@ -1,6 +1,9 @@
 <!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071735"><title>KAGZI Document Studio</title><meta name="description" content="KAGZI unified local and server document workspace for PDF, images, OCR, scanner, Word, PowerPoint and spreadsheets."><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="document-studio.css"></head>
-<body><header class="ds-top"><a href="index.html" class="ds-brand"><span>K</span><b>KAGZI</b><small>DOCUMENT STUDIO</small></a><nav><a href="index.html">Home</a><a href="modules.html">All tools</a></nav></header>
+<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071735"><title>KAGZI Document Studio</title><meta name="description" content="KAGZI unified local and server document workspace for PDF, images, OCR, scanner, Word, PowerPoint and spreadsheets."><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="document-studio.css"><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
+</head>
+<body data-kagzi-protected="true"><header class="ds-top"><a href="index.html" class="ds-brand"><span>K</span><b>KAGZI</b><small>DOCUMENT STUDIO</small></a><nav><a href="index.html">Home</a><a href="modules.html">All tools</a></nav></header>
 <main class="ds-wrap"><section class="ds-hero"><p class="ds-kicker">ONE WORKSPACE · MANY FORMATS</p><h1>Document Studio</h1><p>PDF, photos, scanned pages and Office documents — choose a tool and work in one place.</p>
 <div class="ds-mode" role="group" aria-label="Processing mode"><button type="button" class="selected" data-mode="local" aria-pressed="true">Local Mode</button><button type="button" data-mode="server" aria-pressed="false">Server Mode</button></div><p id="modeStatus" class="ds-status" aria-live="polite">Local Mode: files stay in this browser unless you explicitly choose a server feature.</p></section>
 <section class="ds-grid" aria-label="Document tools">

@@ -3,6 +3,8 @@ name: KAGZI Current Affairs Tests
 on:
   pull_request:
     paths:
+      - "auth-guard.js"
+      - ".github/kagzi-html-pages.json"
       - "current-affairs/**"
       - "scripts/update_current_affairs.py"
       - "tests/**"
@@ -11,6 +13,8 @@ on:
   push:
     branches: [main]
     paths:
+      - "auth-guard.js"
+      - ".github/kagzi-html-pages.json"
       - "current-affairs/**"
       - "scripts/update_current_affairs.py"
       - "tests/**"

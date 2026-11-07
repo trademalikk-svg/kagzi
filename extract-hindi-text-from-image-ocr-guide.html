@@ -17,8 +17,11 @@ h2,h3{color:var(--navy);line-height:1.3}.btn{display:inline-block;background:var
 footer{background:#061947;color:#dce6f8;padding:24px;text-align:center}footer a{color:#ffdb72;margin:0 9px}
 .lang-hi{border-top:1px dashed #ccd8eb;margin-top:22px;padding-top:18px}.small{font-size:14px;color:#53627a}
 @media(max-width:600px){header{gap:12px;padding:14px}header .brand{width:100%}main{padding:14px 12px 32px}.hero,.panel{padding:19px}}
-</style></head>
-<body><header><a class="brand" href="/">KAGZI</a><a href="/pdf-tools">PDF Tools</a><a href="/photo-tools">Photo Tools</a><a href="/modules">All Tools</a></header>
+</style><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
+</head>
+<body data-kagzi-protected="true"><header><a class="brand" href="/">KAGZI</a><a href="/pdf-tools">PDF Tools</a><a href="/photo-tools">Photo Tools</a><a href="/modules">All Tools</a></header>
 <main><section class="hero"><div class="eyebrow">OCR · IMAGE TO TEXT · HINDI + ENGLISH GUIDE</div><h1>How to Extract Hindi and English Text from an Image (OCR) | KAGZI</h1><p>OCR (optical character recognition) can turn visible words in a photo or scan into editable text. This guide explains how to prepare an image, select Hindi and English recognition and review the extracted result.</p><a class="btn" href="/image-text-editor.html">Open KAGZI Image Text Editor</a><a class="btn secondary" href="/modules">Explore KAGZI tools</a><p class="small">Feature note: Follow the current controls and privacy notice shown inside the tool. Keep an original copy of important files.</p></section>
 <section class="panel"><h2>What is OCR?</h2><p>OCR software analyses the shapes in an image and attempts to recognise letters, numbers and words. It is useful for printed notices, forms, book pages and scanned documents. OCR is not a perfect copy process: low resolution, unusual fonts, shadows, handwriting and mixed scripts can cause recognition errors.</p></section>
 <section class="panel"><h2>Prepare an image for better recognition</h2><ul><li>Use a sharp image with readable text and enough light.</li><li>Keep the page straight and avoid perspective distortion.</li><li>Crop out unrelated background while keeping punctuation and line endings.</li><li>Choose an image where text contrasts clearly with the background.</li><li>For Hindi and English on the same page, select a combined language option when available.</li></ul><p class="note"><strong>Accuracy tip:</strong> A clear, high-resolution printed page is usually easier to recognise than a blurred photo or handwriting. Always proofread names, dates, amounts and official identifiers.</p></section>
