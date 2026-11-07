@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -180,6 +181,10 @@ static int kagzi_utf32_to_utf16(const uint32_t* input,
  * target/replacement are Unicode scalar arrays (UTF-32 code points).
  * The function only edits a complete, uniquely matched PDF text object.
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
                            uint32_t pdf_size,
                            int page_index,
@@ -190,11 +195,19 @@ int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
                            unsigned char** output_bytes,
                            uint32_t* output_size) {
   if (!pdf_bytes || !pdf_size || page_index < 0 || !target || !target_length ||
-      !replacement || !replacement_length || !output_bytes || !output_size) {
+      target_length > INT_MAX || !replacement || !replacement_length ||
+      replacement_length > INT_MAX || !output_bytes || !output_size) {
     return -1;
   }
   *output_bytes = NULL;
   *output_size = 0;
+
+  for (uint32_t i = 0; i < target_length; ++i) {
+    if (target[i] > 0x10FFFF ||
+        (target[i] >= 0xD800 && target[i] <= 0xDFFF)) {
+      return -1;
+    }
+  }
 
   unsigned short* replacement_utf16 = NULL;
   size_t replacement_utf16_length = 0;
@@ -296,7 +309,9 @@ int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
     return -9;
   }
 
-  KagziSaveBuffer save = {{1, kagzi_save_block}, NULL, 0, 0, 0};
+  KagziSaveBuffer save = {0};
+  save.base.version = 1;
+  save.base.WriteBlock = kagzi_save_block;
   const FPDF_BOOL saved =
       FPDF_SaveAsCopy(document, &save.base, FPDF_NO_INCREMENTAL);
   FPDF_ClosePage(page);
@@ -316,3 +331,7 @@ int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
 void kagzi_pdf_free(unsigned char* bytes) {
   free(bytes);
 }
+
+#ifdef __cplusplus
+}
+#endif
