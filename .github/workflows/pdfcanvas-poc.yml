@@ -3284,6 +3284,84 @@ jobs:
           }, null, 2));
           NODE
 
+      - name: Verify local Form font resources shadow conflicting page aliases
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, PDFName } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+          import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const fontKey = PDFName.of('Font');
+          const sentinel = 'Local Form font must win over page alias';
+
+          async function makeFixture(withCollision) {
+            const source = await PDFDocument.create();
+            const localFont = await source.embedFont(StandardFonts.Helvetica);
+            const sourcePage = source.addPage([612, 792]);
+            sourcePage.drawText(sentinel, { x: 60, y: 700, size: 18, font: localFont });
+
+            const host = await PDFDocument.create();
+            const [form] = await host.embedPages([sourcePage]);
+            const page = host.addPage([612, 792]);
+            page.drawPage(form, { x: 0, y: 0, width: 612, height: 792 });
+            await form.embed();
+
+            if (withCollision) {
+              const formStream = host.context.lookup(form.ref);
+              const formResources = formStream.dict.lookup(PDFName.of('Resources'));
+              const formFonts = formResources.lookup(fontKey);
+              const aliases = formFonts.keys();
+              assert.ok(aliases.length > 0, 'Form must declare at least one local font alias');
+              const collidingAlias = aliases[0];
+
+              const courier = await host.embedFont(StandardFonts.Courier);
+              page.drawText('page resource control', { x: 60, y: 650, size: 10, font: courier });
+              const pageFonts = page.node.Resources().lookup(fontKey);
+              assert.ok(pageFonts, 'control text must create page-level font resources');
+              pageFonts.set(collidingAlias, courier.ref);
+            }
+            return new Uint8Array(await host.save({ useObjectStreams: true }));
+          }
+
+          async function measure(bytes) {
+            const pdf = await pdfjs.getDocument({ data: bytes, useSystemFonts: true }).promise;
+            try {
+              const page = await pdf.getPage(1);
+              const content = await page.getTextContent();
+              const item = content.items.find(item => typeof item.str === 'string' && item.str.includes(sentinel));
+              assert.ok(item, 'PDF.js must discover the Form text sentinel');
+              const engine = await PdfiumTextEngine.create(wasm, bytes);
+              try {
+                const pdfiumText = engine.readPage(0, 0).map(run => run.text).join(' | ');
+                assert.ok(pdfiumText.includes(sentinel), 'PDFium must discover the Form text sentinel with colliding page alias');
+              } finally {
+                engine.destroy();
+              }
+              return { width: item.width, height: item.height };
+            } finally {
+              await pdf.destroy();
+            }
+          }
+
+          const baseline = await makeFixture(false);
+          const collision = await makeFixture(true);
+          const baselineMetrics = await measure(baseline);
+          const collisionMetrics = await measure(collision);
+          assert.ok(Math.abs(baselineMetrics.width - collisionMetrics.width) < 0.01,
+            'Form-local Helvetica alias must shadow the conflicting page-level Courier alias');
+
+          console.log(JSON.stringify({
+            result: 'FORM_LOCAL_RESOURCE_SHADOWING_PASS',
+            baselineMetrics,
+            collisionMetrics,
+            localAliasShadowedParentAlias: true,
+            interpretation: 'The same font resource name mapped to Courier at page scope did not override the Form-local Helvetica mapping. This verifies only local-over-page font alias precedence for this generated fixture.'
+          }, null, 2));
+          NODE
+
       - name: Compare CropBox coordinates with PDF.js viewport geometry
         working-directory: vendor/pdfcanvas
         run: |
