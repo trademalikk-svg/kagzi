@@ -194,6 +194,8 @@ The isolated CI workflow now tests two generated PDFs with the Form-local `/Reso
 
 CI run #120 completed successfully on commit `665924ef142eb78da79c49941701a7792f1a6dcd`. Both cases returned the exact sentinel text after PDFium parsing.
 
+A follow-up mutation fixture then removed the deepest text object from the nested child Form while that Form inherited its font dictionary from the parent Form. The test marked both Form ancestors dirty using the same fixture-only active-state diagnostic, generated page content, saved, reopened, and verified that the original nested text stayed absent while an unrelated page-level control remained. CI run #126 passed this synthetic deletion round-trip.
+
 **Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
 
 ### Intersecting clipping-path fixture correction (2026-11-07)
