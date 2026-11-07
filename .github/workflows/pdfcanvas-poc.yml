@@ -4097,8 +4097,12 @@ jobs:
         working-directory: vendor/embedpdf-runtime
         run: |
           source third_party/emsdk/emsdk_env.sh
+          # Compile the bridge as C (not C++): its exported ABI uses C linkage.
+          emcc "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" \
+            -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
+            -c -o "$RUNNER_TEMP/kagzi-pdfium-bridge.o"
           em++ "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
-            "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" \
+            "$RUNNER_TEMP/kagzi-pdfium-bridge.o" \
             -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
             out/embedpdf-runtime/wasm32/obj/libembedpdf.a \
             -o "$RUNNER_TEMP/nested-form-dirty-api-smoke.js" \
