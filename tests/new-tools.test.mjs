@@ -45,3 +45,10 @@ test('homepage and sitemap link all three tools',()=>{
   assert.ok(sitemap.includes('https://kagzi-8cy.pages.dev/'+slug),'sitemap '+slug);
  }
 });
+
+test('typing test exposes live speed, time, accuracy, mistakes and Hindi-English modes',()=>{
+ const html=read('hindi-english-typing-tools.html');
+ for(const id of ['typingSpeedTest','testLanguage','testDuration','statWpm','statCpm','statAccuracy','statErrors','statTime','statElapsed','testPassage','typingInput','testProgress','startTypingTest','finishTypingTest','resetTypingTest','typingResult'])assert.ok(html.includes('id="'+id+'"'),'missing typing test control '+id);
+ assert.match(html,/WPM/);assert.match(html,/CPM/);assert.match(html,/setInterval\(tick/);assert.match(html,/function compare\(/);assert.match(html,/function stop\(/);assert.match(html,/Intl\.Segmenter/);
+ assert.match(html,/value="hi"/);assert.match(html,/value="en"/);
+});
