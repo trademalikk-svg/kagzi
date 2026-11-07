@@ -1613,7 +1613,7 @@ jobs:
               if (!mem) return null;
               try {
                 if (!m.FPDFPageObj_GetMatrix(ptr, mem)) return null;
-                return Array.from({ length: 6 }, (_, i) => m.HEAPF32[(mem >> 2) + i]);
+                return Array.from({ length: 6 }, (_, i) => m.pdfium.wasmExports.HEAPF32[(mem >> 2) + i]);
               } finally {
                 m.pdfium.wasmExports.free(mem);
               }
