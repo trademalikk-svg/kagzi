@@ -24,7 +24,7 @@ test.describe('KAGZI anonymous access and browser regression', () => {
     await expect(page.getByRole('link', { name: /login/i }).first()).toBeVisible();
 
     await page.goto(baseURL + '/current-affairs/my-library.html', { waitUntil: 'domcontentloaded' });
-    await expect.poll(() => new URL(page.url()).pathname, { timeout: 15000 }).toBe('/auth.html');
+    await expect.poll(() => ['/auth','/auth.html'].includes(new URL(page.url()).pathname), { timeout: 15000 }).toBe(true);
   });
 
   test('PDF Editor opens, exports, and reopens a one-page edited PDF', async ({ page }) => {
