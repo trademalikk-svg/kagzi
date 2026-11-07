@@ -69,7 +69,7 @@ test('Invoice & GST Bill Maker is a public browser-based tool with printable PDF
  assert.ok(html.includes('name="robots" content="index,follow'));
  assert.ok(html.includes('rel="canonical"'));
  for(const id of ['billType','billNo','billDate','supplyType','sellerName','sellerGstin','customerName','customerGstin','items','addItem','discount','previewItems','previewTotals','printBill','resetBill'])assert.ok(html.includes('id="'+id+'"'),'missing invoice control '+id);
- assert.match(html,/CGST/);assert.match(html,/SGST/);assert.match(html,/IGST/);assert.match(html,/window\\.print\\(\\)/);
+ assert.match(html,/CGST/);assert.match(html,/SGST/);assert.match(html,/IGST/);assert.match(html,/window\.print\(\)/);
  assert.match(html,/function update\\(/);assert.match(html,/addEventListener\\('input',update\\)/);
  const scripts=html.split('<script>');
  for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'invoice-bill-maker.html inline script '+i});}
