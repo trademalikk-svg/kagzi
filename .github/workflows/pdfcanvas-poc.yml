@@ -4047,16 +4047,22 @@ jobs:
           source third_party/emsdk/emsdk_env.sh
           scripts/embedpdf-runtime/ensure-deps.sh
 
-      - name: Apply nested Form dirty-stream API prototype
-        run: |
-          git -C vendor/embedpdf-runtime apply --check "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
-          git -C vendor/embedpdf-runtime apply "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
-
-      - name: Build patched PDFium WASM static library
+      - name: Build pinned PDFium WASM baseline and sync dependencies
         working-directory: vendor/embedpdf-runtime
         run: |
           source third_party/emsdk/emsdk_env.sh
           scripts/embedpdf-runtime/build-target.sh wasm32
+
+      - name: Apply nested Form dirty-stream API after dependency sync
+        run: |
+          git -C vendor/embedpdf-runtime apply --check "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+          git -C vendor/embedpdf-runtime apply "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+
+      - name: Rebuild patched PDFium WASM static library
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          ninja -C out/embedpdf-runtime/wasm32 pdfium
 
       - name: Verify prototype symbol in compiled runtime
         working-directory: vendor/embedpdf-runtime
