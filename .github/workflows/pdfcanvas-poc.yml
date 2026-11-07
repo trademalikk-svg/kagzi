@@ -791,7 +791,7 @@ jobs:
               '',
               'Rendered pixel comparison skipped. Keep Form XObject editing disabled.',
               ''
-            ].join('\\n');
+            ].join('\n');
             const fs = await import('node:fs');
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
             process.exit(0);
