@@ -21,18 +21,21 @@
   if(!document.body||document.body.dataset.kagziProtected!=='true')return;
   if(!await hasSession())location.replace(loginUrl());
  }
- function protectFeatureLinks(){
+ function protectPaidItems(){
   document.addEventListener('click',async function(event){
-   const target=event.target instanceof Element?event.target:null;if(!target)return;
-   const link=target.closest('a[href]'),card=target.closest('.module-card,[data-requires-auth]');
-   if(!link&&!card)return;
-   const href=link?link.getAttribute('href')||'':'';
-   if(!card&&!/^(?:\/?(?:document-library|office|gov-documents|modules|jan-seva|pdf-tools|photo-tools|education|study-material|current-affairs)(?:\.html|\/|#|\?))/.test(href))return;
+   const target=event.target instanceof Element?event.target:null;
+   if(!target)return;
+   const paidItem=target.closest('[data-paid-item]');
+   if(!paidItem)return;
    if(await hasSession())return;
-   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();location.assign(loginUrl());
+   event.preventDefault();
+   event.stopPropagation();
+   event.stopImmediatePropagation();
+   location.assign(loginUrl());
   },true);
  }
  window.KAGZI_AUTH_GUARD={hasSession,loginUrl};
- protectFeatureLinks();
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforcePageGate,{once:true});else enforcePageGate();
+ protectPaidItems();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforcePageGate,{once:true});
+ else enforcePageGate();
 })();
