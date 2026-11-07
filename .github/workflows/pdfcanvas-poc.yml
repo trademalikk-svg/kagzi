@@ -2998,6 +2998,19 @@ jobs:
             await task.destroy();
           }
 
+          assert.ok(
+            Math.abs(pdfjsGeometry.baselineTopLeft[0] - 50) < 0.5,
+            'PDF.js viewport x must account for the 100-point CropBox left offset'
+          );
+          assert.ok(
+            Math.abs(pdfjsGeometry.baselineTopLeft[1] - 50) < 0.5,
+            'PDF.js viewport y must account for the 150-point CropBox bottom offset'
+          );
+          assert.ok(
+            Math.abs(target.x - 50) < 1,
+            'PDFium text-run x must be relative to the CropBox left edge'
+          );
+
           const result = {
             result: 'DIAGNOSTIC',
             fixture: 'non-zero CropBox origin; 400x500 visible region on 612x792 MediaBox',
@@ -3008,8 +3021,9 @@ jobs:
               width: target.w, height: target.h, editable: target.editable
             },
             pdfjsGeometry,
+            pdfiumToViewportXDelta: target.x - pdfjsGeometry.baselineTopLeft[0],
             outsideCropTextDiscovered: Boolean(outside),
-            interpretation: 'Compare PDFium run coordinates against PDF.js viewport geometry before implementing CropBox replacement. A matching text extraction alone is not proof of correct overlay placement.',
+            interpretation: 'PDFium and PDF.js horizontal origins are checked against the known CropBox offset. Vertical glyph-box mapping and overlay placement still require a separate visual regression before editing can be enabled.',
             policy: 'Discovery only; no replacement is attempted and CropBox editing remains disabled.'
           };
           console.log(JSON.stringify(result, null, 2));
@@ -3090,7 +3104,7 @@ jobs:
           | Two disjoint rectangular clip subpaths explicitly reproduced | New PDF.js pixel-diff regression; both regions must change and gap/outside must remain unchanged | Pending CI |
           | Two sequential intersecting rectangular clips explicitly reproduced | New PDF.js pixel-diff regression; intersection changes and all pixels outside remain unchanged | Pending CI |
           | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
-          | CropBox-offset coordinates | PDFium text geometry compared with PDF.js viewport transform; no replacement attempted | Pending CI |
+          | CropBox-offset coordinates | Assert PDFium x and PDF.js viewport origin against known CropBox offsets; vertical glyph-box and overlay placement remain unverified | Pending CI |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
           **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
