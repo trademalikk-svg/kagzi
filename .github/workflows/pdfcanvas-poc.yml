@@ -2210,14 +2210,14 @@ jobs:
             clip(),
             endPath()
           );
-          overlayPage.drawText('Clipped form target must stay clipped', {
+          overlayPage.drawText('Clipped form replacement stays clipped', {
             x: 60, y: 700, size: run.textFontSize, font: overlayFont
           });
           overlayPage.pushOperators(popGraphicsState());
 
           const output = new Uint8Array(await overlayDoc.save());
           const after = await render(output);
-          assert.ok(after.text.includes('Clipped form target must stay clipped'));
+          assert.ok(after.text.includes('Clipped form replacement stays clipped'));
 
           let changedInsideClip = 0;
           let changedOutsideClip = 0;
