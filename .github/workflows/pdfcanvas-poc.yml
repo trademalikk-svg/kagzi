@@ -1239,7 +1239,8 @@ jobs:
           const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
 
           async function render(bytes) {
-            const pdf = await pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true }).promise;
+            const loading = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+          const pdf = await loading.promise;
             try {
               const page = await pdf.getPage(1);
               const viewport = page.getViewport({ scale: 1 });
@@ -1248,7 +1249,7 @@ jobs:
               await page.render({ canvas, canvasContext: context, viewport }).promise;
               return { width: canvas.width, height: canvas.height, pixels: context.getImageData(0, 0, canvas.width, canvas.height).data };
             } finally {
-              await pdf.destroy();
+              await loading.destroy();
             }
           }
 
