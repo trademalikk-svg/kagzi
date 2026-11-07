@@ -25,15 +25,18 @@ def main():
         page=browser.new_page()
         page.goto(SOURCE.as_uri(),wait_until="networkidle")
         style=page.locator("head style").first.evaluate("(el)=>el.outerHTML")
-        for key, selector, title in [
-            ("daily", "#daily-6-nov, #daily-5-nov, #daily-4-nov", "Daily Current Affairs · English Edition"),
-            ("weekly", "#weekly", "Weekly Current Affairs · English Edition"),
-        ]:
-            fragments=page.locator(selector).evaluate_all("(els)=>els.map(el=>el.outerHTML)")
-            if not fragments:
+        selections=[
+            ("daily","#daily-6-nov, #daily-5-nov, #daily-4-nov","Daily Current Affairs · English Edition"),
+            ("weekly","#weekly","Weekly Current Affairs · English Edition"),
+        ]
+        extracted={}
+        for key,selector,title in selections:
+            extracted[key]=page.locator(selector).evaluate_all("(els)=>els.map(el=>el.outerHTML)")
+            if not extracted[key]:
                 raise RuntimeError(f"Missing English {key} section")
+        for key,selector,title in selections:
             cover=f'<section class="cover"><div class="eyebrow">KAGZI · ENGLISH MEDIUM</div><h1>{escape(title)}</h1><p>UPSC · UPPSC · UPSSSC · SSC</p></section>'
-            document=f'<!doctype html><html lang="en"><head><meta charset="utf-8"><style>{style}{PRINT_CSS}</style><title>{escape(title)}</title></head><body><main class="wrap">{cover}{"".join(fragments)}</main></body></html>'
+            document=f'<!doctype html><html lang="en"><head><meta charset="utf-8"><style>{style}{PRINT_CSS}</style><title>{escape(title)}</title></head><body><main class="wrap">{cover}{"".join(extracted[key])}</main></body></html>'
             OUT[key].parent.mkdir(parents=True,exist_ok=True)
             page.set_content(document,wait_until="load")
             page.pdf(path=str(OUT[key]),format="A4",print_background=True,display_header_footer=False)
