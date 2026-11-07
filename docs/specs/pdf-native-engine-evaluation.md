@@ -179,6 +179,23 @@ The CI run on commit `505d47137fe74e026307bced517bab1679bd68ab` completed succes
 
 This is a source-regression guard and one synthetic fixture result, not proof that all nested Forms, resources, clipping combinations, or real-world PDFs are supported. Intersecting nested clipping paths remain blocked; arbitrary resource inheritance and broader preservation still require separate proofs. General Form XObject editing remains disabled.
 
+### Nested Form resource-inheritance follow-up (2026-11-07)
+
+The exact pinned PDFium source was audited for resource resolution:
+
+- `CPDF_Form::ChooseResourcesDict()` selects the Form's own `/Resources` dictionary when present.
+- If the Form has no local resources, it selects the parent Form's resource dictionary; if there is no parent resource dictionary, it falls back to the page resource dictionary.
+- `CPDF_StreamContentParser` passes the local, parent, and page resource dictionaries into this selection path.
+
+The isolated CI workflow now tests two generated PDFs with the Form-local `/Resources` entry deliberately removed and the font dictionary hoisted to the fallback owner:
+
+- **Page-resource fallback:** PDFium successfully discovered the text using the page's font dictionary.
+- **Parent-Form-resource fallback:** PDFium successfully discovered the text through a nested Form using its parent Form's font dictionary.
+
+CI run #120 completed successfully on commit `665924ef142eb78da79c49941701a7792f1a6dcd`. Both cases returned the exact sentinel text after PDFium parsing.
+
+**Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
+
 Pinned source references:
 - https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/fpdfsdk/fpdf_editpage.cpp
 - https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/core/fpdfapi/edit/cpdf_pagecontentgenerator.cpp
