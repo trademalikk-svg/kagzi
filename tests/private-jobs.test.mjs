@@ -113,7 +113,7 @@ test('link-only factual job records may be published with original summaries and
   const sql = read('supabase/migrations/20261107_private_jobs_live_listing.sql');
   assert.ok(sql.includes("source_permission_status in ('link_only','licensed','written_permission')"));
   assert.match(sql, /Senior Associate - Identity and Access Management/);
-  assert.match(sql, /careers\\.npci\\.org\\.in/);
+  assert.ok(sql.includes('careers.npci.org.in'));
   assert.match(sql, /is_published = true/);
   const admin = read('private-jobs-admin.html');
   assert.match(admin, /link_only/);
