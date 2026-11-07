@@ -61,7 +61,7 @@ function createJobCard(job){
   const disclosure=document.createElement('span');disclosure.className='pill '+(job.salary_disclosure==='official'?'official':job.salary_disclosure==='estimated'?'estimated':'');disclosure.textContent=salaryLabel(job);
   salaryTitle.append(titleText,disclosure);salary.append(salaryTitle);
   const values=document.createElement('div');values.className='salary-values';
-  const monthly=document.createElement('span');monthly.textContent='Monthly / Stipend: ';const monthlyB=document.createElement('b');monthlyB.textContent=job.salary_period==='monthly'||job.salary_period==='stipend'?formatRange(job.salary_min_inr,job.salary_max_inr,job.salary_period):'Not specified';monthly.append(monthlyB);
+  const monthly=document.createElement('span');monthly.textContent='Monthly Salary / Internship Stipend: ';const monthlyB=document.createElement('b');monthlyB.textContent=job.salary_period==='monthly'||job.salary_period==='stipend'?formatRange(job.salary_min_inr,job.salary_max_inr,job.salary_period):'Not specified';monthly.append(monthlyB);
   const ctc=document.createElement('span');ctc.textContent='Annual CTC: ';const ctcB=document.createElement('b');ctcB.textContent=formatRange(job.annual_ctc_min_inr,job.annual_ctc_max_inr,'annual');ctc.append(ctcB);
   const inhand=document.createElement('span');inhand.textContent='In-hand: ';const inhandB=document.createElement('b');inhandB.textContent=formatRange(job.in_hand_min_inr,job.in_hand_max_inr,'monthly');inhand.append(inhandB);
   values.append(monthly,ctc,inhand);salary.append(values);
