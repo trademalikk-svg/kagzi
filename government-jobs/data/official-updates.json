@@ -1,6 +1,6 @@
 {
   "updatedAt": "2026-11-07",
-  "note": "केवल आधिकारिक वेबसाइट पर प्रकाशित अपडेट शामिल हैं। यदि स्रोत पेज पर उम्मीदवार लॉगिन या PDF उपलब्ध हो, वहीँ से आगे बढ़ें।",
+  "note": "यहाँ पूरे भारत के आधिकारिक परीक्षा अपडेट दिखते हैं। राज्य-विशेष अपडेट केवल उस राज्य के सत्यापित रिकॉर्ड उपलब्ध होने पर दिखाई देंगे। लिंक संबंधित संस्था के आधिकारिक स्रोत पर जाता है।",
   "items": [
     {
       "id": "ssc-cgle-tier1-answer-key-2026",
@@ -12,7 +12,8 @@
       "summary": "Candidate response sheets और tentative answer keys अपलोड; objections आमंत्रित।",
       "sourceUrl": "https://ssc.gov.in/home/notice-board",
       "sourceLabel": "SSC Official Notice Board",
-      "linkType": "notice"
+      "linkType": "notice",
+      "regionSlug": "all-india"
     },
     {
       "id": "ssc-gd-final-answer-key-2026",
@@ -24,7 +25,8 @@
       "summary": "Final answer keys, question papers, response sheets और CBE marks संबंधी सूचना।",
       "sourceUrl": "https://ssc.gov.in/home/notice-board",
       "sourceLabel": "SSC Official Notice Board",
-      "linkType": "notice"
+      "linkType": "notice",
+      "regionSlug": "all-india"
     },
     {
       "id": "upsc-cds1-final-result-2026",
@@ -36,7 +38,8 @@
       "summary": "UPSC की Examination Final Results सूची में परिणाम अपलोड किया गया।",
       "sourceUrl": "https://cms.upsc.gov.in/results/examination-final-results/",
       "sourceLabel": "UPSC Final Results",
-      "linkType": "result"
+      "linkType": "result",
+      "regionSlug": "all-india"
     },
     {
       "id": "ssc-cgept-admit-card-info-2027",
@@ -48,7 +51,8 @@
       "summary": "उम्मीदवारों के लिए परीक्षा शहर और प्रवेश पत्र से संबंधित सूचना प्रकाशित। उपलब्धता/डाउनलोड स्थिति आधिकारिक नोटिस पर जाँचें।",
       "sourceUrl": "https://ssc.gov.in/home/notice-board",
       "sourceLabel": "SSC Official Notice Board",
-      "linkType": "notice"
+      "linkType": "notice",
+      "regionSlug": "all-india"
     }
   ]
 }
