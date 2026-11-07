@@ -58,3 +58,31 @@ test('new text tool shows and positions a live preview before placement', async 
   assert.match(editor, /el\.editorOverlay\.addEventListener\('pointermove'/);
   assert.match(editor, /paintPendingTextPreview\(\);status\('नया टेक्स्ट लिखें/);
 });
+
+
+test('inspector shows a live preview above all text editing controls', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const preview = html.indexOf('id="inspectorLivePreview"');
+  const textEditor = html.indexOf('id="inspectorText"');
+  assert.ok(preview >= 0 && textEditor > preview, 'Live Preview must appear before the text editor in the inspector');
+  assert.match(editor, /function paintInspectorLivePreview\(/);
+  assert.match(editor, /paintInspectorLivePreview\(value/);
+});
+
+test('all visible text formatting controls refresh the live preview', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  for (const id of ['inspectorText','inspectorFontSize','inspectorFontFamily','inspectorFontColor','inspectorAlignment','inspectorOpacity','inspectorBold','inspectorItalic']) {
+    assert.match(editor, new RegExp("'" + id + "'"));
+  }
+  assert.match(editor, /paintInspectorLivePreview\(value/);
+});
+
+test('mobile inspector is placed in normal page flow above the PDF workspace, not in a drawer', async () => {
+  const workspace = await readFile(new URL('../pdf-editor-workspace.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../pdf-editor-workspace.css', import.meta.url), 'utf8');
+  assert.match(workspace, /shell\.insertBefore\(inspector, workspace\)/);
+  assert.doesNotMatch(workspace, /is-mobile-drawer/);
+  assert.doesNotMatch(css, /translateX\(calc\(100% - 48px\)\)/);
+  assert.match(css, /\.editor-shell>#pdfInspector/);
+});
