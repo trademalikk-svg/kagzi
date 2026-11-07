@@ -2304,7 +2304,7 @@ jobs:
           const source = await PDFDocument.create();
           const sourceFont = await source.embedFont(StandardFonts.Helvetica);
           const sourcePage = source.addPage([612, 792]);
-          sourcePage.drawText('Nonrectangular clipped Form target', {
+          sourcePage.drawText('Nonrectangular clipped Form replacement', {
             x: 60, y: 700, size: 16, font: sourceFont
           });
           const sourceDoc = await PDFDocument.load(await source.save());
@@ -2354,7 +2354,7 @@ jobs:
 
           const output = new Uint8Array(await overlayDoc.save());
           const after = await render(output);
-          assert.ok(after.text.includes('Nonrectangular clipped Form target'));
+          assert.ok(after.text.includes('Nonrectangular clipped Form replacement'));
 
           const insideTriangle = (x, y) => {
             const [a, b, c] = polygon;
