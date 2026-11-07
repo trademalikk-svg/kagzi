@@ -1,0 +1,61 @@
+name: Build KAGZI English Study Book PDFs
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'study-material/english/books.json'
+      - 'scripts/build_english_study_book_pdfs.py'
+      - 'study-material/english/index.html'
+      - 'study-material.html'
+      - '.github/workflows/english-study-book-pdfs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'study-material/english/books.json'
+      - 'scripts/build_english_study_book_pdfs.py'
+      - 'study-material/english/index.html'
+      - 'study-material.html'
+      - '.github/workflows/english-study-book-pdfs.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: english-study-book-pdf-build
+  cancel-in-progress: false
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fonts and Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Audit English source content and catalogue
+        run: node --test tests/english-study-books.test.mjs
+      - name: Generate and validate nine English A4 PDFs
+        run: python scripts/build_english_study_book_pdfs.py
+      - name: Upload generated English PDFs for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: kagzi-english-study-book-pdfs
+          path: study-material/english/pdf/*.pdf
+          if-no-files-found: error
+      - name: Commit English PDFs on main after successful build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add study-material/english/pdf/*.pdf
+          if git diff --cached --quiet; then
+            echo "No English study-book PDF changes"
+          else
+            git commit -m "Publish nine KAGZI English study book PDFs"
+            git push origin main
+          fi
