@@ -37,11 +37,12 @@ test('catalogue activates resume and lists typing and calculator tools',()=>{
  assert.ok(modules.includes("38:'invoice-bill-maker.html'"));
  assert.ok(modules.includes("66:'hindi-english-typing-tools.html'"));
  assert.ok(modules.includes("67:'online-calculators.html'"));
- assert.ok(modules.includes("shown.length+' / 67'"));
+ assert.ok(modules.includes("68:'daily-shop-hisab.html'"));
+ assert.ok(modules.includes("shown.length+' / 68'"));
 });
 test('homepage and sitemap link all three tools',()=>{
  const home=read('index.html'),sitemap=read('sitemap.xml');
- for(const slug of ['resume-cv-maker','hindi-english-typing-tools','online-calculators','invoice-bill-maker']){
+ for(const slug of ['resume-cv-maker','hindi-english-typing-tools','online-calculators','invoice-bill-maker','daily-shop-hisab']){
   assert.ok(home.includes(slug+'.html'),'homepage '+slug);
   assert.ok(sitemap.includes('https://kagzi-8cy.pages.dev/'+slug),'sitemap '+slug);
  }
@@ -73,4 +74,16 @@ test('Invoice & GST Bill Maker is a public browser-based tool with printable PDF
  assert.match(html,/function update\\(/);assert.match(html,/addEventListener\\('input',update\\)/);
  const scripts=html.split('<script>');
  for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'invoice-bill-maker.html inline script '+i});}
+});
+
+test('Daily Shop Hisab supports local ledger, credit tracking, CSV and AI summary',()=>{
+ const html=read('daily-shop-hisab.html');
+ assert.ok(html.includes('name="description"'));assert.ok(html.includes('name="robots" content="index,follow'));assert.ok(html.includes('rel="canonical"'));
+ for(const id of ['entryForm','entryDate','entryType','entryAmount','entryParty','entryNote','reportDate','salesTotal','purchaseTotal','expenseTotal','customerDue','supplierDue','cashIn','cashOut','entries','exportCsv','clearAll','aiReport','aiOutput'])assert.ok(html.includes('id="'+id+'"'),'missing ledger control '+id);
+ for(const type of ['sale','creditSale','purchase','creditPurchase','expense','customerReceipt','supplierPayment'])assert.ok(html.includes('value="'+type+'"'),'missing ledger type '+type);
+ assert.ok(html.includes('localStorage'));assert.ok(html.includes('/api/shop-hisab-ai'));assert.ok(html.includes('textContent=data.answer'));
+ const scripts=html.split('<script>');
+ for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'daily-shop-hisab.html inline script '+i);}
+ const endpoint=read('functions/api/shop-hisab-ai.js');
+ assert.ok(endpoint.includes('env.AI.run'));assert.ok(endpoint.includes('@cf/meta/llama-3.1-8b-instruct'));assert.ok(endpoint.includes('transactionCount'));
 });
