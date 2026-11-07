@@ -762,7 +762,7 @@ jobs:
                 pixels: context.getImageData(0, 0, canvas.width, canvas.height).data
               };
             } finally {
-              await pdf.destroy();
+              await loadingTask.destroy();
             }
           }
 
@@ -3327,7 +3327,8 @@ jobs:
           }
 
           async function measure(bytes) {
-            const pdf = await pdfjs.getDocument({ data: bytes, useSystemFonts: true }).promise;
+            const loadingTask = pdfjs.getDocument({ data: bytes, useSystemFonts: true });
+            const pdf = await loadingTask.promise;
             try {
               const page = await pdf.getPage(1);
               const content = await page.getTextContent();
