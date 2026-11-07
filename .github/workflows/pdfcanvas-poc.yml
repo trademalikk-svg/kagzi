@@ -3894,6 +3894,7 @@ jobs:
           | Nested-nested Form replacement | Ancestor dirty toggles; replacement after reopen; 124 target pixels changed, 0 outside, same-line control unchanged | Verified for this synthetic fixture only |
           | Nested Form resource inheritance | Page/parent resource fallback discovered; nested child deletion survived Save/Reopen; page control preserved | Verified for these synthetic fixtures only |
           | Form font alias collision | Local Form and parent Form Helvetica aliases each shadowed same-name page-level Courier aliases; text widths matched baseline | Verified for these synthetic fixtures only |
+          | Nested inherited-font replacement overlay | Original child text removed; Helvetica overlay width matched baseline (270.126 pt); page control preserved | Verified for unclipped identity-transform fixture only |
           | CropBox-offset overlay placement | Baseline (150, 600); 1,072 changed target pixels; 0 outside CropBox; controls unchanged | Verified for this fixture |
           | Encrypted and malformed PDF handling | Password-protected PDF and malformed cross-reference rejected by PDFium; qpdf independently rejects malformed fixture | Verified for fixtures |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
