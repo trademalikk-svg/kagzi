@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="KAGZI account में आपकी खरीदी और उपलब्ध Paid PDF editions.">
+<title>KAGZI · My Paid Library</title>
+<style>
+:root{--ink:#172033;--muted:#68748a;--line:#e4e9f2;--bg:#f4f6fb;--blue:#315efb;--green:#087443}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,"Noto Sans Devanagari",sans-serif}
+header{background:#111a35;color:#fff;padding:16px 0}header a{color:#d7dcff;text-decoration:none}
+.wrap{width:min(900px,calc(100% - 28px));margin:auto}.hero{padding:30px 0 16px}.hero h1{font-size:clamp(27px,5vw,38px);margin:6px 0}
+.muted{color:var(--muted)}.notice{padding:13px 15px;background:#edf2ff;border-left:4px solid var(--blue);border-radius:10px;font-size:13px;margin:16px 0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:white;font-weight:800;cursor:pointer;text-decoration:none;font:inherit}.btn.secondary{background:#e8edfa;color:#263b75}
+.list{display:grid;gap:12px;margin:18px 0}.item{background:white;border:1px solid var(--line);border-radius:15px;padding:17px}.item h2{font-size:19px;margin:4px 0}.meta{font-size:13px;color:var(--muted)}.download{display:inline-block;margin-top:12px;background:var(--green);color:#fff;padding:9px 13px;border-radius:9px;text-decoration:none;font-weight:800}.empty{padding:22px;background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--muted)}
+footer{padding:24px 0;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><b>KAGZI · MY LIBRARY</b>　<a href="./">← Current Affairs</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="muted">YOUR ACCOUNT · PRIVATE DOWNLOADS</div><h1>मेरी Paid Library</h1><p class="muted">यहाँ केवल आपके खाते को दिए गए Paid PDFs दिखाई देंगे।</p></section>
+<div class="actions"><a class="btn secondary" href="../auth.html?redirect=current-affairs/my-library.html">Login / Account</a><button class="btn secondary" id="refresh" type="button">Refresh</button><button class="btn secondary" id="signout" type="button" hidden>Logout</button></div>
+<p id="status" class="notice" role="status">आपका अकाउंट जाँचा जा रहा है…</p>
+<section id="library" class="list" aria-live="polite"></section>
+</main>
+<footer><div class="wrap">सुरक्षित डाउनलोड लिंक सीमित समय के लिए बनता है। अपना Login किसी अन्य व्यक्ति के साथ साझा न करें।</div></footer>
+<script type="module">
+import { supabase } from "../kagzi-supabase.js";
+const statusEl=document.getElementById("status"),library=document.getElementById("library");
+const refresh=document.getElementById("refresh"),signout=document.getElementById("signout");
+const say=t=>statusEl.textContent=t;
+const dateText=s=>s?new Intl.DateTimeFormat("hi-IN",{dateStyle:"medium"}).format(new Date(s)):"कोई समाप्ति तारीख नहीं";
+function safeText(v){return String(v??"");}
+async function load(){
+  refresh.disabled=true;library.replaceChildren();say("आपका अकाउंट जाँचा जा रहा है…");
+  try{
+    const {data:{user},error:authError}=await supabase.auth.getUser();
+    if(authError)throw authError;
+    if(!user){location.replace("../auth.html?redirect=current-affairs/my-library.html");return;}
+    signout.hidden=false;
+    const {data:rows,error}=await supabase.from("kagzi_paid_entitlements")
+      .select("id,status,granted_at,expires_at,resource:kagzi_paid_resources(id,title,description,storage_path,price_inr,is_active)")
+      .eq("user_id",user.id).eq("status","active").order("granted_at",{ascending:false});
+    if(error)throw error;
+    const now=Date.now();
+    const available=(rows||[]).filter(x=>x.resource&&x.resource.is_active&&(!x.expires_at||new Date(x.expires_at).getTime()>now));
+    if(!available.length){library.innerHTML='<div class="empty">अभी आपके खाते में कोई Paid PDF access नहीं है। खरीद/एडमिन द्वारा access मिलने के बाद सामग्री यहाँ दिखाई देगी।</div>';say("Login सफल है। अभी कोई active Paid PDF access नहीं मिला।");return;}
+    say(available.length+" active Paid edition आपके खाते में उपलब्ध हैं।");
+    for(const row of available){
+      const resource=row.resource,card=document.createElement("article");card.className="item";
+      const title=document.createElement("h2");title.textContent=safeText(resource.title);
+      const desc=document.createElement("p");desc.className="muted";desc.textContent=safeText(resource.description);
+      const meta=document.createElement("p");meta.className="meta";meta.textContent="Access मिला: "+dateText(row.granted_at)+(row.expires_at?" · समाप्ति: "+dateText(row.expires_at):" · अवधि: स्थायी");
+      const button=document.createElement("button");button.type="button";button.className="download";button.textContent="Secure PDF Download";
+      button.addEventListener("click",async()=>{
+        button.disabled=true;button.textContent="Secure link बन रहा है…";
+        try{
+          const {data:{user:currentUser},error:checkError}=await supabase.auth.getUser();
+          if(checkError||!currentUser)throw checkError||new Error("कृपया दोबारा Login करें।");
+          const {data,error:signError}=await supabase.storage.from("kagzi-paid-pdfs").createSignedUrl(resource.storage_path,60,{download:true});
+          if(signError)throw signError;
+          if(!data?.signedUrl)throw new Error("Download link नहीं बन पाया।");
+          window.location.assign(data.signedUrl);
+          button.textContent="Download link जारी हुआ";
+        }catch(e){say(e.message||"Download अभी उपलब्ध नहीं है।");button.textContent="फिर कोशिश करें";button.disabled=false;}
+      });
+      card.append(title,desc,meta,button);library.append(card);
+    }
+  }catch(e){say(e.message||"Library लोड नहीं हो पाई।");}
+  finally{refresh.disabled=false;}
+}
+refresh.addEventListener("click",load);
+signout.addEventListener("click",async()=>{signout.disabled=true;const {error}=await supabase.auth.signOut();if(error)say(error.message);else location.replace("../auth.html");});
+load();
+</script>
+</body></html>
