@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const MAX_CONTEXT = 850;
-  const MAX_QUESTION = 520;
+  const MAX_CONTEXT = 650;
+  const MAX_QUESTION = 350;
   const state = { selectedContext: "", recognition: null, listening: false, lastReply: "" };
 
   const text = (node) => (node?.textContent || "").replace(/\s+/g, " ").trim();
