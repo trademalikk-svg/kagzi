@@ -2815,7 +2815,7 @@ jobs:
           }
           NODE
 
-      - name: Classify CropBox coordinate handling
+      - name: Compare CropBox coordinates with PDF.js viewport geometry
         working-directory: vendor/pdfcanvas
         run: |
           node --input-type=module <<'NODE'
@@ -2824,6 +2824,7 @@ jobs:
           import { PdfiumTextEngine } from './dist/index.js';
 
           const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
           const doc = await PDFDocument.create();
           const font = await doc.embedFont(StandardFonts.Helvetica);
           const page = doc.addPage([612, 792]);
@@ -2837,15 +2838,46 @@ jobs:
           const target = runs.find(run => run.text.includes('CropBox coordinate sentinel'));
           const outside = runs.find(run => run.text.includes('Outside crop control sentinel'));
           assert.ok(target, 'text inside CropBox must remain discoverable');
+
+          const task = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+          const pdf = await task.promise;
+          let pdfjsGeometry;
+          try {
+            const browserPage = await pdf.getPage(1);
+            const viewport = browserPage.getViewport({ scale: 1 });
+            const content = await browserPage.getTextContent();
+            const item = content.items.find(entry =>
+              typeof entry.str === 'string' && entry.str.includes('CropBox coordinate sentinel')
+            );
+            assert.ok(item, 'PDF.js must expose the CropBox target text');
+            pdfjsGeometry = {
+              viewport: { width: viewport.width, height: viewport.height, viewBox: viewport.viewBox },
+              text: item.str,
+              transform: item.transform,
+              width: item.width,
+              height: item.height,
+              baselineTopLeft: {
+                x: item.transform[4] - viewport.viewBox[0],
+                y: viewport.height - (item.transform[5] - viewport.viewBox[1])
+              }
+            };
+          } finally {
+            await task.destroy();
+          }
+
           const result = {
-            result: 'PASS',
+            result: 'DIAGNOSTIC',
             fixture: 'non-zero CropBox origin; 400x500 visible region on 612x792 MediaBox',
             mediaBox: page.getMediaBox(),
             cropBox: page.getCropBox(),
-            insideCropText: { text: target.text, x: target.x, y: target.y, width: target.w, height: target.h, editable: target.editable },
+            pdfiumRun: {
+              text: target.text, x: target.x, y: target.y,
+              width: target.w, height: target.h, editable: target.editable
+            },
+            pdfjsGeometry,
             outsideCropTextDiscovered: Boolean(outside),
-            classification: 'discovery only; coordinates require comparison with a browser-rendered page before native replacement is allowed',
-            policy: 'No replacement is attempted for CropBox coordinates.'
+            interpretation: 'Compare PDFium run coordinates against PDF.js viewport geometry before implementing CropBox replacement. A matching text extraction alone is not proof of correct overlay placement.',
+            policy: 'Discovery only; no replacement is attempted and CropBox editing remains disabled.'
           };
           console.log(JSON.stringify(result, null, 2));
           engine.destroy();
