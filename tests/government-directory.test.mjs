@@ -105,3 +105,17 @@ test("region filter is populated from the complete 36-region registry", async()=
  assert.match(js,/regionFilter\.append/);
  assert.match(js,/regionFilter\.value/);
 });
+
+test("Central Jobs shows official recruitment portals without mislabelling homepages as Apply Online", async()=>{
+ const html=await readFile(new URL("../government-jobs/central/index.html",import.meta.url),"utf8");
+ for(const host of ["ssc.gov.in","upsc.gov.in","rrbcdg.gov.in","ncs.gov.in","apprenticeshipindia.gov.in","ibps.in"]) assert.ok(html.includes(host),host+" official portal link");
+ assert.match(html,/Official portal/);
+ assert.doesNotMatch(html,/Apply Online/);
+ assert.match(html,/data-share-page/);
+ assert.match(html,/data-whatsapp-page/);
+});
+
+test("Apply Online is shown only for a verified open vacancy", async()=>{
+ const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
+ assert.match(js,/item\.applyUrl&&item\.applyVerified===true&&open/);
+});
