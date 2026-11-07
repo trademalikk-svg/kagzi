@@ -2587,6 +2587,16 @@ jobs:
             bottom: Math.max(beforeTarget.bounds.bottom, afterTarget.bounds.bottom)
           };
 
+          const pixelIntersectsRect = (x, y, rect) =>
+            x + 1 > rect.left && x < rect.right && y + 1 > rect.top && y < rect.bottom;
+          const toCanvasRect = region => ({
+            left: region.x,
+            right: region.x + region.width,
+            top: 792 - (region.y + region.height),
+            bottom: 792 - region.y
+          });
+          const firstRegionBand = toCanvasRect(regions[0]);
+          const secondRegionBand = toCanvasRect(regions[1]);
           let changedInFirstRegion = 0;
           let changedInSecondRegion = 0;
           let changedOutsideClip = 0;
@@ -2599,16 +2609,9 @@ jobs:
                 before.pixels[p + 2] !== after.pixels[p + 2] ||
                 before.pixels[p + 3] !== after.pixels[p + 3];
               if (!changed) continue;
-              const canvasX = x + 0.5;
-              const canvasY = y + 0.5;
-              const inTargetBand = canvasX >= targetBand.left && canvasX <= targetBand.right &&
-                canvasY >= targetBand.top && canvasY <= targetBand.bottom;
-              const pdfX = canvasX;
-              const pdfY = 792 - canvasY;
-              const inFirstRegion = pdfX >= regions[0].x && pdfX <= regions[0].x + regions[0].width &&
-                pdfY >= regions[0].y && pdfY <= regions[0].y + regions[0].height;
-              const inSecondRegion = pdfX >= regions[1].x && pdfX <= regions[1].x + regions[1].width &&
-                pdfY >= regions[1].y && pdfY <= regions[1].y + regions[1].height;
+              const inTargetBand = pixelIntersectsRect(x, y, targetBand);
+              const inFirstRegion = pixelIntersectsRect(x, y, firstRegionBand);
+              const inSecondRegion = pixelIntersectsRect(x, y, secondRegionBand);
               if (inTargetBand && inFirstRegion) changedInFirstRegion += 1;
               else if (inTargetBand && inSecondRegion) changedInSecondRegion += 1;
               else changedOutsideClip += 1;
