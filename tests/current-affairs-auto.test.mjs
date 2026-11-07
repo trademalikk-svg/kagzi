@@ -56,7 +56,7 @@ test('automatic PIB workflow builds Hindi PDFs in the same successful archive ru
 
 test('PDF workflow builds branch preview on pull requests without pushing to main',()=>{
  const workflow=read('.github/workflows/current-affairs-pdfs.yml');
- assert.match(workflow,/pull_request:/);
+ assert.match(workflow,/github\\.ref == 'refs\\/heads\\/main'/);
  assert.doesNotMatch(workflow,/ref: main/);
  assert.match(workflow,/if: github\.event_name != 'pull_request'/);
  assert.match(workflow,/scripts\/current_affairs_pdf_content\.py/);
