@@ -1107,6 +1107,7 @@ jobs:
           const [formPage] = await target.embedPages([sourceDoc.getPage(0)]);
           const page = target.addPage([612, 792]);
           page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
+          page.drawText('Top-level control original text', { x: 60, y: 640, size: 12, font: await target.embedFont(StandardFonts.Helvetica) });
           const input = new Uint8Array(await target.save({ useObjectStreams: true }));
 
           async function probe(generatePageContent, markFormDirty = false) {
@@ -1117,11 +1118,19 @@ jobs:
             const formPtr = module.FPDFPage_GetObject(pagePtr, 0);
             const childPtr = module.FPDFFormObj_GetObject(formPtr, 0);
             const replacement = 'Nested form replacement text';
-            const utf16 = Buffer.from(replacement + '\\0', 'utf16le');
-            const textPtr = exports.malloc(utf16.length);
-            new Uint8Array(exports.memory.buffer).set(utf16, textPtr);
-            const setTextResult = module.FPDFText_SetText(childPtr, textPtr);
-            exports.free(textPtr);
+            const controlReplacement = 'Top-level control replacement text';
+            const controlPtr = module.FPDFPage_GetObject(pagePtr, 1);
+            if (module.FPDFPageObj_GetType(controlPtr) !== 1) throw new Error('expected second page object to be top-level text');
+            const setText = (objectPtr, value) => {
+              const utf16 = Buffer.from(value + '\\0', 'utf16le');
+              const textPtr = exports.malloc(utf16.length);
+              new Uint8Array(exports.memory.buffer).set(utf16, textPtr);
+              const result = Boolean(module.FPDFText_SetText(objectPtr, textPtr));
+              exports.free(textPtr);
+              return result;
+            };
+            const setTextResult = setText(childPtr, replacement);
+            const controlSetTextResult = setText(controlPtr, controlReplacement);
             const formDirtyMarkResult = markFormDirty
               ? (() => {
                   const wasActive = Boolean(module.FPDFPageObj_GetIsActive(formPtr));
@@ -1141,6 +1150,9 @@ jobs:
             verify.destroy();
             return {
               setTextResult: Boolean(setTextResult),
+              controlSetTextResult,
+              controlReplacementFoundAfterReopen: extracted.includes(controlReplacement),
+              controlOriginalStillFoundAfterReopen: extracted.includes('Top-level control original text'),
               formDirtyMarkResult: formDirtyMarkResult === null ? 'not called' : Boolean(formDirtyMarkResult),
               pageGenerateResult: pageGenerateResult === null ? 'not called' : Boolean(pageGenerateResult),
               replacementFoundAfterReopen: extracted.includes(replacement),
@@ -1158,9 +1170,11 @@ jobs:
             withoutPageGeneration,
             withPageGeneration,
             withFormDirtyGeneration,
-            interpretation: withFormDirtyGeneration.replacementFoundAfterReopen
-              ? 'Nested child text replacement survived save/reopen when the containing Form was explicitly marked dirty before page content generation. This is a fixture-only dirty-propagation diagnostic; visual and unrelated-object preservation tests remain required.'
-              : 'Nested child text replacement did not survive save/reopen even when the containing Form was explicitly marked dirty; do not enable editing until a safe Form stream serialization path is identified.',
+            interpretation: withFormDirtyGeneration.controlReplacementFoundAfterReopen && !withFormDirtyGeneration.replacementFoundAfterReopen
+              ? 'Top-level text replacement persisted but nested Form text did not. This isolates the current failure to Form stream mutation/serialization; keep nested Form text editing disabled.'
+              : withFormDirtyGeneration.replacementFoundAfterReopen
+                ? 'Both top-level and nested text replacements survived this synthetic save/reopen fixture; additional visual and preservation tests remain required.'
+                : 'The control replacement also failed or the nested text result is ambiguous; investigate the broader text serialization path before enabling editing.',
             policy: 'Disposable test PDFs only. No production files or user documents are changed.'
           };
           console.log(JSON.stringify(report, null, 2));
