@@ -2963,6 +2963,7 @@ jobs:
           const font = await doc.embedFont(StandardFonts.Helvetica);
           const page = doc.addPage([612, 792]);
           page.drawText('CropBox coordinate sentinel', { x: 150, y: 600, size: 16, font });
+          page.drawText('CropBox lower vertical sentinel', { x: 150, y: 400, size: 16, font });
           page.drawText('Outside crop control sentinel', { x: 40, y: 100, size: 12, font });
           page.setCropBox(100, 150, 400, 500);
           const bytes = new Uint8Array(await doc.save({ useObjectStreams: true }));
@@ -2970,8 +2971,10 @@ jobs:
           const engine = await PdfiumTextEngine.create(wasm, bytes);
           const runs = engine.readPage(0, 0);
           const target = runs.find(run => run.text.includes('CropBox coordinate sentinel'));
+          const lowerTarget = runs.find(run => run.text.includes('CropBox lower vertical sentinel'));
           const outside = runs.find(run => run.text.includes('Outside crop control sentinel'));
           assert.ok(target, 'text inside CropBox must remain discoverable');
+          assert.ok(lowerTarget, 'second in-CropBox vertical sentinel must remain discoverable');
 
           const task = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
           const pdf = await task.promise;
@@ -2983,7 +2986,11 @@ jobs:
             const item = content.items.find(entry =>
               typeof entry.str === 'string' && entry.str.includes('CropBox coordinate sentinel')
             );
+            const lowerItem = content.items.find(entry =>
+              typeof entry.str === 'string' && entry.str.includes('CropBox lower vertical sentinel')
+            );
             assert.ok(item, 'PDF.js must expose the CropBox target text');
+            assert.ok(lowerItem, 'PDF.js must expose the lower vertical sentinel');
             pdfjsGeometry = {
               viewport: { width: viewport.width, height: viewport.height, viewBox: viewport.viewBox },
               text: item.str,
@@ -2992,6 +2999,10 @@ jobs:
               height: item.height,
               baselineTopLeft: viewport.convertToViewportPoint(
                 item.transform[4], item.transform[5]
+              ),
+              lowerText: lowerItem.str,
+              lowerBaselineTopLeft: viewport.convertToViewportPoint(
+                lowerItem.transform[4], lowerItem.transform[5]
               )
             };
           } finally {
@@ -3009,6 +3020,13 @@ jobs:
           assert.ok(
             Math.abs(target.x - 50) < 1,
             'PDFium text-run x must be relative to the CropBox left edge'
+          );
+          const pdfiumVerticalDelta = lowerTarget.y - target.y;
+          const pdfjsVerticalDelta =
+            pdfjsGeometry.lowerBaselineTopLeft[1] - pdfjsGeometry.baselineTopLeft[1];
+          assert.ok(
+            Math.abs(pdfiumVerticalDelta - pdfjsVerticalDelta) < 1,
+            'PDFium vertical run spacing must match PDF.js viewport baseline spacing'
           );
 
           const result = {
@@ -3104,7 +3122,7 @@ jobs:
           | Two disjoint rectangular clip subpaths explicitly reproduced | New PDF.js pixel-diff regression; both regions must change and gap/outside must remain unchanged | Pending CI |
           | Two sequential intersecting rectangular clips explicitly reproduced | New PDF.js pixel-diff regression; intersection changes and all pixels outside remain unchanged | Pending CI |
           | Nested Form inside Form | Child removal returned success, but original nested text remained after serialization | Blocked |
-          | CropBox-offset coordinates | Assert PDFium x and PDF.js viewport origin against known CropBox offsets; vertical glyph-box and overlay placement remain unverified | Pending CI |
+          | CropBox-offset coordinates | Assert PDFium horizontal origin and vertical text spacing against PDF.js viewport geometry; absolute glyph-box and overlay placement remain unverified | Pending CI |
           | General Form XObject editing | Synthetic fixtures do not establish universal support | **Disabled** |
 
           **Release rule:** Keep Form XObject content non-editable in the user-facing editor. The verified identity, scaled, and rotated cases are fixture-specific only. Clipping, nested-nested resources, CropBox mapping, and broader PDF preservation still require separate proofs.
