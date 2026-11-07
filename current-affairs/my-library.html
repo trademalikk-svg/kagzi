@@ -22,7 +22,7 @@ footer{padding:24px 0;color:var(--muted);font-size:12px}
 <header><div class="wrap"><b>KAGZI · MY LIBRARY</b>　<a href="./">← Current Affairs</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="muted">YOUR ACCOUNT · PRIVATE DOWNLOADS</div><h1>मेरी Paid Library</h1><p class="muted">यहाँ केवल आपके खाते को दिए गए Paid PDFs दिखाई देंगे।</p></section>
-<div class="actions"><a class="btn secondary" href="../auth.html?redirect=current-affairs/my-library.html">Login / Account</a><button class="btn secondary" id="refresh" type="button">Refresh</button><button class="btn secondary" id="signout" type="button" hidden>Logout</button></div>
+<div class="actions"><a class="btn secondary" href="../paid-library.html">Paid PDFs खरीदें</a><a class="btn secondary" href="../auth.html?redirect=current-affairs/my-library.html">Login / Account</a><button class="btn secondary" id="refresh" type="button">Refresh</button><button class="btn secondary" id="signout" type="button" hidden>Logout</button></div>
 <p id="status" class="notice" role="status">आपका अकाउंट जाँचा जा रहा है…</p>
 <section id="library" class="list" aria-live="polite"></section>
 </main>
@@ -42,7 +42,7 @@ async function load(){
     if(!user){location.replace("../auth.html?redirect=current-affairs/my-library.html");return;}
     signout.hidden=false;
     const {data:rows,error}=await supabase.from("kagzi_paid_entitlements")
-      .select("id,status,granted_at,expires_at,resource:kagzi_paid_resources(id,title,description,storage_path,price_inr,is_active)")
+      .select("id,status,granted_at,expires_at,resource:kagzi_paid_resources(id,title,description,price_inr,is_active)")
       .eq("user_id",user.id).eq("status","active").order("granted_at",{ascending:false});
     if(error)throw error;
     const now=Date.now();
@@ -56,14 +56,18 @@ async function load(){
       const meta=document.createElement("p");meta.className="meta";meta.textContent="Access मिला: "+dateText(row.granted_at)+(row.expires_at?" · समाप्ति: "+dateText(row.expires_at):" · अवधि: स्थायी");
       const button=document.createElement("button");button.type="button";button.className="download";button.textContent="Secure PDF Download";
       button.addEventListener("click",async()=>{
-        button.disabled=true;button.textContent="Secure link बन रहा है…";
+        button.disabled=true;button.textContent="Access जाँचा जा रहा है…";
         try{
-          const {data:{user:currentUser},error:checkError}=await supabase.auth.getUser();
-          if(checkError||!currentUser)throw checkError||new Error("कृपया दोबारा Login करें।");
-          const {data,error:signError}=await supabase.storage.from("kagzi-paid-pdfs").createSignedUrl(resource.storage_path,60,{download:true});
-          if(signError)throw signError;
-          if(!data?.signedUrl)throw new Error("Download link नहीं बन पाया।");
-          window.location.assign(data.signedUrl);
+          const {data:{session},error:sessionError}=await supabase.auth.getSession();
+          if(sessionError||!session?.access_token)throw sessionError||new Error("कृपया दोबारा Login करें।");
+          const response=await fetch("/api/payments/download",{
+            method:"POST",
+            headers:{"content-type":"application/json","authorization":"Bearer "+session.access_token},
+            body:JSON.stringify({resource_id:resource.id})
+          });
+          const result=await response.json();
+          if(!response.ok||!result.signed_url)throw new Error(result.error||"Secure download link नहीं बन पाया।");
+          window.location.assign(result.signed_url);
           button.textContent="Download link जारी हुआ";
         }catch(e){say(e.message||"Download अभी उपलब्ध नहीं है।");button.textContent="फिर कोशिश करें";button.disabled=false;}
       });
