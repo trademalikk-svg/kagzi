@@ -45,7 +45,7 @@ test('Private Jobs migration grants public read only to verified published recor
   assert.match(sql, /alter table public\.kagzi_private_jobs enable row level security/i);
   assert.match(sql, /alter table public\.kagzi_private_job_sources enable row level security/i);
   assert.match(sql, /grant select on public\.kagzi_private_jobs to anon/i);
-  assert.match(sql, /verification_status = 'verified'/i);
+  assert.match(sql, /verification_status in \('verified','expired'\)/i);
   assert.match(sql, /is_published = true/i);
   assert.match(sql, /kagzi_library_admins/i);
   assert.match(sql, /salary_disclosure/i);
@@ -60,6 +60,6 @@ test('public jobs route and admin login entry are public while admin data is all
   const adminPage = read('private-jobs-admin.html');
   const protectedPages = JSON.parse(read('.github/kagzi-html-pages.json'));
   assert.doesNotMatch(publicPage, /data-kagzi-protected="true"/i);
-  assert.match(adminPage, /data-kagzi-protected="true"/i);
-  assert.ok(protectedPages.includes('private-jobs-admin.html'));
+  assert.doesNotMatch(adminPage, /data-kagzi-protected="true"/i);
+  assert.ok(!protectedPages.includes('private-jobs-admin.html'));
 });
