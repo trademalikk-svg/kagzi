@@ -11,8 +11,8 @@ from current_affairs_pdf_content import build_pib_digest_fragment
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "current-affairs-book-source.html"
 DATA = ROOT / "current-affairs/data/items.json"
-DAY_DIR = ROOT / "current-affairs/day"
-WEEK_DIR = ROOT / "current-affairs/weekly"
+DAY_DIR = ROOT / "current-affairs/day/"
+WEEK_DIR = ROOT / "current-affairs/weekly/"
 
 PRINT_CSS = """
 @page { size: A4; margin: 18mm 16mm 20mm; @bottom-center { content: "https://kagzi-8cy.pages.dev"; font-size: 8pt; color: #9aa3b2; } }
