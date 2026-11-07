@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(new URL('../' + path, import.meta.url), 'utf8');
-const [sharedCss, privateCss, jobsCss, privateHtml, privateJs] = await Promise.all([
+const [sharedCss, privateCss, jobsCss, privateHtml, privateJs, homepage, schemes] = await Promise.all([
   read('shared/cls-stability.css'),
   read('private-jobs.css'),
   read('government-jobs/assets/jobs-directory.css'),
   read('private-jobs.html'),
-  read('private-jobs.js')
+  read('private-jobs.js'),
+  read('index.html'),
+  read('government-schemes/index.html')
 ]);
 
 test('homepage hero and service cards reserve stable dimensions', () => {
