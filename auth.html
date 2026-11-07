@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="hi">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Log in or create your KAGZI account."><title>Login / Sign Up — KAGZI</title>
 <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="style.css"><style>
 .auth-page{min-height:100vh;display:grid;place-items:center;padding:28px;background:linear-gradient(135deg,#f5f7fc,#edf2ff)}
@@ -26,9 +26,13 @@
 <label class="auth-field">Password<input id="authPassword" type="password" autocomplete="current-password" required minlength="8" maxlength="128" placeholder="At least 8 characters"></label>
 <button class="auth-submit" id="authSubmit" type="submit">Log in</button>
 </form>
-<button type="button" id="authResend" class="auth-submit" style="display:none;background:#e9eefb;color:#24416f">Resend confirmation email</button>
-<div class="auth-message" id="authMessage" role="status">Supabase connection must be configured before accounts can be created or used.</div>
-<p class="auth-help">Use your own email and a unique password. Never share your password or OTP with anyone. Account creation may require email confirmation.</p>
+<form id="otpForm" style="display:none">
+<label class="auth-field">Email OTP (6 digits)<input id="authOtp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required></label>
+<button class="auth-submit" id="otpSubmit" type="submit">Verify OTP</button>
+</form>
+<button type="button" id="authResend" class="auth-resend" style="display:none">Resend OTP</button>
+<div class="auth-message" id="authMessage" role="status">KAGZI account service is connecting…</div>
+<p class="auth-help">OTP केवल अपने registered email पर प्राप्त करें। अपना password या OTP किसी के साथ साझा न करें।</p>
 <a class="auth-back" href="index.html">← Back to KAGZI workspace</a>
 </section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="auth.js"></script></body></html>
