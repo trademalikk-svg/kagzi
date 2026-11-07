@@ -47,9 +47,18 @@ def main():
             blocks.map(day => '<h3>' + day.heading + '</h3>' + day.articles.join('')).join('') +
             '<p class="muted">Detailed news stories included: ' + total + '. Count reflects the available daily source material.</p></section>';
         }""")
-        weekly_mcq = page.locator("#daily-6-nov .quiz").evaluate("(el)=>el.outerHTML")
+        weekly_mcq = page.evaluate("""() => {
+          const blocks = Array.from(document.querySelectorAll('section[id^="daily-"]')).map(section => {
+            const quiz = section.querySelector('.quiz');
+            if (!quiz) return '';
+            const heading = section.querySelector('h2')?.innerText || section.id;
+            return '<h3>' + heading + '</h3>' + quiz.outerHTML;
+          }).filter(Boolean);
+          if (!blocks.length) throw new Error('No English daily practice questions available for weekly compilation');
+          return '<section class="chapter" id="weekly-mcq"><div class="label">WEEKLY PRACTICE · QUESTIONS</div><h2>Weekly Practice Questions</h2>' + blocks.join('') + '</section>';
+        }""")
         if not all(sections.values()) or not weekly or not daily_roundup or not weekly_mcq:
-            raise RuntimeError("One or more English daily/weekly sections or MCQs are missing")
+            raise RuntimeError("One or more English daily/weekly sections or practice questions are missing")
 
         outputs = [
             (DAILY["06"], "Daily Current Affairs · 6 November 2026", sections["06"]),

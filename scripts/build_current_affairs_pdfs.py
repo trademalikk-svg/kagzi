@@ -59,15 +59,20 @@ def main():
             '<p class="muted">इस PDF में शामिल विस्तृत समाचार: ' + total + '। यह संख्या उपलब्ध दैनिक स्रोत सामग्री पर आधारित है।</p></section>';
         }""")
         weekly_mcq = page.evaluate("""() => {
-          const source = document.querySelector('#quiz-6-nov');
-          const questions = source ? Array.from(source.querySelectorAll('details')) : [];
-          if (!questions.length) throw new Error('No Hindi daily MCQs available for weekly compilation');
-          const items = questions.map((item, index) => {
-            const question = item.querySelector('summary')?.innerText || '';
-            const answer = item.querySelector('p')?.innerHTML || '';
-            return '<li><p><b>' + question + '</b></p>' + answer + '</li>';
-          }).join('');
-          return '<section class="chapter" id="weekly-mcq"><div class="label">WEEKLY PRACTICE · MCQ</div><h2>साप्ताहिक बहुविकल्पीय अभ्यास</h2><p>ये प्रश्न उपलब्ध दैनिक अंक के आधिकारिक-स्रोत आधारित तथ्यों से संकलित हैं। उत्तर प्रत्येक प्रश्न के नीचे दिए गए हैं।</p><ol>' + items + '</ol></section>';
+          const sources = Array.from(document.querySelectorAll('[id^="quiz-"]'));
+          const blocks = sources.map(source => {
+            const questions = Array.from(source.querySelectorAll('details'));
+            if (!questions.length) return '';
+            const heading = source.querySelector('b')?.innerText || source.id;
+            const items = questions.map(item => {
+              const question = item.querySelector('summary')?.innerText || '';
+              const answer = item.querySelector('p')?.innerHTML || '';
+              return '<li><p><b>' + question + '</b></p>' + answer + '</li>';
+            }).join('');
+            return '<h3>' + heading + '</h3><ol>' + items + '</ol>';
+          }).filter(Boolean);
+          if (!blocks.length) throw new Error('No Hindi daily practice questions available for weekly compilation');
+          return '<section class="chapter" id="weekly-mcq"><div class="label">WEEKLY PRACTICE · QUESTIONS</div><h2>साप्ताहिक अभ्यास प्रश्न</h2><p>ये प्रश्न उपलब्ध दैनिक अंकों के आधिकारिक-स्रोत आधारित तथ्यों से संकलित हैं। उत्तर प्रत्येक प्रश्न के नीचे दिए गए हैं।</p>' + blocks.join('') + '</section>';
         }""")
         OUT["weekly"].parent.mkdir(parents=True, exist_ok=True)
         page.set_content(make_document("साप्ताहिक समसामयिक सार", [weekly, daily_roundup, weekly_mcq], style), wait_until="load")
