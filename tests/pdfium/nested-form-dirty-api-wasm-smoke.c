@@ -125,6 +125,23 @@ int main(void) {
     return 3;
   }
 
+  // Prove the fixture contains both nested target text and the unrelated
+  // page-level control before mutating anything.
+  FPDF_TEXTPAGE original_text_page = FPDFText_LoadPage(page);
+  if (!original_text_page) {
+    FPDF_ClosePage(page);
+    FPDF_CloseDocument(document);
+    return 17;
+  }
+  int original_found = contains_text(original_text_page, "ORIGINAL");
+  int initial_control_found = contains_text(original_text_page, "PAGECONTROL");
+  FPDFText_ClosePage(original_text_page);
+  if (!original_found || !initial_control_found) {
+    FPDF_ClosePage(page);
+    FPDF_CloseDocument(document);
+    return 18;
+  }
+
   FPDF_PAGEOBJECT outer_form = NULL;
   for (int i = 0; i < FPDFPage_CountObjects(page); ++i) {
     FPDF_PAGEOBJECT object = FPDFPage_GetObject(page, i);
