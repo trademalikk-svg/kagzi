@@ -4072,14 +4072,18 @@ jobs:
           source third_party/emsdk/emsdk_env.sh
           nm_tool="$(command -v llvm-nm)"
           test -n "$nm_tool"
-          echo "=== API symbol in compiled archive ==="
-          "$nm_tool" --defined-only --demangle "$library" | grep -E "FPDF(FormObj|PageObj)" | head -80 || true
-          echo "=== API symbol in fpdf_editpage object ==="
+          echo "=== API symbol in compiled archive (raw nm) ==="
+          "$nm_tool" "$library" | grep -E "MarkObjectDirty|FormObj|RemoveObject" | head -100 || true
+          echo "=== API symbol in fpdf_editpage object (raw nm) ==="
           object="out/embedpdf-runtime/wasm32/obj/fpdfsdk/fpdfsdk/fpdf_editpage.o"
           test -s "$object"
-          "$nm_tool" --defined-only --demangle "$object" | grep -E "FPDF(FormObj|PageObj)" | head -80 || true
+          "$nm_tool" "$object" | grep -E "MarkObjectDirty|FormObj|RemoveObject" | head -100 || true
+          echo "=== API name in compiled object strings ==="
+          strings "$object" | grep -E "MarkObjectDirty|FPDFFormObj" | head -40 || true
+          echo "=== Source patch presence ==="
+          grep -n -A24 -B3 "FPDFFormObj_MarkObjectDirty" fpdfsdk/fpdf_editpage.cpp
           echo "=== Exact prototype symbol gate ==="
-          "$nm_tool" --defined-only --demangle "$library" | grep -F "FPDFFormObj_MarkObjectDirty"
+          "$nm_tool" "$library" | grep -F "FPDFFormObj_MarkObjectDirty"
 
       - name: Link and run nested Form dirty API WASM smoke test
         working-directory: vendor/embedpdf-runtime
