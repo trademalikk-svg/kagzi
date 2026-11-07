@@ -1795,7 +1795,8 @@ jobs:
             policy: 'Synthetic scaled fixture only; no production documents are changed.'
           };          console.log(JSON.stringify(report, null, 2));
           assert.ok(changedInside > 0, 'replacement must visibly change the transformed target bounds');          assert.equal(changedOutside, 0, 'pixels outside transformed target bounds must remain unchanged');
-          assert.equal(changedControl, 0, 'same-line external control pixels must remain unchanged');          NODE
+          assert.equal(changedControl, 0, 'same-line external control pixels must remain unchanged');
+          NODE
       - name: Test matrix-aware rotated Form XObject replacement
         working-directory: vendor/pdfcanvas
         run: |
