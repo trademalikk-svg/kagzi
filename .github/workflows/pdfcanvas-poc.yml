@@ -1844,7 +1844,7 @@ jobs:
           const page = targetDoc.addPage([1000, 1100]);
           page.drawPage(form, { x: 250, y: 150, width: 612, height: 792, rotate: degrees(15) });
           const controlFont = await targetDoc.embedFont(StandardFonts.Helvetica);
-          page.drawText('Same-line external control', { x: 850, y: 180, size: 8, font: controlFont });
+          page.drawText('Same-line external control', { x: 850, y: 840, size: 8, font: controlFont });
           page.drawText('Unrelated page control', { x: 60, y: 1020, size: 12, font: controlFont });
           const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
           const before = await render(input);
@@ -1896,9 +1896,16 @@ jobs:
             font: await overlayDoc.embedFont(StandardFonts.Helvetica)
           });
           const output = new Uint8Array(await overlayDoc.save());
-          const verify = await PdfiumTextEngine.create(wasm, output);
-          const extracted = verify.readPage(0, 0).map(item => item.text).join(' ');
-          verify.destroy();
+          const verifyTask = pdfjs.getDocument({ data: output.slice(), useSystemFonts: true });
+          const verifyPdf = await verifyTask.promise;
+          let extracted;
+          try {
+            const verifyPage = await verifyPdf.getPage(1);
+            const textContent = await verifyPage.getTextContent();
+            extracted = textContent.items.map(item => item.str).join(' ');
+          } finally {
+            await verifyTask.destroy();
+          }
           const replacementFound = extracted.includes('Matrix-aware rotated sample');
           const originalRemoved = !extracted.includes('Matrix-aware rotated target');
           console.log(JSON.stringify({
