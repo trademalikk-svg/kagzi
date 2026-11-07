@@ -19,8 +19,8 @@ test('live text preview expands to fit replacement text and paints it above the 
 
   assert.match(editor, /measureText\(/);
   assert.match(editor, /span\.style\.width=/);
-  assert.match(editor, /selectedText\.span\.style\.background(Color)?\s*=/);
-  assert.match(editor, /selectedText\.span\.style\.webkitTextFillColor/);
+  assert.match(editor, /span\.style\.backgroundColor=/);
+  assert.match(editor, /span\.style\.webkitTextFillColor=/);
 });
 
 test('selected PDF text loads its original size and available font style into the inspector', async () => {
