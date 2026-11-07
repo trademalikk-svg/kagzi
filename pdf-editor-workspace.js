@@ -6,8 +6,7 @@
     const panel = root.getElementById(panelId);
     if (!button || !panel || typeof button.addEventListener !== 'function') return;
 
-    const isMobileInspector = buttonId === 'toggleInspector' && typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 650px)').matches;
-    const initialExpanded = !isMobileInspector && button.getAttribute('aria-expanded') !== 'false';
+    const initialExpanded = button.getAttribute('aria-expanded') !== 'false';
     button.setAttribute('aria-expanded', String(initialExpanded));
     button.textContent = initialExpanded ? expandedLabel : collapsedLabel;
     button.setAttribute('aria-label', initialExpanded ? expandedAriaLabel : collapsedAriaLabel);
@@ -16,10 +15,6 @@
     button.addEventListener('click', function () {
       const currentlyExpanded = button.getAttribute('aria-expanded') === 'true';
       const nextExpanded = !currentlyExpanded;
-      const drawer = typeof panel.closest === 'function' ? panel.closest('#pdfInspector') : null;
-      if (buttonId === 'toggleInspector' && drawer && drawer.classList.contains('is-mobile-drawer')) {
-        drawer.classList.toggle('is-open', nextExpanded);
-      }
       button.setAttribute('aria-expanded', String(nextExpanded));
       button.textContent = nextExpanded ? expandedLabel : collapsedLabel;
       button.setAttribute('aria-label', nextExpanded ? expandedAriaLabel : collapsedAriaLabel);
@@ -39,7 +34,7 @@
     if (workspace && inspector && shell && toolbar) {
       const placeInspector = () => {
         if (window.matchMedia('(max-width: 650px)').matches) {
-          inspector.classList.add('is-mobile-drawer');
+          inspector.classList.remove('is-mobile-drawer', 'is-open');
           if (inspector.parentElement !== shell) shell.insertBefore(inspector, workspace);
         } else {
           inspector.classList.remove('is-mobile-drawer', 'is-open');
