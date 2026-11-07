@@ -1017,6 +1017,9 @@ jobs:
             'FPDFPageObj_GetType',
             'FPDFFormObj_CountObjects',
             'FPDFFormObj_GetObject',
+            'FPDFFormObj_RemoveObject',
+            'FPDFFormObj_InsertObject',
+            'FPDFFormObj_GenerateContent',
             'FPDFText_LoadPage',
             'FPDFTextObj_GetText',
             'FPDFPage_GenerateContent'
@@ -1025,6 +1028,9 @@ jobs:
             name,
             typeof module[name] === 'function' || typeof exports[name] === 'function'
           ]));
+          assert.equal(availability.FPDFFormObj_RemoveObject, true, 'Form child removal API must be available');
+          assert.equal(availability.FPDFFormObj_InsertObject, false, 'no Form child insertion API is currently exposed');
+          assert.equal(availability.FPDFFormObj_GenerateContent, false, 'no Form-specific content generation API is currently exposed');
 
           const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
           const topLevel = [];
@@ -1097,9 +1103,9 @@ jobs:
               memberCount: run.members.length,
               memberPointers: run.members.map(member => member.objPtr)
             })),
-            interpretation: availability.FPDFFormObj_CountObjects && availability.FPDFFormObj_GetObject
-              ? 'Nested Form Object traversal API is exposed; inspect pointer mapping before implementing nested stream serialization.'
-              : 'The required nested Form Object traversal API is not exposed through this PDFium wrapper; a supported binding or another safe approach is needed.',
+            interpretation: availability.FPDFFormObj_CountObjects && availability.FPDFFormObj_GetObject && availability.FPDFFormObj_RemoveObject
+              ? 'Nested Form traversal and removal are exposed, but no Form child insertion or Form-specific content generation API is exposed; a supported stream-dirtying path is still missing.'
+              : 'The required nested Form object APIs are not fully exposed through this PDFium wrapper; a supported binding or another safe approach is needed.',
             policy: 'Diagnostic only. No PDF objects are mutated and no Form XObject editing is enabled.'
           };
           console.log(JSON.stringify(report, null, 2));
