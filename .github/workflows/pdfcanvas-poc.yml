@@ -3173,7 +3173,7 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
-          import { PDFDocument, StandardFonts, PDFDict, PDFName, PDFStream } from 'pdf-lib';
+          import { PDFDocument, StandardFonts, PDFName } from 'pdf-lib';
           import { PdfiumTextEngine } from './dist/index.js';
 
           const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
@@ -3185,9 +3185,9 @@ jobs:
           sourcePage.drawText('Inherited nested Form font sentinel', { x: 60, y: 700, size: 16, font });
 
           function removeLocalResourcesAndHoistFonts(hostDoc, embeddedPage, hostPage) {
-            const formStream = hostDoc.context.lookup(embeddedPage.ref, PDFStream);
-            const localResources = formStream.dict.lookup(resourceKey, PDFDict);
-            const localFonts = localResources.lookup(fontKey, PDFDict);
+            const formStream = hostDoc.context.lookup(embeddedPage.ref);
+            const localResources = formStream.dict.lookup(resourceKey);
+            const localFonts = localResources.lookup(fontKey);
             hostPage.node.Resources().set(fontKey, localFonts);
             assert.equal(formStream.dict.delete(resourceKey), true, 'fixture must remove Form-local Resources');
           }
