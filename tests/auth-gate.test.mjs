@@ -1,29 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {execFileSync} from 'node:child_process';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
-
-test('shared auth guard limits page redirects to the paid membership scope',()=>{
+const publicPages=new Set(['index.html','auth.html','about.html','paid-library.html','pricing.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html',
+ 'current-affairs.html','current-affairs-book.html','current-affairs/archive.html','current-affairs/day/index.html',
+ 'current-affairs/english/index.html','current-affairs/index.html','current-affairs/monthly/index.html',
+ 'current-affairs/weekly/index.html','current-affairs/yearly/index.html','private-jobs.html','private-jobs-admin.html','economy-book.html','education.html',
+ 'environment-book.html','geography-book.html','hindi-book.html','history-book.html','math-reasoning-book.html',
+ 'mcq-pyq-book.html','science-book.html','study-material.html','up-gk-book.html']);
+test('shared auth guard fails closed and preserves the requested destination',()=>{
  const guard=read('auth-guard.js');
- assert.ok(guard.includes("body.dataset.kagziAuthScope!=='membership'"));
- assert.ok(!guard.includes('body.dataset.kagziProtected'));
+ assert.ok(guard.includes("body.dataset.kagziProtected!=='true'"));
  assert.ok(guard.includes("if(!await hasSession())location.replace(loginUrl())"));
  assert.ok(guard.includes("const authPath='/auth.html'"));
  assert.ok(guard.includes('auth.getSession()'));
  assert.ok(guard.includes('encodeURIComponent(next)'));
 });
-
-test('every tracked HTML page is public except the private paid library',()=>{
- const pages=execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
+test('every non-public HTML route requires a Supabase session',()=>{
+ const pages=JSON.parse(read('.github/kagzi-html-pages.json'));
  assert.ok(pages.length>=100);
  for(const path of pages){
+  assert.ok(!publicPages.has(path),path+' must not be in the protected list');
   const html=read(path);
-  if(path==='current-affairs/my-library.html'){
-   assert.match(html,/<body[^>]*data-kagzi-auth-scope="membership"/i,path+' must remain gated');
-  }else{
-   assert.doesNotMatch(html,/<body[^>]*data-kagzi-auth-scope="membership"/i,path+' must remain public');
-  }
+  assert.match(html,/<body\b[^>]*data-kagzi-protected="true"/i,path+' must require login');
+  assert.ok(html.includes('/auth-guard.js'),path+' must load shared auth guard');
+  assert.ok(html.includes('/config.js'),path+' must load Supabase config');
+  assert.ok(html.includes('supabase-js@2'),path+' must load Supabase client');
  }
 });
