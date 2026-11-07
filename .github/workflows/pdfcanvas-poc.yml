@@ -3168,6 +3168,73 @@ jobs:
           }
           NODE
 
+      - name: Verify nested Form parent and page resource inheritance
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { PDFDocument, StandardFonts, PDFDict, PDFName, PDFStream } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const resourceKey = PDFName.of('Resources');
+          const fontKey = PDFName.of('Font');
+          const source = await PDFDocument.create();
+          const font = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Inherited nested Form font sentinel', { x: 60, y: 700, size: 16, font });
+
+          function removeLocalResourcesAndHoistFonts(hostDoc, embeddedPage, hostPage) {
+            const formStream = hostDoc.context.lookup(embeddedPage.ref, PDFStream);
+            const localResources = formStream.dict.lookup(resourceKey, PDFDict);
+            const localFonts = localResources.lookup(fontKey, PDFDict);
+            hostPage.node.Resources().set(fontKey, localFonts);
+            assert.equal(formStream.dict.delete(resourceKey), true, 'fixture must remove Form-local Resources');
+          }
+
+          async function discover(label, bytes) {
+            const engine = await PdfiumTextEngine.create(wasm, bytes);
+            try {
+              const runs = engine.readPage(0, 0).map(run => run.text);
+              const found = runs.some(text => text.includes('Inherited nested Form font sentinel'));
+              assert.ok(found, label + ': PDFium must resolve the inherited font resource and discover the text');
+              return { label, inheritedFontDiscovered: found, extractedText: runs.join(' | ') };
+            } finally {
+              engine.destroy();
+            }
+          }
+
+          // Case 1: Form-local Resources are absent; font resource is supplied by the host page.
+          const pageHostDoc = await PDFDocument.create();
+          const [pageForm] = await pageHostDoc.embedPages([sourcePage]);
+          const pageHost = pageHostDoc.addPage([612, 792]);
+          pageHost.drawPage(pageForm, { x: 0, y: 0, width: 612, height: 792 });
+          removeLocalResourcesAndHoistFonts(pageHostDoc, pageForm, pageHost);
+          const pageFallbackBytes = new Uint8Array(await pageHostDoc.save({ useObjectStreams: true }));
+          const pageFallback = await discover('page-resource fallback', pageFallbackBytes);
+
+          // Case 2: The deepest Form has no local Resources; its parent Form supplies the font.
+          const parentHostDoc = await PDFDocument.create();
+          const [childForm] = await parentHostDoc.embedPages([sourcePage]);
+          const parentHostPage = parentHostDoc.addPage([612, 792]);
+          parentHostPage.drawPage(childForm, { x: 0, y: 0, width: 612, height: 792 });
+          removeLocalResourcesAndHoistFonts(parentHostDoc, childForm, parentHostPage);
+          const parentReloaded = await PDFDocument.load(await parentHostDoc.save());
+          const outerDoc = await PDFDocument.create();
+          const [parentForm] = await outerDoc.embedPages([parentReloaded.getPage(0)]);
+          const outerPage = outerDoc.addPage([612, 792]);
+          outerPage.drawPage(parentForm, { x: 0, y: 0, width: 612, height: 792 });
+          const parentFallbackBytes = new Uint8Array(await outerDoc.save({ useObjectStreams: true }));
+          const parentFallback = await discover('parent-Form-resource fallback', parentFallbackBytes);
+
+          console.log(JSON.stringify({
+            result: 'INHERITED_FORM_RESOURCE_FIXTURES_PASS',
+            sourceRuntime: 'PDFium pinned by this workflow',
+            cases: [pageFallback, parentFallback],
+            interpretation: 'Text discovery passed when the nested Form omitted local Resources and inherited the font dictionary from its page or parent Form. This is a parser/resource-resolution fixture only; no replacement or editability claim is made.'
+          }, null, 2));
+          NODE
+
       - name: Compare CropBox coordinates with PDF.js viewport geometry
         working-directory: vendor/pdfcanvas
         run: |
