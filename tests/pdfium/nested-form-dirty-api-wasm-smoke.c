@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "public/fpdf_edit.h"
@@ -109,6 +110,36 @@ static int contains_text(FPDF_TEXTPAGE text_page, const char* expected) {
   return 0;
 }
 
+#define RENDER_WIDTH 600
+#define RENDER_HEIGHT 600
+
+static FPDF_BITMAP render_page(FPDF_PAGE page) {
+  FPDF_BITMAP bitmap = FPDFBitmap_Create(RENDER_WIDTH, RENDER_HEIGHT, 0);
+  if (!bitmap) return NULL;
+  if (!FPDFBitmap_FillRect(bitmap, 0, 0, RENDER_WIDTH, RENDER_HEIGHT,
+                           0xFFFFFFFF)) {
+    FPDFBitmap_Destroy(bitmap);
+    return NULL;
+  }
+  FPDF_RenderPageBitmap(bitmap, page, 0, 0, RENDER_WIDTH, RENDER_HEIGHT, 0, 0);
+  return bitmap;
+}
+
+static int count_region_differences(const unsigned char* before,
+                                    const unsigned char* after, int stride,
+                                    int left, int top, int right, int bottom) {
+  int differences = 0;
+  for (int y = top; y < bottom; ++y) {
+    for (int x = left; x < right; ++x) {
+      if (memcmp(before + y * stride + x * 4,
+                 after + y * stride + x * 4, 4) != 0) {
+        ++differences;
+      }
+    }
+  }
+  return differences;
+}
+
 int main(void) {
   PdfBuffer input = {{0}, 0};
   if (!build_nested_form_pdf(&input)) return 1;
@@ -141,6 +172,17 @@ int main(void) {
     FPDF_CloseDocument(document);
     return 18;
   }
+
+  // Capture the original page pixels so the round-trip test verifies visible
+  // output as well as extracted text.
+  FPDF_BITMAP before_bitmap = render_page(page);
+  if (!before_bitmap) return 19;
+  int before_stride = FPDFBitmap_GetStride(before_bitmap);
+  size_t before_size = (size_t)before_stride * RENDER_HEIGHT;
+  unsigned char* before_pixels = (unsigned char*)malloc(before_size);
+  if (!before_pixels) return 20;
+  memcpy(before_pixels, FPDFBitmap_GetBuffer(before_bitmap), before_size);
+  FPDFBitmap_Destroy(before_bitmap);
 
   FPDF_PAGEOBJECT outer_form = NULL;
   for (int i = 0; i < FPDFPage_CountObjects(page); ++i) {
@@ -193,10 +235,30 @@ int main(void) {
   int original_remains = contains_text(text_page, "ORIGINAL");
   int control_preserved = contains_text(text_page, "PAGECONTROL");
   FPDFText_ClosePage(text_page);
+
+  FPDF_BITMAP after_bitmap = render_page(reopened_page);
+  if (!after_bitmap) return 21;
+  int after_stride = FPDFBitmap_GetStride(after_bitmap);
+  const unsigned char* after_pixels =
+      (const unsigned char*)FPDFBitmap_GetBuffer(after_bitmap);
+  if (after_stride != before_stride) return 22;
+
+  // The nested target occupies the middle of the page; the page-level
+  // control is near the bottom. The target must visibly change while the
+  // unrelated control region remains pixel-identical.
+  int target_pixel_differences = count_region_differences(
+      before_pixels, after_pixels, before_stride, 0, 340, 300, 440);
+  int control_pixel_differences = count_region_differences(
+      before_pixels, after_pixels, before_stride, 0, 550, 300, 600);
+
+  FPDFBitmap_Destroy(after_bitmap);
+  free(before_pixels);
   FPDF_ClosePage(reopened_page);
   FPDF_CloseDocument(reopened);
   FPDF_DestroyLibrary();
 
   if (!replacement_found || original_remains || !control_preserved) return 15;
+  if (target_pixel_differences == 0) return 23;
+  if (control_pixel_differences != 0) return 24;
   return 0;
 }
