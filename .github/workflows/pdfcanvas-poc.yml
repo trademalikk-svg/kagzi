@@ -4057,3 +4057,15 @@ jobs:
           nm_tool="$(find third_party/emsdk/upstream/bin -type f -name llvm-nm -print -quit)"
           test -n "$nm_tool"
           "$nm_tool" --defined-only "$library" | grep -F "FPDFFormObj_MarkObjectDirty"
+
+      - name: Link and run nested Form dirty API WASM smoke test
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          emcc "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
+            -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
+            out/embedpdf-runtime/wasm32/obj/libembedpdf.a \
+            -o "$RUNNER_TEMP/nested-form-dirty-api-smoke.js" \
+            -sEXPORTED_FUNCTIONS='["_main","_FPDFFormObj_MarkObjectDirty"]' \
+            -sEXPORTED_RUNTIME_METHODS='["ccall"]'
+          node -e 'const createModule = require(process.argv[1]); createModule().then(m => { if (m.ccall("main", "number", [], []) !== 0) process.exit(1); console.log("WASM API linked, exported, and invalid handles fail closed"); });' \
+            "$RUNNER_TEMP/nested-form-dirty-api-smoke.js"
