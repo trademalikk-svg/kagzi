@@ -2183,6 +2183,208 @@ jobs:
           }
           NODE
 
+      - name: Test nested-nested Form XObject replacement round-trip
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+
+          async function render(bytes) {
+            const task = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+            const pdf = await task.promise;
+            try {
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1 });
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await page.render({ canvas, canvasContext: context, viewport }).promise;
+              const textContent = await page.getTextContent();
+              const textItems = textContent.items
+                .filter(item => typeof item.str === 'string' && item.transform?.length === 6)
+                .map(item => ({ str: item.str, transform: item.transform, width: item.width, height: item.height }));
+              return {
+                width: canvas.width,
+                height: canvas.height,
+                pixels: context.getImageData(0, 0, canvas.width, canvas.height).data,
+                textItems
+              };
+            } finally {
+              await task.destroy();
+            }
+          }
+
+          const innerDoc = await PDFDocument.create();
+          const innerFont = await innerDoc.embedFont(StandardFonts.Helvetica);
+          const innerPage = innerDoc.addPage([612, 792]);
+          innerPage.drawText('Nested nested Form target', { x: 60, y: 700, size: 16, font: innerFont });
+
+          const middleDoc = await PDFDocument.create();
+          const [innerForm] = await middleDoc.embedPages([innerPage]);
+          const middlePage = middleDoc.addPage([612, 792]);
+          middlePage.drawPage(innerForm, { x: 30, y: 40, width: 306, height: 396 });
+          const middleReloaded = await PDFDocument.load(await middleDoc.save());
+
+          const targetDoc = await PDFDocument.create();
+          const [outerForm] = await targetDoc.embedPages([middleReloaded.getPage(0)]);
+          const targetPage = targetDoc.addPage([612, 792]);
+          targetPage.drawPage(outerForm, { x: 0, y: 0, width: 612, height: 792 });
+          const pageFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          targetPage.drawText('Nested same-line control', { x: 430, y: 390, size: 8, font: pageFont });
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+          const before = await render(input);
+          assert.ok(before.textItems.some(item => item.str.includes('Nested nested Form target')));
+
+          const engine = await PdfiumTextEngine.create(wasm, input);
+          const module = engine.m;
+          const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
+          const pageObjectCount = module.FPDFPage_CountObjects(pagePtr);
+          const outerIndex = Array.from({ length: pageObjectCount }, (_, index) => index)
+            .find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          assert.notEqual(outerIndex, undefined, 'outer Form XObject must exist');
+          const outerPtr = module.FPDFPage_GetObject(pagePtr, outerIndex);
+          const middlePtr = module.FPDFFormObj_GetObject(outerPtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(middlePtr), 5, 'outer Form must contain a nested Form');
+          const innerTextPtr = module.FPDFFormObj_GetObject(middlePtr, 0);
+          assert.equal(module.FPDFPageObj_GetType(innerTextPtr), 1, 'nested Form must contain a text object');
+          const run = engine.readPage(0, 0).find(item => item.text.includes('Nested nested Form target'));
+          assert.ok(run, 'deep nested text must be discoverable');
+
+          const readMatrix = ptr => {
+            const memory = module.pdfium.wasmExports.memory;
+            const ptrOut = module.pdfium.wasmExports.malloc(24);
+            try {
+              if (!module.FPDFPageObj_GetMatrix(ptr, ptrOut)) throw new Error('PDFium matrix read failed');
+              const view = new DataView(memory.buffer);
+              return Array.from({ length: 6 }, (_, i) => view.getFloat32(ptrOut + i * 4, true));
+            } finally {
+              module.pdfium.wasmExports.free(ptrOut);
+            }
+          };
+          const multiply = (a, b) => [
+            a[0] * b[0] + a[2] * b[1],
+            a[1] * b[0] + a[3] * b[1],
+            a[0] * b[2] + a[2] * b[3],
+            a[1] * b[2] + a[3] * b[3],
+            a[0] * b[4] + a[2] * b[5] + a[4],
+            a[1] * b[4] + a[3] * b[5] + a[5]
+          ];
+          const outerMatrix = readMatrix(outerPtr);
+          const middleMatrix = readMatrix(middlePtr);
+          const textMatrix = readMatrix(innerTextPtr);
+          const combined = multiply(multiply(outerMatrix, middleMatrix), textMatrix);
+          const scale = Math.hypot(combined[0], combined[1]);
+          const angle = Math.atan2(combined[1], combined[0]) * 180 / Math.PI;
+
+          const removed = Boolean(module.FPDFFormObj_RemoveObject(middlePtr, innerTextPtr));
+          if (removed) module.FPDFPageObj_Destroy(innerTextPtr);
+          const generated = removed && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          const removedBytes = engine.save();
+          module.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+
+          if (!removed || !generated) {
+            console.log(JSON.stringify({
+              result: 'NESTED_EDIT_UNSUPPORTED',
+              outerMatrix,
+              middleMatrix,
+              textMatrix,
+              combinedMatrix: combined,
+              removed,
+              generated,
+              interpretation: 'PDFium could discover the nested chain, but mutation did not complete; keep nested-nested editing disabled.'
+            }, null, 2));
+          } else {
+            const intermediate = await render(removedBytes);
+            const oldTextRemains = intermediate.textItems.some(item => item.str.includes('Nested nested Form target'));
+            if (oldTextRemains) {
+              console.log(JSON.stringify({
+                result: 'NESTED_EDIT_UNSUPPORTED',
+                outerMatrix,
+                middleMatrix,
+                textMatrix,
+                combinedMatrix: combined,
+                removed,
+                generated,
+                oldTextRemains,
+                interpretation: 'Nested child removal did not survive serialization; keep nested-nested editing disabled.'
+              }, null, 2));
+            } else {
+              const overlayDoc = await PDFDocument.load(removedBytes);
+              overlayDoc.getPage(0).drawText('Nested nested Form sample', {
+                x: combined[4],
+                y: combined[5],
+                size: run.textFontSize * scale,
+                rotate: { type: 'degrees', angle },
+                font: await overlayDoc.embedFont(StandardFonts.Helvetica)
+              });
+              const output = new Uint8Array(await overlayDoc.save());
+              const after = await render(output);
+              const replacementFound = after.textItems.some(item => item.str.includes('Nested nested Form sample'));
+              assert.ok(replacementFound, 'nested replacement must survive PDF.js reopen');
+
+              const bounds = item => {
+                const [a, b, c, d, e, f] = item.transform;
+                const sx = Math.hypot(a, b) || 1;
+                const sy = Math.hypot(c, d) || 1;
+                const ux = a / sx, uy = b / sx, vx = c / sy, vy = d / sy;
+                const p0 = [e, f];
+                const p1 = [e + item.width * ux, f + item.width * uy];
+                const p2 = [e + item.height * vx, f + item.height * vy];
+                const p3 = [p1[0] + item.height * vx, p1[1] + item.height * vy];
+                return [p0, p1, p2, p3].map(([x, y]) => [x, 792 - y]);
+              };
+              const originalItem = before.textItems.find(item => item.str.includes('Nested nested Form target'));
+              const replacementItem = after.textItems.find(item => item.str.includes('Nested nested Form sample'));
+              const corners = [...bounds(originalItem), ...bounds(replacementItem)];
+              const xs = corners.map(p => p[0]), ys = corners.map(p => p[1]);
+              const x0 = Math.max(0, Math.floor(Math.min(...xs) - 12));
+              const x1 = Math.min(before.width, Math.ceil(Math.max(...xs) + 12));
+              const y0 = Math.max(0, Math.floor(Math.min(...ys) - 12));
+              const y1 = Math.min(before.height, Math.ceil(Math.max(...ys) + 12));
+              let changedInside = 0, changedOutside = 0, changedControl = 0;
+              for (let y = 0; y < before.height; y += 1) {
+                for (let x = 0; x < before.width; x += 1) {
+                  const p = (y * before.width + x) * 4;
+                  const changed = before.pixels[p] !== after.pixels[p] ||
+                    before.pixels[p + 1] !== after.pixels[p + 1] ||
+                    before.pixels[p + 2] !== after.pixels[p + 2] ||
+                    before.pixels[p + 3] !== after.pixels[p + 3];
+                  if (!changed) continue;
+                  if (x >= x0 && x < x1 && y >= y0 && y < y1) changedInside += 1;
+                  else changedOutside += 1;
+                  if (x >= 420 && x < 610 && y >= y0 && y < y1) changedControl += 1;
+                }
+              }
+              const visuallyPreserved = changedInside > 0 && changedOutside === 0 && changedControl === 0;
+              console.log(JSON.stringify({
+                result: visuallyPreserved ? 'NESTED_FIXTURE_PASS' : 'NESTED_EDIT_UNSUPPORTED',
+                outerMatrix,
+                middleMatrix,
+                textMatrix,
+                combinedMatrix: combined,
+                overlay: { x: combined[4], y: combined[5], size: run.textFontSize * scale, angle },
+                replacementFound,
+                originalRemoved: true,
+                changedPixelsInsideTargetBounds: changedInside,
+                changedPixelsOutsideTargetBounds: changedOutside,
+                sameLineControlPixelsChanged: changedControl,
+                interpretation: visuallyPreserved
+                  ? 'Nested-nested replacement passed this synthetic fixture only; broader resource and clipping cases remain gated.'
+                  : 'Nested-nested replacement failed visual preservation; keep nested-nested editing disabled.'
+              }, null, 2));
+            }
+          }
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
