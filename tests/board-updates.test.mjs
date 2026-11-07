@@ -55,3 +55,17 @@ test("shared board renderer preserves archives and provides notice sharing",()=>
  assert.match(js,/clipboard\.writeText/);
  assert.match(js,/createElement/);
 });
+
+test("daily source checker uses only official UPMSP and CBSE pages and preserves archives",()=>{
+ const script=read("scripts/check_board_updates.py");
+ const workflow=read(".github/workflows/board-updates-check.yml");
+ assert.match(script,/UPMSP_URL/);
+ assert.match(script,/CBSE_CIRCULARS_URL/);
+ assert.match(script,/ALLOWED_HOSTS/);
+ assert.match(script,/os\.replace/);
+ assert.match(script,/merge_items/);
+ assert.match(workflow,/workflow_dispatch:/);
+ assert.match(workflow,/30 3 \* \* \*/);
+ assert.match(workflow,/python scripts\/check_board_updates\.py/);
+ assert.match(workflow,/contents: write/);
+});
