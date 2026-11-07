@@ -906,6 +906,92 @@ jobs:
           engine.destroy();
           NODE
 
+      - name: Inspect nested Form XObject object APIs
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const source = await PDFDocument.create();
+          const font = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Nested form text object probe', { x: 60, y: 700, size: 16, font });
+          const sourceBytes = await source.save();
+
+          const target = await PDFDocument.create();
+          const sourceDoc = await PDFDocument.load(sourceBytes);
+          const [formPage] = await target.embedPages([sourceDoc.getPage(0)]);
+          const page = target.addPage([612, 792]);
+          page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
+          const bytes = new Uint8Array(await target.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const module = engine.m;
+          const exports = module.pdfium?.wasmExports ?? {};
+          const apiNames = [
+            'FPDFPage_CountObjects',
+            'FPDFPage_GetObject',
+            'FPDFPageObj_GetType',
+            'FPDFFormObj_CountObjects',
+            'FPDFFormObj_GetObject',
+            'FPDFPage_GenerateContent'
+          ];
+          const availability = Object.fromEntries(apiNames.map(name => [
+            name,
+            typeof module[name] === 'function' || typeof exports[name] === 'function'
+          ]));
+
+          const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
+          const topLevel = [];
+          const nested = [];
+          const textRuns = engine.readPage(0, 0);
+          const runObjectPointers = new Set(textRuns.flatMap(run => run.members.map(member => member.objPtr)));
+          const countObjects = module.FPDFPage_CountObjects;
+          const getObject = module.FPDFPage_GetObject;
+          const getType = module.FPDFPageObj_GetType;
+          const countFormObjects = module.FPDFFormObj_CountObjects;
+          const getFormObject = module.FPDFFormObj_GetObject;
+
+          if (typeof countObjects === 'function' && typeof getObject === 'function' && typeof getType === 'function') {
+            const count = countObjects(pagePtr);
+            for (let index = 0; index < count; index += 1) {
+              const objectPtr = getObject(pagePtr, index);
+              const type = getType(objectPtr);
+              topLevel.push({ index, type, pointerMatchesExtractedText: runObjectPointers.has(objectPtr) });
+              if (type === 5 && typeof countFormObjects === 'function' && typeof getFormObject === 'function') {
+                const childCount = countFormObjects(objectPtr);
+                for (let childIndex = 0; childIndex < childCount; childIndex += 1) {
+                  const childPtr = getFormObject(objectPtr, childIndex);
+                  nested.push({
+                    formIndex: index,
+                    childIndex,
+                    type: getType(childPtr),
+                    pointerMatchesExtractedText: runObjectPointers.has(childPtr)
+                  });
+                }
+              }
+            }
+          }
+
+          const report = {
+            result: 'DIAGNOSTIC',
+            fixture: 'one page-level Form XObject containing one text object',
+            apiAvailability: availability,
+            topLevelPageObjects: topLevel,
+            nestedFormObjects: nested,
+            extractedTextRuns: textRuns.map(run => ({ text: run.text, editable: run.editable, memberCount: run.members.length })),
+            interpretation: availability.FPDFFormObj_CountObjects && availability.FPDFFormObj_GetObject
+              ? 'Nested Form Object traversal API is exposed; inspect pointer mapping before implementing nested stream serialization.'
+              : 'The required nested Form Object traversal API is not exposed through this PDFium wrapper; a supported binding or another safe approach is needed.',
+            policy: 'Diagnostic only. No PDF objects are mutated and no Form XObject editing is enabled.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          if (pagePtr && typeof module.FPDF_ClosePage === 'function') module.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
