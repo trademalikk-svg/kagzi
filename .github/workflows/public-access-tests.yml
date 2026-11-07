@@ -14,4 +14,4 @@ jobs:
           node-version: 20
       - run: node --check auth-guard.js
       - run: node --check auth.js
-      - run: node --test tests/public-free-access.test.mjs tests/auth-gate.test.mjs tests/paid-only-auth.test.mjs tests/paid-pdf-checkout.test.mjs
+      - run: node --test tests/public-free-access.test.mjs tests/auth-gate.test.mjs tests/paid-only-auth.test.mjs tests/paid-pdf-checkout.test.mjs tests/pdf-editor-buffer-ownership.test.mjs
