@@ -98,3 +98,13 @@ test('public page lists 50 official career portal links without claiming vacanci
     assert.equal(new URL(source.url).protocol, 'https:');
   }
 });
+
+test('policy tuning migration keeps one combined select policy and indexes admin foreign keys', () => {
+  const sql = read('supabase/migrations/20261107_private_jobs_policy_tuning.sql');
+  assert.match(sql, /create policy "View permitted private jobs and admin records"/i);
+  assert.match(sql, /create policy "KAGZI admins insert private jobs"/i);
+  assert.match(sql, /create policy "KAGZI admins update private jobs"/i);
+  assert.match(sql, /create policy "KAGZI admins delete private jobs"/i);
+  assert.match(sql, /kagzi_private_jobs_created_by_idx/);
+  assert.match(sql, /kagzi_private_job_sources_created_by_idx/);
+});
