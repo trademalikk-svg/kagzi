@@ -14,6 +14,9 @@ test('English Current Affairs generates one independent PDF for each date plus w
  assert.ok(generator.includes('KAGZI-English-Weekly-Current-Affairs-2026-11.pdf'));
  assert.ok(generator.includes('page.locator(selector).evaluate'));
  assert.ok(generator.includes('page.locator("#weekly")'));
+ assert.ok(generator.includes('section[id^="daily-"]'), 'English weekly PDF collects dated daily sections');
+ assert.ok(generator.includes('article.news'), 'English weekly PDF includes full daily news articles');
+ assert.ok(generator.includes('weekly-daily-roundup'), 'English weekly PDF adds a dated news digest');
  assert.ok(!generator.includes('current-affairs" / "day"'));
 });
 test('English index links each date separately and keeps Hindi separate',()=>{
