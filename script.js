@@ -122,9 +122,9 @@ window.kagziPhotoInputChanged=function(input){
   $('#photoCropW').value=photoOriginalWidth;
   $('#photoCropH').value=photoOriginalHeight;
   $('#photoDimensions').textContent=photoOriginalWidth+' × '+photoOriginalHeight+' pixels';
-  updatePhotoPreviewEffects();
   photoPreview.hidden=false;
   photoPreview.style.display='block';
+  updatePhotoPreviewEffects();
   $('#photoPreviewEmpty').hidden=true;
   downloadPhotoBtn.disabled=false;
   $('#compressPhotoBtn').disabled=false;
