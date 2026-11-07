@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Invoice & GST Bill Maker with PDF Download | KAGZI</title>
+<meta name="description" content="दुकान का सामान्य बिल और GST invoice बनाएं। Items, quantity, price, GST, totals अपने-आप calculate करें और PDF save करें। Free Hindi-English invoice maker by KAGZI.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/invoice-bill-maker">
+<meta property="og:type" content="website"><meta property="og:title" content="Invoice & GST Bill Maker | KAGZI"><meta property="og:description" content="Create shop bills and GST invoices with live totals and PDF print."><meta property="og:url" content="https://kagzi-8cy.pages.dev/invoice-bill-maker">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5fb;color:#17243d;font:15px Arial,sans-serif}.wrap{max-width:1120px;margin:auto;padding:20px 15px 55px}.nav{display:flex;justify-content:space-between;gap:12px}.nav a{color:#164a9e;text-decoration:none;font-weight:bold}.hero{margin:18px 0;background:linear-gradient(120deg,#061735,#124b94);color:white;border-radius:17px;padding:25px}.hero h1{font-size:clamp(27px,5vw,40px);color:#ffd46b;margin:8px 0}.hero p{line-height:1.6;color:#e6efff;margin-bottom:0}.layout{display:grid;grid-template-columns:1fr;gap:16px}.panel,.invoice{background:white;border:1px solid #dce5f2;border-radius:15px;padding:20px;box-shadow:0 8px 25px #17345a0b}.panel h2{font-size:19px;margin:0 0 14px;color:#102d5b}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:bold;color:#566781}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #cbd6e8;border-radius:8px;font:14px Arial;background:#fff;color:#17243d}.field textarea{min-height:70px;resize:vertical}.section{margin-top:18px}.items-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.items-head h2{margin:0}.btn{border:0;border-radius:8px;padding:10px 14px;background:#0b55c8;color:white;font-weight:bold;cursor:pointer}.btn.secondary{background:#eaf1fc;color:#17458d}.btn.danger{background:#fff0f0;color:#a22}.item-row{display:grid;grid-template-columns:minmax(130px,2fr) 85px 110px 110px 75px;gap:8px;align-items:center;margin-top:10px}.item-row input{min-width:0;width:100%;padding:9px;border:1px solid #ccd7e7;border-radius:7px}.item-labels{display:grid;grid-template-columns:minmax(130px,2fr) 85px 110px 110px 75px;gap:8px;margin-top:12px;color:#66758d;font-size:11px;font-weight:bold}.item-amount{text-align:right;font-weight:bold;font-size:13px}.options{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px}.options label{font-size:13px;display:flex;gap:6px;align-items:center}.hint{font-size:12px;line-height:1.6;color:#65738a}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.invoice{padding:28px}.invoice-top{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #193d70;padding-bottom:17px}.invoice h2{font-size:25px;color:#0c2a56;margin:0 0 8px}.invoice-tag{font-size:12px;color:#66758d;font-weight:bold}.invoice-meta{text-align:right;font-size:13px;line-height:1.7}.parties{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:20px 0}.parties h3{font-size:12px;text-transform:uppercase;color:#66758d;margin:0 0 7px}.parties p{white-space:pre-line;margin:0;line-height:1.55;font-size:13px}.bill-table{width:100%;border-collapse:collapse;font-size:13px}.bill-table th{background:#edf3fc;color:#1c3d70;text-align:left}.bill-table th,.bill-table td{padding:10px 8px;border-bottom:1px solid #e1e8f2}.bill-table td:nth-child(n+2),.bill-table th:nth-child(n+2){text-align:right}.totals{width:min(100%,360px);margin:18px 0 0 auto;font-size:13px}.total-line{display:flex;justify-content:space-between;padding:6px 0;gap:15px}.grand{font-size:18px;font-weight:bold;color:#0b3472;border-top:2px solid #183d70;margin-top:6px;padding-top:12px}.amount-words{margin-top:20px;padding:12px;background:#f5f8fd;border-radius:8px;font-size:12px}.footnote{margin-top:22px;padding-top:12px;border-top:1px solid #e1e8f2;font-size:11px;color:#66758d;text-align:center}.empty{color:#64748b;text-align:center;padding:14px}.hidden{display:none!important}
+@media(max-width:700px){.fields{grid-template-columns:1fr}.item-labels{display:none}.item-row{grid-template-columns:1fr 1fr;gap:7px;padding:10px;border:1px solid #e1e8f2;border-radius:9px}.item-row input:first-child{grid-column:1/-1}.item-row .item-amount{grid-column:1}.item-row button{grid-column:2}.invoice{padding:16px}.invoice-top{flex-direction:column}.invoice-meta{text-align:left}.parties{gap:12px}}
+@media print{@page{size:A4;margin:14mm}body{background:#fff;color:#111;font-size:12px}.wrap{max-width:none;padding:0}.nav,.hero,.editor,.print-actions{display:none!important}.invoice{border:0;box-shadow:none;padding:0;border-radius:0}.invoice h2{color:#111}.bill-table th{background:#eee!important;color:#111;print-color-adjust:exact}.amount-words{background:#f5f5f5!important;print-color-adjust:exact}}
+</style>
+</head>
+<body><main class="wrap">
+<nav class="nav"><a href="index.html">← KAGZI Home</a><a href="modules.html">All tools →</a></nav>
+<header class="hero"><div>FREE SHOP BILL · GST INVOICE · PDF DOWNLOAD</div><h1>Invoice & Bill Maker</h1><p>दुकान का बिल या GST invoice बनाएं। Quantity, rate, tax और total अपने-आप calculate होंगे। PDF पाने के लिए Print / Save PDF दबाएँ। आपका invoice इसी browser में तैयार होता है।</p></header>
+<section class="panel editor">
+<h2>1. बिल की जानकारी</h2>
+<div class="fields">
+<div class="field"><label for="billType">Bill type</label><select id="billType"><option value="regular">सामान्य दुकान बिल (Non-GST)</option><option value="gst">GST Tax Invoice</option></select></div>
+<div class="field"><label for="billNo">Invoice / Bill number</label><input id="billNo" maxlength="40" placeholder="INV-001"></div>
+<div class="field"><label for="billDate">Bill date</label><input id="billDate" type="date"></div>
+<div class="field"><label for="supplyType">GST type</label><select id="supplyType"><option value="intra">Same state (CGST + SGST)</option><option value="inter">Other state (IGST)</option></select></div>
+</div>
+<div class="section"><h2>2. दुकान / Seller details</h2><div class="fields">
+<div class="field"><label for="sellerName">दुकान / Business name</label><input id="sellerName" placeholder="आपकी दुकान का नाम"></div>
+<div class="field"><label for="sellerPhone">Mobile / Phone</label><input id="sellerPhone" type="tel" placeholder="Mobile number"></div>
+<div class="field"><label for="sellerGstin">GSTIN (GST bill के लिए)</label><input id="sellerGstin" maxlength="15" placeholder="15-character GSTIN"></div>
+<div class="field"><label for="sellerAddress">दुकान का पता</label><textarea id="sellerAddress" placeholder="पूरा पता, शहर, राज्य और PIN"></textarea></div>
+</div></div>
+<div class="section"><h2>3. Customer details</h2><div class="fields">
+<div class="field"><label for="customerName">Customer name</label><input id="customerName" placeholder="ग्राहक का नाम"></div>
+<div class="field"><label for="customerPhone">Customer phone</label><input id="customerPhone" type="tel" placeholder="वैकल्पिक"></div>
+<div class="field"><label for="customerGstin">Customer GSTIN (optional)</label><input id="customerGstin" maxlength="15" placeholder="GSTIN"></div>
+<div class="field"><label for="customerAddress">Customer address</label><textarea id="customerAddress" placeholder="ग्राहक का पता"></textarea></div>
+</div></div>
+<div class="section">
+<div class="items-head"><h2>4. सामान / Services</h2><button class="btn secondary" id="addItem" type="button">+ Add item</button></div>
+<div class="item-labels"><span>Item description</span><span>Qty</span><span>Rate (₹)</span><span>GST rate</span><span>Total</span></div>
+<div id="items"></div>
+<div class="hint">हर item की quantity, rate और GST बदलने पर bill total तुरंत update होगा। सामान्य बिल में GST नहीं जोड़ा जाएगा।</div>
+</div>
+<div class="section fields">
+<div class="field"><label for="discount">Discount (₹)</label><input id="discount" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="notes">Notes / Payment details</label><textarea id="notes" placeholder="धन्यवाद! फिर पधारें।"></textarea></div>
+</div>
+<div class="actions print-actions"><button class="btn" id="printBill" type="button">Print / Save PDF</button><button class="btn secondary" id="resetBill" type="button">नया बिल / Reset</button></div>
+<p class="hint">PDF download: Print / Save PDF दबाएँ, फिर अपने browser के print विकल्प में “Save as PDF” चुनें। यह tool bill data को server पर upload या permanent save नहीं करता।</p>
+</section>
+<section class="invoice" aria-label="Invoice preview" id="invoicePreview">
+<div class="invoice-top"><div><div class="invoice-tag" id="previewType">SHOP BILL</div><h2 id="previewSeller">Your Shop Name</h2><div id="previewSellerDetails" class="hint">दुकान का पता और फोन</div><div id="previewGstin" class="hint"></div></div><div class="invoice-meta"><b id="previewBillNo">Bill No: —</b><br><span id="previewDate">Date: —</span><br><span id="previewSupply"></span></div></div>
+<div class="parties"><div><h3>Bill To</h3><p id="previewCustomer">Customer name</p><p id="previewCustomerGstin"></p></div><div><h3>Payment / Notes</h3><p id="previewNotes">धन्यवाद!</p></div></div>
+<table class="bill-table"><thead><tr><th>#</th><th>Item / Description</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr></thead><tbody id="previewItems"><tr><td colspan="6" class="empty">Add items to create your bill.</td></tr></tbody></table>
+<div class="totals" id="previewTotals"></div>
+<div class="amount-words"><b>Amount payable:</b> <span id="previewWords">₹0.00</span></div>
+<div class="footnote">Thank you for your business. Please verify all details before issuing this bill. Generated with KAGZI Invoice & Bill Maker.</div>
+</section>
+</main>
+<script>
+(()=> {
+const $=id=>document.getElementById(id),money=n=>'₹'+new Intl.NumberFormat('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number.isFinite(n)?n:0);
+const ids=['billType','billNo','billDate','supplyType','sellerName','sellerPhone','sellerGstin','sellerAddress','customerName','customerPhone','customerGstin','customerAddress','discount','notes'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let itemCount=0;
+function addItem(desc='',qty=1,rate=0,gst=18){
+ const id=++itemCount,row=document.createElement('div');row.className='item-row';row.dataset.id=id;
+ row.innerHTML='<input class="desc" maxlength="120" aria-label="Item description" placeholder="Item / service name" value="'+esc(desc)+'"><input class="qty" aria-label="Quantity" type="number" min="0" step="any" value="'+qty+'"><input class="rate" aria-label="Rate in rupees" type="number" min="0" step="any" value="'+rate+'"><select class="tax" aria-label="GST rate"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select><span class="item-amount">₹0.00</span><button class="btn danger remove" type="button">Remove</button>';
+ row.querySelector('.tax').value=String(gst);row.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',update));row.querySelector('.remove').addEventListener('click',()=>{if($('items').children.length>1){row.remove();update();}});$('items').append(row);update();
+}
+function update(){
+ const gstMode=$('billType').value==='gst',inter=$('supplyType').value==='inter';
+ $('supplyType').closest('.field').classList.toggle('hidden',!gstMode);$('sellerGstin').closest('.field').classList.toggle('hidden',!gstMode);$('customerGstin').closest('.field').classList.toggle('hidden',!gstMode);
+ $('previewType').textContent=gstMode?'TAX INVOICE':'SHOP BILL';$('previewSeller').textContent=$('sellerName').value.trim()||'Your Shop Name';
+ $('previewSellerDetails').textContent=[$('sellerAddress').value.trim(),$('sellerPhone').value.trim()].filter(Boolean).join(' · ')||'दुकान का पता और फोन';
+ $('previewGstin').textContent=gstMode&&$('sellerGstin').value.trim()?'GSTIN: '+$('sellerGstin').value.trim():'';
+ $('previewBillNo').textContent='Bill No: '+($('billNo').value.trim()||'—');
+ const dt=$('billDate').value;$('previewDate').textContent='Date: '+(dt?new Date(dt+'T00:00:00').toLocaleDateString('en-IN'):'—');
+ $('previewSupply').textContent=gstMode?(inter?'IGST · Inter-state':'CGST + SGST · Intra-state'):'';
+ $('previewCustomer').textContent=[$('customerName').value.trim()||'Customer name',$('customerAddress').value.trim(),$('customerPhone').value.trim()].filter(Boolean).join('\n');
+ $('previewCustomerGstin').textContent=gstMode&&$('customerGstin').value.trim()?'GSTIN: '+$('customerGstin').value.trim():'';
+ $('previewNotes').textContent=$('notes').value.trim()||'धन्यवाद!';
+ let subtotal=0,taxTotal=0,rows='';let idx=0;
+ document.querySelectorAll('.item-row').forEach(row=>{const desc=row.querySelector('.desc').value.trim()||'Item',qty=Math.max(0,Number(row.querySelector('.qty').value)||0),rate=Math.max(0,Number(row.querySelector('.rate').value)||0),tax=gstMode?Math.max(0,Number(row.querySelector('.tax').value)||0):0,base=qty*rate,taxAmt=base*tax/100,total=base+taxAmt;subtotal+=base;taxTotal+=taxAmt;row.querySelector('.item-amount').textContent=money(total);idx++;rows+='<tr><td>'+idx+'</td><td>'+esc(desc)+'</td><td>'+qty+'</td><td>'+money(rate)+'</td><td>'+tax+'%</td><td>'+money(total)+'</td></tr>';});
+ $('previewItems').innerHTML=rows||'<tr><td colspan="6" class="empty">Add items to create your bill.</td></tr>';
+ const discount=Math.min(subtotal,Math.max(0,Number($('discount').value)||0)),taxable=Math.max(0,subtotal-discount),effectiveTax=subtotal?taxTotal*(taxable/subtotal):0,total=taxable+effectiveTax,fmt=n=>money(n);
+ let lines='<div class="total-line"><span>Subtotal</span><b>'+fmt(subtotal)+'</b></div>';
+ if(discount)lines+='<div class="total-line"><span>Discount</span><b>− '+fmt(discount)+'</b></div>';
+ if(gstMode){if(inter)lines+='<div class="total-line"><span>IGST</span><b>'+fmt(effectiveTax)+'</b></div>';else{lines+='<div class="total-line"><span>CGST</span><b>'+fmt(effectiveTax/2)+'</b></div><div class="total-line"><span>SGST</span><b>'+fmt(effectiveTax/2)+'</b></div>';}}
+ lines+='<div class="total-line grand"><span>Grand Total</span><b>'+fmt(total)+'</b></div>';$('previewTotals').innerHTML=lines;$('previewWords').textContent=fmt(total);
+}
+ids.forEach(id=>$(id).addEventListener('input',update));
+$('addItem').addEventListener('click',()=>addItem());
+$('printBill').addEventListener('click',()=>{update();window.print();});
+$('resetBill').addEventListener('click',()=>{if(!confirm('सभी bill details हटाकर नया bill बनाएं?'))return;ids.forEach(id=>{const el=$(id);if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});$('discount').value='0';$('billDate').value=new Date().toISOString().slice(0,10);$('items').replaceChildren();itemCount=0;addItem();update();});
+$('billDate').value=new Date().toISOString().slice(0,10);$('billNo').value='INV-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-001';addItem('Item / Product',1,0,18);update();
+})();
+</script>
+</body></html>
