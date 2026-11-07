@@ -86,3 +86,15 @@ test('migration seeds 50 official company career sources for manual permission r
   assert.match(seed, /'pending_review',false,false,true,'manual',true/);
   assert.match(seed, /on conflict \(careers_url\) do nothing/i);
 });
+
+test('public page lists 50 official career portal links without claiming vacancies', () => {
+  const page = read('private-jobs.html');
+  const sources = JSON.parse(read('private-job-sources.json'));
+  assert.equal(sources.length, 50);
+  assert.match(page, /50 Company Career Portals/);
+  assert.match(page, /id="companySources"/);
+  for (const source of sources) {
+    assert.ok(source.company && source.sector);
+    assert.equal(new URL(source.url).protocol, 'https:');
+  }
+});
