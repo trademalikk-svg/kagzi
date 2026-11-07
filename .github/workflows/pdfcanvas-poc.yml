@@ -2115,6 +2115,74 @@ jobs:
           assert.equal(changedControl, 0, 'unrelated page control must remain unchanged');
           NODE
 
+      - name: Diagnose nested-nested Form XObject structure
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          const wasm = 'node_modules/@embedpdf/pdfium/dist/pdfium.wasm';
+          const innerDoc = await PDFDocument.create();
+          const innerFont = await innerDoc.embedFont(StandardFonts.Helvetica);
+          const innerPage = innerDoc.addPage([612, 792]);
+          innerPage.drawText('Nested nested Form target', { x: 60, y: 700, size: 16, font: innerFont });
+
+          const middleDoc = await PDFDocument.create();
+          const [innerForm] = await middleDoc.embedPages([innerPage]);
+          const middlePage = middleDoc.addPage([612, 792]);
+          middlePage.drawPage(innerForm, { x: 0, y: 0, width: 612, height: 792 });
+          const middleReloaded = await PDFDocument.load(await middleDoc.save());
+
+          const targetDoc = await PDFDocument.create();
+          const [outerForm] = await targetDoc.embedPages([middleReloaded.getPage(0)]);
+          const targetPage = targetDoc.addPage([612, 792]);
+          targetPage.drawPage(outerForm, { x: 0, y: 0, width: 612, height: 792 });
+          const bytes = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create(wasm, bytes);
+          const module = engine.m;
+          const pagePtr = module.FPDF_LoadPage(engine.docPtr, 0);
+          const pageObjectCount = module.FPDFPage_CountObjects(pagePtr);
+          const outerIndex = Array.from({ length: pageObjectCount }, (_, index) => index)
+            .find(index => module.FPDFPageObj_GetType(module.FPDFPage_GetObject(pagePtr, index)) === 5);
+          const outerPtr = outerIndex === undefined ? 0 : module.FPDFPage_GetObject(pagePtr, outerIndex);
+          const outerCount = outerPtr ? module.FPDFFormObj_CountObjects(outerPtr) : 0;
+          const middlePtr = outerCount > 0 ? module.FPDFFormObj_GetObject(outerPtr, 0) : 0;
+          const middleType = middlePtr ? module.FPDFPageObj_GetType(middlePtr) : null;
+          const middleCount = middlePtr && middleType === 5 ? module.FPDFFormObj_CountObjects(middlePtr) : 0;
+          const innerTextPtr = middleCount > 0 ? module.FPDFFormObj_GetObject(middlePtr, 0) : 0;
+          const innerTextType = innerTextPtr ? module.FPDFPageObj_GetType(innerTextPtr) : null;
+          const runs = engine.readPage(0, 0).map(run => ({
+            text: run.text,
+            x: Number(run.x.toFixed(2)),
+            y: Number(run.y.toFixed(2)),
+            width: Number(run.w.toFixed(2)),
+            height: Number(run.h.toFixed(2)),
+            editable: run.editable
+          }));
+          const report = {
+            result: 'DIAGNOSTIC',
+            fixture: 'page contains outer Form -> nested Form -> text object',
+            pageObjectCount,
+            outerFormFound: Boolean(outerPtr),
+            outerChildCount: outerCount,
+            nestedChildType: middleType,
+            nestedFormChildCount: middleCount,
+            deepestChildType: innerTextType,
+            nestedChainFound: Boolean(outerPtr && middleType === 5 && middleCount > 0 && innerTextType === 1),
+            extractedRuns: runs,
+            interpretation: 'Discovery only. Nested-nested text replacement remains disabled until recursive object ownership, matrix composition, resource inheritance, and PDF.js visual preservation are separately verified.',
+            policy: 'Synthetic nested Form fixture only; no production documents are changed.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          module.FPDF_ClosePage(pagePtr);
+          engine.destroy();
+          if (!report.nestedChainFound) {
+            console.log('Nested Form API traversal is incomplete; retain fail-closed behavior.');
+          }
+          NODE
+
       - name: Classify CropBox coordinate handling
         working-directory: vendor/pdfcanvas
         run: |
