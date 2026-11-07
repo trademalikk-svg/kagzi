@@ -35,6 +35,11 @@ jobs:
           ref: 42388d3b4c9895d6672f5da357b1429678a0994c
           path: vendor/embedpdf-runtime
 
+      - name: Apply isolated nested Form dirty-stream API prototype
+        run: |
+          git -C vendor/embedpdf-runtime apply --check patches/pdfium/nested-form-dirty-stream-api.patch
+          git -C vendor/embedpdf-runtime apply patches/pdfium/nested-form-dirty-stream-api.patch
+
       - name: Verify pinned Form dirty-marking and serialization path
         run: |
           node --input-type=module <<'NODE'
