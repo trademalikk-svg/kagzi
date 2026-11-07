@@ -1,0 +1,247 @@
+{
+  "edition": "Initial English Edition · 7 November 2026",
+  "coverage_note": "This is an initial, chapter-wise edition. It does not claim to cover the complete syllabus. Check changing administrative and current-affairs facts against official sources before an examination.",
+  "books": [
+    {
+      "id": "history",
+      "number": "01",
+      "filename": "KAGZI-History-English.pdf",
+      "title": "Indian History",
+      "subtitle": "Ancient, Medieval and Modern India",
+      "intro": "The study of history is not merely the memorisation of dates. It involves understanding society, economy, governance, culture and processes of change. Indian history is commonly studied through ancient, medieval and modern periods.",
+      "chapters": [
+        {
+          "title": "Chapter 01 · Indus Valley (Harappan) Civilisation",
+          "objective": "Understand the main concepts, identify key terms and answer factual as well as conceptual examination questions.",
+          "sections": [
+            ["1. Sources of History", "The major sources of history are archaeological and literary. Archaeological sources include inscriptions, coins, monuments, tools, pottery and objects recovered through excavations. Literary sources include religious texts, secular literature, travellers’ accounts and royal records. Conclusions should be based on a comparative study of multiple sources."],
+            ["2. Introduction to the Harappan Civilisation", "The Harappan Civilisation was a Bronze Age urban civilisation of the Indian subcontinent. Its Mature phase is generally dated to approximately 2600–1900 BCE. Harappa (Punjab, Pakistan) and Mohenjo-daro (Sindh, Pakistan) were major cities. Important sites in present-day India include Dholavira, Rakhigarhi, Kalibangan, Lothal and Banawali."],
+            ["3. Town Planning and Economy", "Many cities had planned streets, drainage systems, baked-brick buildings and public structures. Agriculture, animal husbandry, craft production and long-distance trade supported the economy. Standardised weights and measures and seals indicate organised exchange and administrative activity."],
+            ["4. Script, Beliefs and Decline", "The Harappan script has not yet been conclusively deciphered. Beliefs are cautiously inferred from seals, figurines and burial practices. Possible factors behind the weakening of urban systems include climate change, changes in river systems and the transformation of trade networks. No single cause is universally accepted."]
+          ],
+          "quick": ["Mature Harappan phase: approximately 2600–1900 BCE", "Dholavira: Gujarat", "Lothal: Gujarat", "Kalibangan: Rajasthan", "Rakhigarhi: Haryana"],
+          "questions": [
+            ["What is the commonly accepted period of the Mature Harappan phase?", "Approximately 2600–1900 BCE. This is the commonly used chronology for the mature urban phase."],
+            ["Name two major Harappan cities in present-day Pakistan.", "Harappa and Mohenjo-daro."],
+            ["Has the Harappan script been conclusively deciphered?", "No. It has not yet been conclusively deciphered."]
+          ]
+        },
+        {
+          "title": "Chapter 02 · The Vedic Period: Early and Later Vedic Society",
+          "objective": "Identify the four Vedas, compare the regions, economy, society and political institutions of the Early and Later Vedic phases, and solve source-based questions.",
+          "sections": [
+            ["Chronology: an approximate framework", "Standard textbook divisions commonly place the Early Vedic phase at approximately 1500–1000 BCE and the Later Vedic phase at approximately 1000–600 BCE. These are approximate study ranges, not exact or universally fixed dates."],
+            ["1. Introduction to Vedic Literature", "The Vedas are major sources of ancient Indian religious and literary traditions. Rigveda: hymns in praise of deities; generally regarded as the oldest Veda, with 10 mandalas and 1,028 hymns. Samaveda: associated with chants and musical recitation at ritual occasions. Yajurveda: contains material related to sacrificial rites and rituals. Atharvaveda: includes material associated with domestic life, popular beliefs, prayers and healing traditions. Other layers include the Brahmanas (explanations of rituals), Aranyakas (forest reflections and meditation-related ideas) and Upanishads (philosophical discussions of the self and Brahman)."],
+            ["2. Early Vedic Phase: Region and Life", "The Early Vedic society is described mainly in the Rigveda and is commonly associated with the Sapta-Sindhu region. Animal husbandry and cattle were particularly important, although agriculture was also known. Family, clan and jana were important social relationships. The rajan was a community leader, not necessarily an all-powerful monarch in the modern sense. Sabha and samiti are mentioned as community institutions associated with deliberation and decision-making."],
+            ["3. Later Vedic Phase: Changes", "Later Vedic literature describes eastward expansion towards the Ganga–Yamuna plains, the growing importance of agriculture and more settled communities. References and evidence relating to the use of iron become more visible. Political organisation and kingship gained importance, and sacrificial rituals became more elaborate. Social divisions associated with varna are described more systematically; these should not be treated as identical to all later caste arrangements, which developed over a long period. The Upanishads also emphasised philosophical questions concerning knowledge, the self and Brahman."],
+            ["4. Main Differences between the Early and Later Vedic Phases", "Region: Early Vedic — associated with Sapta-Sindhu; Later Vedic — expansion towards the Ganga–Yamuna region. Economy: Early — pastoralism was prominent and agriculture was known; Later — agriculture and settled communities became more important. Politics: Early — jana-based leadership and references to sabha/samiti; Later — growing importance of kingship and larger political organisations. Society: Early — clan and jana relationships; Later — clearer social stratification. Religious thought: Early — Rigvedic hymns; Later — more elaborate ritual practices alongside philosophical reflection in the Upanishads."],
+            ["5. Key Examination Terms", "Jana: a community or people in Early Vedic literature. Rajan: political leader of a community. Sabha and samiti: institutions associated with deliberation; their form should not be assumed to have remained identical in every period. Yajna: a Vedic ritual, with more elaborate procedures in Later Vedic literature. Upanishads: philosophical texts discussing the self, Brahman, knowledge and liberation."],
+            ["6. Learn through Examples", "If a question links the Samaveda with singing, recall its musical recitation tradition. If it mentions sabha and samiti, connect them with Vedic community deliberation. If agriculture, eastward expansion and more organised kingship appear together, the clue generally points to the Later Vedic phase."]
+          ],
+          "quick": ["Oldest Veda: Rigveda", "Musical recitation: Samaveda", "Ritual procedures: Yajurveda", "Domestic and popular-life material: Atharvaveda", "Sabha and samiti: deliberative community institutions", "Later Vedic phase: growing importance of agriculture, settled communities and kingship"],
+          "questions": [
+            ["Which of the four Vedas is generally considered the oldest?", "The Rigveda. It is a collection of hymns and is generally regarded as the oldest Vedic compilation."],
+            ["What is the Samaveda chiefly associated with?", "Musical or sung recitation. Its verses are associated with specific melodies and chanting traditions."],
+            ["How should sabha and samiti be understood?", "As community institutions associated with deliberation. They should not be equated directly with a modern parliament."],
+            ["Name a major economic trend of the Later Vedic phase.", "The growing importance of agriculture and settled communities, along with eastward expansion and more organised political structures."],
+            ["What subjects are chiefly discussed in the Upanishads?", "Philosophical questions such as the self, Brahman, knowledge and liberation."]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geography",
+      "number": "02",
+      "filename": "KAGZI-Geography-English.pdf",
+      "title": "Geography of India and the World",
+      "subtitle": "Physical, Human and Economic Geography",
+      "intro": "Geography studies the natural conditions of the Earth, human activities and the relationships between them. It can be approached through physical, human and economic geography.",
+      "chapters": [{
+        "title": "Chapter 01 · Earth, Latitude and Longitude",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Shape and Rotation of the Earth", "The Earth is slightly flattened at the poles and bulges at the Equator; this shape is described as an oblate spheroid. Rotation on its axis from west to east causes day and night. Revolution around the Sun, together with the tilt of the Earth's axis, produces the cycle of seasons."],
+          ["2. Latitude and Longitude", "The Equator is 0° latitude and divides the Earth into the Northern and Southern Hemispheres. The Tropic of Cancer lies at approximately 23½° north and the Tropic of Capricorn at approximately 23½° south. The Prime Meridian is 0° longitude. Longitudes are useful for timekeeping; a difference of 15° of longitude corresponds to approximately one hour of local solar time."],
+          ["3. Physical Divisions of India", "The major physical divisions of India are the Himalayas, Northern Plains, Peninsular Plateau, Indian Desert, Coastal Plains and Islands. The Himalayas are young fold mountains. The Northern Plains were formed by alluvial deposits of the Indus, Ganga and Brahmaputra river systems. The Peninsular Plateau is a region of ancient, hard rocks."],
+          ["4. Rivers and Climate", "Himalayan rivers generally receive water from both snowmelt and rainfall, whereas the flow of Peninsular rivers depends mainly on rainfall. The Indian monsoon is linked to differential heating of land and sea, pressure systems and seasonal winds."]
+        ],
+        "quick": ["Equator: 0° latitude", "Tropic of Cancer: approximately 23½° north", "Standard Meridian of India: 82°30′ east"],
+        "questions": [
+          ["What is the shape of the Earth commonly called?", "An oblate spheroid: slightly flattened at the poles and bulging at the Equator."],
+          ["At what longitude is the Prime Meridian located?", "0° longitude."],
+          ["What is the Standard Meridian of India?", "82°30′ east longitude."]
+        ]
+      }]
+    },
+    {
+      "id": "up-gk",
+      "number": "03",
+      "filename": "KAGZI-UP-GK-English.pdf",
+      "title": "Uttar Pradesh General Knowledge",
+      "subtitle": "History, Geography, Administration and Culture",
+      "intro": "For studying Uttar Pradesh, it is useful to understand its geographical position, river systems, historical regions, agriculture, industries, culture and administrative structure separately.",
+      "chapters": [{
+        "title": "Chapter 01 · Geographical Introduction to Uttar Pradesh",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Location and Boundaries", "Uttar Pradesh is a large state in northern India. It shares boundaries with several Indian states and with Nepal to the north. Much of the state lies in the extensive alluvial plains of the Ganga and Yamuna, while the southern parts include plateau and Vindhyan physical features."],
+          ["2. River Systems", "The Ganga and Yamuna are major rivers of the state. The Ghaghara, Gomti, Rapti, Ramganga, Gandak, Son and Chambal are also important to regional water systems. Rivers support irrigation, drinking-water supply, fisheries and transport, while also being associated with challenges such as floods and erosion."],
+          ["3. Agriculture and Economy", "Fertile alluvial soil and irrigation make agriculture an important foundation of the state's economy. Wheat, rice, sugarcane, potato and pulses are among the major crops. Regional industries include sugar, textiles, leather, food processing, handicrafts and small-scale manufacturing."],
+          ["4. How to Study Administrative Facts", "The number of districts, divisions, urban local bodies, schemes and office-holders can change over time. Verify such facts from the latest official Uttar Pradesh government portals, budget documents and departmental notifications."]
+        ],
+        "quick": ["Major river systems: Ganga–Yamuna, Ghaghara, Gomti, Rapti, Ramganga and Son", "Administrative statistics: verify against the latest government notification"],
+        "questions": [
+          ["Name two major rivers of Uttar Pradesh.", "The Ganga and the Yamuna."],
+          ["Why is agriculture important in Uttar Pradesh?", "Fertile alluvial soil and irrigation support major crops such as wheat, rice and sugarcane."],
+          ["Where should changing administrative statistics be verified?", "From the latest official state-government portals, budget documents and departmental notifications."]
+        ]
+      }]
+    },
+    {
+      "id": "economy",
+      "number": "04",
+      "filename": "KAGZI-Economy-English.pdf",
+      "title": "Indian Economy",
+      "subtitle": "National Income, Banking, Budget and Development",
+      "intro": "Economics studies production, income, consumption, investment, employment, prices and government policies. Understanding the basic concepts makes it easier to read budgets and economic news.",
+      "chapters": [{
+        "title": "Chapter 01 · National Income and GDP",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Meaning of GDP", "Gross Domestic Product (GDP) measures the market value of final goods and services produced within a country's domestic territory during a specified period. Intermediate goods are not added separately because doing so can result in double counting; the focus is on final output."],
+          ["2. Nominal and Real GDP", "Nominal GDP is measured at current prices. Real GDP uses the prices of a base year to try to separate the effect of price increases. It is therefore more useful for understanding changes in the volume of production."],
+          ["3. Inflation", "Inflation is a sustained rise in the general price level. The Consumer Price Index (CPI) measures changes in the prices of consumer goods and services at the retail level. Possible causes include rising demand, higher production costs and supply constraints."],
+          ["4. RBI and Monetary Policy", "The Reserve Bank of India plays an important role in the monetary and financial system. Through policy interest rates and liquidity management, it seeks to influence inflation and economic activity. Consult official RBI releases for current rates and policy decisions."]
+        ],
+        "quick": ["GDP: value of final output produced within domestic territory", "CPI: a key measure of retail inflation", "RBI: India's central bank"],
+        "questions": [
+          ["What does GDP measure?", "The market value of final goods and services produced within a country's domestic territory during a specified period."],
+          ["What effect does real GDP try to separate?", "The effect of price changes, including inflation, by using base-year prices."],
+          ["Which index is a key measure of retail inflation in India?", "The Consumer Price Index (CPI)."]
+        ]
+      }]
+    },
+    {
+      "id": "science",
+      "number": "05",
+      "filename": "KAGZI-Science-English.pdf",
+      "title": "General Science and Technology",
+      "subtitle": "Physics, Chemistry, Biology and Technology",
+      "intro": "Science requires an understanding of principles, experiments, causes and outcomes alongside factual knowledge. General science can be studied through physics, chemistry, biology and applied technology.",
+      "chapters": [{
+        "title": "Chapter 01 · The Cell: Basic Unit of Life",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Concept of the Cell", "The cell is the basic structural and functional unit of living organisms. Unicellular organisms consist of one cell, whereas multicellular organisms have many cells that perform specialised functions. Cell theory states that all living organisms are made of cells and that new cells arise from pre-existing cells."],
+          ["2. Cell Membrane and Cytoplasm", "The cell membrane is selectively permeable and regulates the movement of substances. The cytoplasm contains various cell organelles. The nucleus contains genetic material and plays a role in regulating cellular activities."],
+          ["3. Major Cell Organelles", "Mitochondria are associated with cellular respiration and ATP production. Ribosomes carry out protein synthesis. In plant cells, chloroplasts perform photosynthesis. Vacuoles help store water and other substances."],
+          ["4. Plant and Animal Cells", "Plant cells generally have a cell wall, plastids and a large central vacuole. Animal cells do not have a cell wall. Both types share structures such as the cell membrane, cytoplasm and ribosomes."]
+        ],
+        "quick": ["Cell: basic structural and functional unit of life", "Mitochondria: ATP production", "Ribosomes: protein synthesis"],
+        "questions": [
+          ["What is the basic structural and functional unit of life?", "The cell."],
+          ["Which organelle is associated with ATP production?", "Mitochondria."],
+          ["Where does protein synthesis take place?", "At ribosomes."]
+        ]
+      }]
+    },
+    {
+      "id": "environment",
+      "number": "06",
+      "filename": "KAGZI-Environment-English.pdf",
+      "title": "Environment and Ecology",
+      "subtitle": "Ecosystems, Biodiversity and Climate",
+      "intro": "Environmental studies examine relationships among organisms, their physical surroundings, energy flow and the conservation of natural resources.",
+      "chapters": [{
+        "title": "Chapter 01 · Basic Concepts of an Ecosystem",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Ecosystem", "An ecosystem is a functional unit formed by interactions between a community of organisms and its abiotic environment. Biotic components include producers, consumers and decomposers. Abiotic components include light, water, air, soil and temperature."],
+          ["2. Food Chains and Food Webs", "A food chain transfers energy from one trophic level to another. Multiple interconnected food chains form a food web. Energy flow is generally unidirectional, and the amount of available energy decreases at each successive trophic level."],
+          ["3. Biodiversity", "Biodiversity includes diversity at genetic, species and ecosystem levels. Major threats include habitat destruction, pollution, overexploitation, invasive alien species and climate change. Conservation approaches include national parks, wildlife sanctuaries, biosphere reserves and community-based conservation."],
+          ["4. Climate Change", "Greenhouse gases absorb part of the outgoing infrared radiation from Earth and influence the planet's heat balance. When human activities increase the concentration of these gases, global warming and climate risks increase. Mitigation concerns reducing emissions, while adaptation concerns preparing for and responding to impacts."]
+        ],
+        "quick": ["Biotic components: producers, consumers and decomposers", "Biodiversity: genetic, species and ecosystem diversity", "Mitigation: reducing emissions; adaptation: preparing for impacts"],
+        "questions": [
+          ["What are the main biotic components of an ecosystem?", "Producers, consumers and decomposers."],
+          ["Name three levels of biodiversity.", "Genetic diversity, species diversity and ecosystem diversity."],
+          ["What is the difference between mitigation and adaptation?", "Mitigation reduces emissions or the causes of climate change; adaptation prepares for and responds to its impacts."]
+        ]
+      }]
+    },
+    {
+      "id": "maths-reasoning",
+      "number": "07",
+      "filename": "KAGZI-Maths-Reasoning-English.pdf",
+      "title": "Mathematics and Reasoning",
+      "subtitle": "Arithmetic, Algebra and Logical Ability",
+      "intro": "In mathematics, it is important not only to remember formulas but also to understand when each formula applies. Solve questions step by step and pay attention to units.",
+      "chapters": [{
+        "title": "Chapter 01 · Percentage: Basic Concepts",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Meaning of Percentage", "Percentage means per hundred. To calculate x per cent of a quantity, multiply the quantity by x/100. Example: 25% of 240 = 240 × 25/100 = 60."],
+          ["2. Converting Percentages into Fractions and Decimals", "20% = 20/100 = 1/5 = 0.20. Also, 12.5% = 1/8. Remembering common percentage-to-fraction conversions can make calculations faster."],
+          ["3. Increase and Decrease", "After an increase of r%, new value = original value × (100+r)/100. After a decrease of r%, new value = original value × (100-r)/100. Example: after a 10% increase, 500 becomes 550."],
+          ["4. Reasoning Strategy", "For a number series, first check differences, then differences of differences, multiplication or division, squares, or alternating patterns. For blood relations, directions, ordering and classification, a small diagram can help organise the given information."]
+        ],
+        "quick": ["x% = x/100", "Value after r% increase = original × (100+r)/100", "Value after r% decrease = original × (100-r)/100"],
+        "questions": [
+          ["What is 25% of 240?", "60, because 240 × 25/100 = 60."],
+          ["Convert 20% into a fraction in simplest form.", "1/5."],
+          ["What is the value of 500 after a 10% increase?", "550."]
+        ]
+      }]
+    },
+    {
+      "id": "hindi",
+      "number": "08",
+      "filename": "KAGZI-Hindi-English.pdf",
+      "title": "General Hindi",
+      "subtitle": "Grammar, Vocabulary and Language Usage",
+      "intro": "General Hindi preparation involves correct spelling, grammatical structure, vocabulary and using language appropriately in context.",
+      "chapters": [{
+        "title": "Chapter 01 · Sounds, Words and Sentences",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["1. Letters and Sounds", "A varna (letter/speech sound unit) is the smallest sound unit of a language in the traditional description of Hindi grammar. Hindi letters are studied as vowels and consonants from the perspectives of pronunciation and writing. Correct use of anusvara, anunasika, visarga and conjunct consonants is important for standard spelling."],
+          ["2. Words and Grammatical Forms", "A meaningful group of letters is called a shabda (word). A word used in a sentence in a grammatical role is called a pada (grammatical form). Words may be classified by meaning, origin, formation and usage. Important origin-based categories include tatsama, tadbhava, deshaja and foreign-origin words."],
+          ["3. Nouns and Pronouns", "A noun names a person, object, place, feeling or group. A pronoun is used in place of a noun. Correct use depends on the form required by the sentence and its grammatical relationships, including case."],
+          ["4. Sentence Correction", "Sentence correction requires attention to gender, number, person, case, tense and agreement between the subject and verb. For example, the Hindi sentence “वे बाजार गया” is incorrect; “वे बाजार गए” is the correct form. Word order and punctuation should also be checked to remove ambiguity."]
+        ],
+        "quick": ["Origin-based word categories: tatsama, tadbhava, deshaja and foreign-origin", "Sentence agreement: gender, number, person and verb"],
+        "questions": [
+          ["What is a meaningful group of letters called?", "A word (shabda)."],
+          ["Which categories classify words by origin?", "Tatsama, tadbhava, deshaja and foreign-origin words."],
+          ["What should be checked during sentence correction?", "Gender, number, person, case, tense and subject–verb agreement."]
+        ]
+      }]
+    },
+    {
+      "id": "mcq-pyq",
+      "number": "09",
+      "filename": "KAGZI-MCQ-PYQ-English.pdf",
+      "title": "MCQ and PYQ Practice",
+      "subtitle": "Subject-wise Practice with Explained Answers",
+      "intro": "This book is designed for subject-wise practice. The questions below are original practice questions and are not presented as official previous-year examination questions (PYQs).",
+      "chapters": [{
+        "title": "Chapter 01 · Mixed Practice Set 01",
+        "objective": "Understand basic concepts, identify key terms and answer factual as well as conceptual examination questions.",
+        "sections": [
+          ["History · Question 1", "Which period is generally assigned to the Mature Harappan Civilisation? Answer: approximately 2600–1900 BCE. This is the commonly used chronology for its mature urban phase."],
+          ["Geography · Question 2", "The Standard Meridian of India is based on which longitude? Answer: 82°30′ east. Indian Standard Time is based on this meridian."],
+          ["Economy · Question 3", "Which effect does real GDP attempt to separate? Answer: changes in prices, including inflation. Real GDP uses base-year prices to help compare changes in production."],
+          ["Science · Question 4", "Which cell organelle is the main site of protein synthesis? Answer: ribosomes. They build proteins in cells."],
+          ["Environment · Question 5", "What is the main role of decomposers in an ecosystem? Answer: they break down dead organic matter and return nutrients to the environment."],
+          ["Mathematics · Question 6", "What is 15 per cent of 360? Answer: 54. Calculation: 360 × 15/100 = 54."],
+          ["Hindi · Question 7", "Which type of sandhi is illustrated by the Hindi word “विद्यालय”? Answer: dirgha swara sandhi (long-vowel combination): विद्या + आलय = विद्यालय."]
+        ],
+        "quick": ["Practice questions: 7", "Official PYQs: not included. They will be added only when the exact examination year and official question paper source are verified."],
+        "questions": [
+          ["What is the status of the questions in this set?", "They are original practice questions, not verified official PYQs."],
+          ["When may an official PYQ label be used?", "Only after the exact examination year and the official question-paper source have been verified."]
+        ]
+      }]
+    }
+  ]
+}
