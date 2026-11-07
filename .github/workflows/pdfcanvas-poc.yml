@@ -96,8 +96,8 @@ jobs:
           const holderSource = fs.readFileSync('vendor/embedpdf-runtime/core/fpdfapi/page/cpdf_pageobjectholder.cpp', 'utf8');
           const removeStart = holderSource.indexOf('CPDF_PageObjectHolder::RemovePageObject(');
           assert.notEqual(removeStart, -1, 'pinned runtime must contain RemovePageObject');
-          const removeBody = holderSource.slice(removeStart, removeStart + 900);
-          assert.ok(removeBody.includes('dirty_streams_.insert(content_stream);'),
+          const holderRemoveBody = holderSource.slice(removeStart, removeStart + 900);
+          assert.ok(holderRemoveBody.includes('dirty_streams_.insert(content_stream);'),
             'removing a child must mark its containing content stream dirty');
 
           console.log(JSON.stringify({
