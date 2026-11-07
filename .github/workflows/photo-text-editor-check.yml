@@ -1,0 +1,52 @@
+name: Photo Text Editor Checks
+
+on:
+  push:
+    branches:
+      - feature/photo-text-editor
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  photo-text-editor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check script.js
+          node --check photo-text-editor.js
+      - name: Verify editor UI and script wiring
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const addon = fs.readFileSync('photo-text-editor.js', 'utf8');
+          const core = fs.readFileSync('script.js', 'utf8');
+          const requiredIds = [
+            'photoInput', 'photoPreview', 'photoTextPreview',
+            'photoOverlayText', 'photoOverlayColor', 'photoOverlaySize',
+            'photoOverlayX', 'photoOverlayY', 'photoOverlayAdd',
+            'photoOverlayClear', 'photoCoverApply', 'photoCoverClear',
+            'photoTextStatus', 'photoCloneSize', 'photoCloneSample', 'photoCloneClear'
+          ];
+          for (const id of requiredIds) {
+            const count = (html.match(new RegExp('id="' + id + '"', 'g')) || []).length;
+            if (count !== 1) throw new Error(id + ' must occur exactly once; found ' + count);
+          }
+          if (!html.includes('src="photo-text-editor.js"')) throw new Error('Photo editor script is not loaded.');
+          if (html.indexOf('src="script.js') > html.indexOf('src="photo-text-editor.js"')) throw new Error('Photo editor must load after the core script.');
+          if (!core.includes('async function buildPhotoBlob')) throw new Error('Core photo export function is missing.');
+          if (!addon.includes('window.buildPhotoBlob = async')) throw new Error('Edited export wrapper is missing.');
+          if (!addon.includes('ctx.fillText')) throw new Error('Text drawing operation is missing.');
+          if (!addon.includes('ctx.fillRect')) throw new Error('Area cover drawing operation is missing.');
+          if (!addon.includes('function paintClone')) throw new Error('Clone brush export operation is missing.');
+          if (!addon.includes('pointerdown') || !addon.includes('pointermove')) throw new Error('Touch/pointer brush interaction is missing.');
+          console.log('Photo editor IDs, script order, text overlay, cover, and export wiring verified.');
+          NODE
