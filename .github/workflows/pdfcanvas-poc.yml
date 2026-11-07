@@ -3029,11 +3029,24 @@ jobs:
           const removed = Boolean(module.FPDFFormObj_RemoveObject(middlePtr, innerTextPtr));
           if (removed) module.FPDFPageObj_Destroy(innerTextPtr);
 
-          // Do not emulate dirty propagation by toggling active state: the pinned
-          // PDFium implementation of FPDFPageObj_SetIsActive only changes the
-          // active flag and does not mark content streams dirty. Test the actual
-          // RemoveObject contract followed by normal page content generation.
-          const generated = removed && Boolean(module.FPDFPage_GenerateContent(pagePtr));
+          // Test the documented PDFium matrix setter as a serialization trigger.
+          // In the pinned source, FPDFPageObj_SetMatrix marks the Form object's
+          // matrix dirty even when the same matrix values are written back.
+          const markFormMatrixDirty = (formPtr, matrix) => {
+            const memory = module.pdfium.wasmExports.memory;
+            const ptrOut = module.pdfium.wasmExports.malloc(24);
+            try {
+              const view = new DataView(memory.buffer);
+              matrix.forEach((value, index) => view.setFloat32(ptrOut + index * 4, value, true));
+              return Boolean(module.FPDFPageObj_SetMatrix(formPtr, ptrOut));
+            } finally {
+              module.pdfium.wasmExports.free(ptrOut);
+            }
+          };
+          const middleMatrixMarked = removed && markFormMatrixDirty(middlePtr, middleMatrix);
+          const outerMatrixMarked = middleMatrixMarked && markFormMatrixDirty(outerPtr, outerMatrix);
+          const generated = removed && middleMatrixMarked && outerMatrixMarked &&
+            Boolean(module.FPDFPage_GenerateContent(pagePtr));
           const removedBytes = engine.save();
           module.FPDF_ClosePage(pagePtr);
           engine.destroy();
