@@ -15,8 +15,11 @@ h1{font-size:clamp(24px,4vw,36px);margin:10px 0}p{color:var(--muted);line-height
 .viewer{display:none;width:100%;height:min(78vh,900px);border:1px solid var(--line);border-radius:12px;background:#fff}
 .notice{background:#fff6df;border:1px solid #f3dfaa;border-radius:12px;padding:16px;margin-top:18px;color:#70531b;line-height:1.6}
 </style>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
 </head>
-<body>
+<body data-kagzi-protected="true">
 <header><strong>KAGZI · LEARNING HUB</strong><a href="education.html">← Back to Library</a></header>
 <main class="wrap"><section class="panel">
 <div class="kicker">KAGZI IN-WEBSITE READER</div>
