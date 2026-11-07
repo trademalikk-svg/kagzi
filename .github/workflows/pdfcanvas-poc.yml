@@ -1901,6 +1901,18 @@ jobs:
           verify.destroy();
           const replacementFound = extracted.includes('Matrix-aware rotated sample');
           const originalRemoved = !extracted.includes('Matrix-aware rotated target');
+          console.log(JSON.stringify({
+            diagnostic: 'rotated replacement round-trip',
+            run: { text: run.text, x: run.x, y: run.y, width: run.w, height: run.h, fontSize: run.fontSize, textFontSize: run.textFontSize },
+            formMatrix: fm,
+            textMatrix: tm,
+            combinedMatrix: combined,
+            scale,
+            angle,
+            extracted,
+            replacementFound,
+            originalRemoved
+          }, null, 2));
           assert.ok(replacementFound && originalRemoved, 'replacement text must survive PDFium reopen');
 
           const after = await render(output);
