@@ -4061,7 +4061,7 @@ jobs:
       - name: Link and run nested Form dirty API WASM smoke test
         working-directory: vendor/embedpdf-runtime
         run: |
-          emcc "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
+          em++ "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" \
             -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" \
             out/embedpdf-runtime/wasm32/obj/libembedpdf.a \
             -o "$RUNNER_TEMP/nested-form-dirty-api-smoke.js" \
