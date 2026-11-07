@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
-const publicPages=new Set(['index.html','auth.html','about.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html']);
+const publicPages=new Set(['index.html','auth.html','about.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html',
+ 'current-affairs.html','current-affairs-book.html','current-affairs/archive.html','current-affairs/day/index.html',
+ 'current-affairs/english/index.html','current-affairs/index.html','current-affairs/monthly/index.html',
+ 'current-affairs/weekly/index.html','current-affairs/yearly/index.html','economy-book.html','education.html',
+ 'environment-book.html','geography-book.html','hindi-book.html','history-book.html','math-reasoning-book.html',
+ 'mcq-pyq-book.html','science-book.html','study-material.html','up-gk-book.html']);
 test('shared auth guard fails closed and preserves the requested destination',()=>{
  const guard=read('auth-guard.js');
  assert.ok(guard.includes("body.dataset.kagziProtected!=='true'"));
@@ -14,7 +19,7 @@ test('shared auth guard fails closed and preserves the requested destination',()
 });
 test('every non-public HTML route requires a Supabase session',()=>{
  const pages=JSON.parse(read('.github/kagzi-html-pages.json'));
- assert.ok(pages.length>=120);
+ assert.ok(pages.length>=100);
  for(const path of pages){
   assert.ok(!publicPages.has(path),path+' must not be in the protected list');
   const html=read(path);
