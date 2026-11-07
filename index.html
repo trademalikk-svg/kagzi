@@ -298,7 +298,9 @@ img,video,canvas,iframe{max-width:100%}
 <div class="studio-field"><label for="photoOverlayX">Text position X (%)</label><input class="page-range-input" id="photoOverlayX" type="number" min="0" max="100" value="5"></div>
 <div class="studio-field"><label for="photoOverlayY">Text position Y (%)</label><input class="page-range-input" id="photoOverlayY" type="number" min="0" max="100" value="15"></div>
 <div class="studio-field wide"><button class="primary-btn" id="photoOverlayAdd" type="button" disabled>Add text to photo</button><button class="subtle-btn" id="photoOverlayClear" type="button" disabled>Remove added text</button></div>
-<div class="studio-field"><label for="photoCoverColor">Cover colour</label><input id="photoCoverColor" type="color" value="#ffffff"></div>
+<div class="studio-field"><label for="photoCoverColor">Cover colour</label><input id="photoCoverColor" type="color" value="#ffffff"></div><div class="studio-field wide"><label for="photoCloneSize">Manual clone brush size (px)</label><input class="page-range-input" id="photoCloneSize" type="number" min="4" max="160" value="28"></div>
+<div class="studio-field wide"><button class="subtle-btn" id="photoCloneSample" type="button" disabled>1. Pick clean sample area</button><button class="subtle-btn" id="photoCloneClear" type="button" disabled>Clear retouch strokes</button></div>
+<p class="studio-hint wide">After selecting a sample, drag your finger over the unwanted text in the preview. The brush copies nearby photo texture; it is manual retouching, not automatic AI reconstruction.</p>
 <div class="studio-field"><label for="photoCoverX">Area X (%)</label><input class="page-range-input" id="photoCoverX" type="number" min="0" max="100" value="5"></div>
 <div class="studio-field"><label for="photoCoverY">Area Y (%)</label><input class="page-range-input" id="photoCoverY" type="number" min="0" max="100" value="80"></div>
 <div class="studio-field"><label for="photoCoverW">Area width (%)</label><input class="page-range-input" id="photoCoverW" type="number" min="1" max="100" value="30"></div>
