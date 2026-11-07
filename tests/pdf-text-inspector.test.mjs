@@ -39,3 +39,12 @@ test('selected PDF text loads its original size and available font style into th
   assert.match(editor, /Math\.min\(96,edit\.fontSize\)/);
   assert.match(html, /id="inspectorItalic"/);
 });
+
+
+test('italic styling is applied to direct text overlays and Unicode raster export', async () => {
+  const editor = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const unicode = await readFile(new URL('../pdf-unicode-text.js', import.meta.url), 'utf8');
+
+  assert.match(editor, /inspectorItalic&&el\.inspectorItalic\.checked\?\(baseFont==='TimesRoman'\?'Italic':'Oblique'\)/);
+  assert.match(unicode, /opts\.italic\?'italic ':' '/);
+});
