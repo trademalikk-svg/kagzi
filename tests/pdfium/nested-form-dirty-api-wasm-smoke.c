@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,17 @@
 #include "public/fpdf_edit.h"
 #include "public/fpdf_save.h"
 #include "public/fpdf_text.h"
+
+extern int kagzi_pdf_replace_text(const unsigned char* pdf_bytes,
+                                 uint32_t pdf_size,
+                                 int page_index,
+                                 const uint32_t* target,
+                                 uint32_t target_length,
+                                 const uint32_t* replacement,
+                                 uint32_t replacement_length,
+                                 unsigned char** output_bytes,
+                                 uint32_t* output_size);
+extern void kagzi_pdf_free(unsigned char* bytes);
 
 #define PDF_CAPACITY 8192
 #define OUTPUT_CAPACITY 16384
@@ -265,5 +277,39 @@ int main(void) {
   if (!replacement_found || original_remains || !control_preserved) return 15;
   if (target_pixel_differences == 0) return 23;
   if (control_pixel_differences != 0) return 24;
+
+  // Exercise the browser-facing bridge, not only the low-level PDFium API.
+  const uint32_t bridge_target[] = {
+      'O', 'R', 'I', 'G', 'I', 'N', 'A', 'L'
+  };
+  const uint32_t bridge_replacement[] = {
+      'B', 'R', 'I', 'D', 'G', 'E', 'O', 'K'
+  };
+  unsigned char* bridge_output = NULL;
+  uint32_t bridge_output_size = 0;
+  int bridge_result = kagzi_pdf_replace_text(
+      (const unsigned char*)input.bytes, (uint32_t)input.size, 0,
+      bridge_target, 8, bridge_replacement, 8,
+      &bridge_output, &bridge_output_size);
+  if (bridge_result != 0 || !bridge_output || !bridge_output_size) return 27;
+
+  FPDF_InitLibrary();
+  FPDF_DOCUMENT bridge_document = FPDF_LoadMemDocument64(
+      bridge_output, (unsigned long long)bridge_output_size, NULL);
+  if (!bridge_document) return 28;
+  FPDF_PAGE bridge_page = FPDF_LoadPage(bridge_document, 0);
+  if (!bridge_page) return 29;
+  FPDF_TEXTPAGE bridge_text = FPDFText_LoadPage(bridge_page);
+  if (!bridge_text) return 30;
+  int bridge_replaced = contains_text(bridge_text, "BRIDGEOK");
+  int bridge_original_absent = !contains_text(bridge_text, "ORIGINAL");
+  int bridge_control_kept = contains_text(bridge_text, "PAGECONTROL");
+  FPDFText_ClosePage(bridge_text);
+  FPDF_ClosePage(bridge_page);
+  FPDF_CloseDocument(bridge_document);
+  FPDF_DestroyLibrary();
+  kagzi_pdf_free(bridge_output);
+  if (!bridge_replaced || !bridge_original_absent || !bridge_control_kept)
+    return 31;
   return 0;
 }
