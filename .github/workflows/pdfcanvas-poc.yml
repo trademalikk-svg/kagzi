@@ -650,6 +650,161 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
           NODE
 
+      - name: Install isolated Node canvas for PDF.js visual comparison
+        working-directory: vendor/pdfcanvas
+        run: npm install --no-save --no-package-lock --no-audit --no-fund @napi-rs/canvas@0.1.80
+
+      - name: Compare Form XObject replacement render with PDF.js
+        working-directory: vendor/pdfcanvas
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createCanvas, DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
+          import { PDFDocument, StandardFonts } from 'pdf-lib';
+          import { PdfiumTextEngine } from './dist/index.js';
+
+          // PDF.js uses browser canvas globals; @napi-rs/canvas supplies the Node equivalents.
+          globalThis.DOMMatrix ??= DOMMatrix;
+          globalThis.ImageData ??= ImageData;
+          globalThis.Path2D ??= Path2D;
+          const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+
+          async function renderFirstPage(bytes) {
+            const loading = pdfjs.getDocument({ data: bytes.slice(), useSystemFonts: true });
+            const pdf = await loading.promise;
+            try {
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1 });
+              const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+              const context = canvas.getContext('2d');
+              await page.render({ canvas, canvasContext: context, viewport }).promise;
+              return {
+                width: canvas.width,
+                height: canvas.height,
+                pixels: context.getImageData(0, 0, canvas.width, canvas.height).data
+              };
+            } finally {
+              await pdf.destroy();
+            }
+          }
+
+          const source = await PDFDocument.create();
+          const sourceFont = await source.embedFont(StandardFonts.Helvetica);
+          const sourcePage = source.addPage([612, 792]);
+          sourcePage.drawText('Form XObject original text', { x: 60, y: 700, size: 16, font: sourceFont });
+          const loadedSource = await PDFDocument.load(await source.save());
+
+          const targetDoc = await PDFDocument.create();
+          const [formPage] = await targetDoc.embedPages([loadedSource.getPage(0)]);
+          const page = targetDoc.addPage([612, 792]);
+          page.drawPage(formPage, { x: 0, y: 0, width: 612, height: 792 });
+          const sentinelFont = await targetDoc.embedFont(StandardFonts.Helvetica);
+          page.drawText('Unrelated page sentinel', { x: 60, y: 640, size: 12, font: sentinelFont });
+          const input = new Uint8Array(await targetDoc.save({ useObjectStreams: true }));
+
+          const engine = await PdfiumTextEngine.create('node_modules/@embedpdf/pdfium/dist/pdfium.wasm', input);
+          const runs = engine.readPage(0, 0);
+          const target = runs.find(run => run.text.includes('Form XObject original text'));
+          assert.ok(runs.some(run => run.text.includes('Unrelated page sentinel')),
+            'unrelated page sentinel must be discoverable');
+
+          if (!target || target.editable !== true) {
+            engine.destroy();
+            console.log(JSON.stringify({
+              result: 'BLOCKED',
+              reason: !target ? 'Form XObject text was not discovered' : 'PDFium did not mark Form XObject text editable',
+              visualReplacementComparison: 'not run because no replacement was safely available',
+              policy: 'Keep Form XObject replacement disabled.'
+            }, null, 2));
+            const summary = [
+              '### Form XObject visual comparison',
+              '',
+              '**BLOCKED** — no safely editable Form XObject run was available; no replacement was attempted.',
+              '',
+              'Visual replacement comparison remains pending. Keep this content non-editable.',
+              ''
+            ].join('\\n');
+            await import('node:fs').then(({ default: fs }) => fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary));
+            process.exit(0);
+          }
+
+          const edited = engine.applyEdits([{
+            ...target,
+            newText: 'Form XObject replacement text',
+            originalText: target.text,
+            background: '#ffffff'
+          }]);
+          engine.destroy();
+          if (edited.failed.length > 0 || edited.bytes === input) {
+            console.log(JSON.stringify({
+              result: 'BLOCKED',
+              reason: 'PDFium applyEdits did not produce a replacement PDF',
+              failed: edited.failed.map(run => run.text),
+              policy: 'Keep Form XObject replacement disabled.'
+            }, null, 2));
+            process.exit(0);
+          }
+
+          const before = await renderFirstPage(input);
+          const after = await renderFirstPage(edited.bytes);
+          assert.equal(after.width, before.width, 'rendered page width must remain unchanged');
+          assert.equal(after.height, before.height, 'rendered page height must remain unchanged');
+
+          // Compare a full-width horizontal band around the target line. This allows
+          // the replacement string to be wider while requiring every unrelated pixel
+          // elsewhere on the page to remain identical under the same PDF.js renderer.
+          const y0 = Math.max(0, Math.floor(target.y - 18));
+          const y1 = Math.min(before.height, Math.ceil(target.y + target.h + 24));
+          let changedInsideBand = 0;
+          let changedOutsideBand = 0;
+          for (let y = 0; y < before.height; y += 1) {
+            for (let x = 0; x < before.width; x += 1) {
+              const offset = (y * before.width + x) * 4;
+              const changed =
+                before.pixels[offset] !== after.pixels[offset] ||
+                before.pixels[offset + 1] !== after.pixels[offset + 1] ||
+                before.pixels[offset + 2] !== after.pixels[offset + 2] ||
+                before.pixels[offset + 3] !== after.pixels[offset + 3];
+              if (changed) {
+                if (y >= y0 && y < y1) changedInsideBand += 1;
+                else changedOutsideBand += 1;
+              }
+            }
+          }
+
+          assert.ok(changedInsideBand > 0, 'replacement must produce a visible pixel change in the target text band');
+          assert.equal(changedOutsideBand, 0,
+            'pixels outside the target text band must remain identical (unrelated page content preserved)');
+
+          const report = {
+            result: 'PASS',
+            renderer: 'PDF.js (same renderer used by PDFcanvas)',
+            canvasBackend: '@napi-rs/canvas',
+            pagePixels: before.width + 'x' + before.height,
+            targetBand: { y0, y1 },
+            changedPixelsInsideTargetBand: changedInsideBand,
+            changedPixelsOutsideTargetBand: changedOutsideBand,
+            unrelatedPageVisuals: 'pixel-identical outside the edited text band',
+            policy: 'Visual comparison passed for this fixture only; do not generalize Form XObject editability to other PDFs.'
+          };
+          console.log(JSON.stringify(report, null, 2));
+          const summary = [
+            '### Form XObject visual comparison',
+            '',
+            '| Check | Result |',
+            '|---|---|',
+            '| Renderer | PDF.js |',
+            '| Page size | ' + before.width + ' × ' + before.height + ' px |',
+            '| Changed pixels in target band | ' + changedInsideBand + ' |',
+            '| Changed pixels outside target band | ' + changedOutsideBand + ' |',
+            '| Unrelated page visuals | pixel-identical |',
+            '',
+            'Visual comparison passed for this fixture only. This does not enable general Form XObject editing.'
+          ].join('\\n');
+          const fs = await import('node:fs');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+          NODE
+
       - name: Classify text inside Form XObjects
         working-directory: vendor/pdfcanvas
         run: |
