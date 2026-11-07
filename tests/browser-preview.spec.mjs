@@ -14,7 +14,7 @@ test.describe('KAGZI anonymous access and browser regression', () => {
     test(route + ' is accessible without authentication', async ({ page }) => {
       await page.goto(baseURL + route, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('body')).toBeVisible();
-      await expect.poll(() => new URL(page.url()).pathname).not.toBe('/auth.html');
+      await expect.poll(() => new URL(page.url()).pathname).not.toMatch(/^\/auth(?:\.html)?$/);
     });
   }
 
