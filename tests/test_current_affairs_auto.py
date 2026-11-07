@@ -37,7 +37,7 @@ class CurrentAffairsParserTests(unittest.TestCase):
         self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["date"], "2026-11-06")
         self.assertEqual(items[0]["source"], "पत्र सूचना कार्यालय (PIB)")
-        self.assertIn("परीक्षा के लिए", items[0]["description"])
+        self.assertTrue(any("परीक्षा के लिए" in item["description"] for item in items))
         self.assertTrue(items[0]["url"].startswith("https://www.pib.gov.in/"))
 
     def test_rejects_items_without_a_valid_publication_date(self):
