@@ -176,6 +176,24 @@ img,video,canvas,iframe{max-width:100%}
 </style>
 
 
+
+<style id="kagzi-sarkari-jobs-board-css">
+.kagzi-jobs-board{margin:18px 0 20px;background:linear-gradient(135deg,#071a3b,#10458d);border:1px solid #e5bd54;border-radius:18px;padding:clamp(16px,2.2vw,26px);color:#fff;box-shadow:0 8px 24px #071a3b18}
+.kagzi-jobs-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:16px}
+.kagzi-jobs-eyebrow{font-size:10px;letter-spacing:2px;font-weight:800;color:#ffdc82}
+.kagzi-jobs-head h2{margin:5px 0;color:#fff;font:900 clamp(22px,3vw,30px) Manrope,Arial}
+.kagzi-jobs-head p{margin:0;color:#dce8ff;font-size:12px;line-height:1.6}
+.kagzi-jobs-all{flex-shrink:0;background:#ffd45d;color:#102348;text-decoration:none;border-radius:22px;padding:10px 14px;font-size:11px;font-weight:900}
+.kagzi-jobs-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kagzi-job-tile{display:flex;align-items:center;gap:12px;min-width:0;min-height:88px;padding:13px;background:linear-gradient(145deg,#fff,#edf4ff);border:1px solid #d9e5f8;border-radius:13px;color:#102348;text-decoration:none;transition:transform .18s,box-shadow .18s}
+.kagzi-job-tile:hover{transform:translateY(-2px);box-shadow:0 8px 18px #0002}
+.kagzi-job-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:12px;background:#e3edff;font-size:23px}
+.kagzi-job-tile b{display:block;font:800 14px Manrope,Arial;color:#082b63}
+.kagzi-job-tile small{display:block;margin-top:4px;font-size:10px;line-height:1.45;color:#536782}
+.kagzi-jobs-foot{margin:13px 2px 0;color:#d8e5fa;font-size:10px;line-height:1.55}
+@media(max-width:760px){.kagzi-jobs-head{align-items:flex-start;flex-direction:column}.kagzi-jobs-all{align-self:flex-start}.kagzi-jobs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kagzi-job-tile{min-height:80px;padding:10px;gap:8px}.kagzi-job-icon{flex-basis:36px;width:36px;height:36px;font-size:20px}.kagzi-job-tile b{font-size:12px}.kagzi-job-tile small{font-size:9px}}
+@media(max-width:360px){.kagzi-jobs-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -327,6 +345,22 @@ img,video,canvas,iframe{max-width:100%}
 <div class="document-list" id="documentList" aria-live="polite"></div>
 <input type="file" id="filePicker" hidden multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt">
 <div class="file-note">Privacy: files are only referenced in this browser tab. They are not uploaded, synced, or saved to an account. Refreshing or closing this tab clears this list. Avoid using shared devices for confidential files.</div>
+</section>
+
+<section class="kagzi-jobs-board" id="kagzi-sarkari-jobs-board" aria-label="KAGZI Sarkari Naukri and Exam Updates">
+  <div class="kagzi-jobs-head">
+    <div><div class="kagzi-jobs-eyebrow">KAGZI CAREER DESK · INDIA + UTTAR PRADESH</div><h2>सरकारी नौकरी और परीक्षा अपडेट</h2><p>Latest भर्ती, परिणाम, Admit Card और परीक्षा की जानकारी — एक ही जगह।</p></div>
+    <a class="kagzi-jobs-all" href="government-jobs/index.html">सभी Job Updates देखें ↗</a>
+  </div>
+  <div class="kagzi-jobs-grid">
+    <a class="kagzi-job-tile" href="government-jobs/index.html#latest-jobs"><span class="kagzi-job-icon">📋</span><span><b>Latest Jobs</b><small>नई सरकारी भर्तियाँ</small></span></a>
+    <a class="kagzi-job-tile" href="government-jobs/index.html#results"><span class="kagzi-job-icon">🏆</span><span><b>Results</b><small>परीक्षा परिणाम</small></span></a>
+    <a class="kagzi-job-tile" href="government-jobs/index.html#admit-cards"><span class="kagzi-job-icon">🎫</span><span><b>Admit Card</b><small>प्रवेश पत्र और परीक्षा शहर</small></span></a>
+    <a class="kagzi-job-tile" href="government-jobs/index.html#answer-keys"><span class="kagzi-job-icon">📝</span><span><b>Answer Key</b><small>उत्तर कुंजी और आपत्ति</small></span></a>
+    <a class="kagzi-job-tile" href="government-jobs/index.html#syllabus"><span class="kagzi-job-icon">📚</span><span><b>Syllabus</b><small>पाठ्यक्रम और परीक्षा पैटर्न</small></span></a>
+    <a class="kagzi-job-tile" href="government-jobs/index.html#admission"><span class="kagzi-job-icon">🎓</span><span><b>Admission</b><small>प्रवेश और आवेदन सूचना</small></span></a>
+  </div>
+  <p class="kagzi-jobs-foot">सूचना प्रकाशित करने से पहले आधिकारिक विभागीय नोटिस की जाँच आवश्यक है। KAGZI सरकारी वेबसाइट नहीं है; अंतिम जानकारी संबंधित आधिकारिक पोर्टल से सत्यापित करें।</p>
 </section>
 <section class="panel updates-panel" style="margin-top:18px"><div class="panel-heading"><div><h2>Workspace updates</h2><p>What’s coming to KAGZI</p></div><span class="sparkle">✦</span></div><div class="update-item"><span class="update-number">01</span><div><b>Document tools</b><p>PDF, scanner and office workflows are being added in stages.</p></div></div><div class="update-item"><span class="update-number">02</span><div><b>AI workspace</b><p>Document summaries, translation and smart assistance are planned.</p></div></div><div class="update-item"><span class="update-number">03</span><div><b>Private document locker</b><p>Secure accounts and storage require a separate backend build.</p></div></div></section>
 <footer><span>© 2026 KAGZI</span><span>Built for a more organised day.</span><a href="pdf-tools.html">Free PDF Tools</a><a href="photo-tools.html">Photo Tools</a><a href="gov-documents.html">Government Document Guides</a><a href="jan-seva.html">जन सेवा / Jan Seva</a><a href="education-pdfs.html">Education PDFs</a><a href="document-editing-en.html">Document Editing · English</a><a href="document-editing.html">दस्तावेज़ संपादन · Hindi</a><a href="https://services.india.gov.in/" target="_blank" rel="noopener noreferrer">National Services Portal</a><a href="https://www.digilocker.gov.in/" target="_blank" rel="noopener noreferrer">DigiLocker</a><a href="about.html">About</a><a href="contact.html">Contact & AI Support</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a><a href="/pdf-tools">Hindi + English Guides</a><a href="/prepare-documents-for-online-forms-guide">Online Form Checklist</a><button class="share-btn" data-share-page type="button">Share KAGZI</button><button class="share-btn" data-whatsapp-page type="button">WhatsApp Share</button></footer>
