@@ -196,6 +196,19 @@ CI run #120 completed successfully on commit `665924ef142eb78da79c49941701a7792f
 
 **Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
 
+### Intersecting clipping-path fixture correction (2026-11-07)
+
+The earlier intersecting-clip test compared a page before and after drawing the exact same text at the same coordinates. That made a zero-pixel difference ambiguous: the test could not distinguish an unchanged original from a successful same-text replacement. The fixture was corrected to:
+
+- Verify that the original Form text is absent after PDFium removal and Save/Reopen.
+- Draw a distinct replacement string under two sequential rectangular clipping paths.
+- Verify that the replacement is present and the original is absent after PDF.js reopen.
+- Compare rendered pixels against the intersection and unrelated control region.
+
+CI run #123 completed successfully on commit `f890997c44ee11109fdb45baee66d1e62bc5e217`: 220 changed pixels inside the intersection, 0 outside, and 0 changes to the unrelated control.
+
+**Scope:** this establishes only this synthetic two-rectangle intersection. Arbitrary clip paths, transformed clipping paths, even-odd rules, Bezier paths, and nested clipping combinations remain unverified. General Form XObject editing remains disabled.
+
 Pinned source references:
 - https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/fpdfsdk/fpdf_editpage.cpp
 - https://github.com/embedpdf/runtime/blob/42388d3b4c9895d6672f5da357b1429678a0994c/core/fpdfapi/edit/cpdf_pagecontentgenerator.cpp
