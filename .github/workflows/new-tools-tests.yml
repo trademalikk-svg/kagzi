@@ -1,0 +1,15 @@
+name: KAGZI new tools checks
+on:
+  push:
+    branches: [fix/public-free-access-preview-2026-11-08]
+  pull_request:
+    branches: [fix/public-free-access-preview-2026-11-08]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
