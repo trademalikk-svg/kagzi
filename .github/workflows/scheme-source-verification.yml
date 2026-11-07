@@ -1,0 +1,34 @@
+name: KAGZI Scheme Eligibility and Benefit Source Verification
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: kagzi-scheme-source-verification
+  cancel-in-progress: false
+jobs:
+  verify-official-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test source checker
+        run: python -m unittest discover -s tests -p 'test_scheme_source_verification.py'
+      - name: Check official government sources
+        run: python scripts/verify_scheme_sources.py
+      - name: Commit report
+        run: |
+          if git diff --quiet -- government-schemes/data/verification-status.json; then
+            echo "Source report unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add government-schemes/data/verification-status.json
+          git commit -m "chore: refresh official scheme source verification"
+          git push
