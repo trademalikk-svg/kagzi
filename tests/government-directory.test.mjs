@@ -82,3 +82,26 @@ test("unified jobs renderer supports region search, deadline sorting and safe sh
  assert.match(js,/clipboard\.writeText/);
  assert.match(js,/textContent/);
 });
+
+test("all 28 State PSC portal links are attributed to the official UPPSC directory", async()=>{
+ const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
+ const data=JSON.parse(raw);
+ assert.equal(data.portals.length,28);
+ assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,28);
+ for(const portal of data.portals){
+  assert.match(portal.url,/^https:\/\//);
+  assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
+  assert.ok(portal.lastCheckedAt);
+ }
+});
+
+test("region filter is populated from the complete 36-region registry", async()=>{
+ const raw=await readFile(new URL("../government-jobs/assets/regions.js",import.meta.url),"utf8");
+ const match=raw.match(/window\.KAGZI_REGIONS=(\[[\s\S]*\]);/);
+ const regions=JSON.parse(match[1]);
+ const js=await readFile(new URL("../government-jobs/assets/jobs-directory.js",import.meta.url),"utf8");
+ assert.equal(regions.length,36);
+ assert.match(js,/regions\.forEach/);
+ assert.match(js,/regionFilter\.append/);
+ assert.match(js,/regionFilter\.value/);
+});
