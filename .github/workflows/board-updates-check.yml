@@ -1,0 +1,40 @@
+name: KAGZI Official Board Updates
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kagzi-board-updates
+  cancel-in-progress: false
+
+jobs:
+  refresh-board-notices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run board parser tests
+        run: python -m unittest tests.test_board_updates
+      - name: Check official UPMSP and CBSE pages
+        run: python scripts/check_board_updates.py
+      - name: Commit updated board archives
+        run: |
+          if git diff --quiet -- board-updates/data/up-board.json board-updates/data/cbse.json; then
+            echo "No board archive changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add board-updates/data/up-board.json board-updates/data/cbse.json
+          git commit -m "chore: refresh official UP Board and CBSE notices"
+          git push
