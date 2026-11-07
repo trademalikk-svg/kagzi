@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
+const htmlPages=()=>execFileSync('git',['ls-files','*.html'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
 
 test('legacy protected markers do not block free/public pages',()=>{
  const guard=read('auth-guard.js');
@@ -11,13 +13,15 @@ test('legacy protected markers do not block free/public pages',()=>{
 });
 
 test('only the private paid library has a page-level membership gate',()=>{
- const library=read('current-affairs/my-library.html');
- assert.match(library,/<body[^>]*data-kagzi-auth-scope="membership"/i);
- const pages=JSON.parse(read('.github/kagzi-html-pages.json'));
+ const pages=htmlPages();
+ assert.ok(pages.length>=100);
  for(const path of pages){
-  if(path==='current-affairs/my-library.html')continue;
   const html=read(path);
-  assert.doesNotMatch(html,/<body[^>]*data-kagzi-auth-scope="membership"/i,path+' must remain public');
+  if(path==='current-affairs/my-library.html'){
+   assert.match(html,/<body[^>]*data-kagzi-auth-scope="membership"/i);
+  }else{
+   assert.doesNotMatch(html,/<body[^>]*data-kagzi-auth-scope="membership"/i,path+' must remain public');
+  }
  }
 });
 
