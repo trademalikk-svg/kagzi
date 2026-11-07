@@ -3,7 +3,7 @@ on:
   push:
     branches: [feat/resume-typing-calculators-preview-2026-11-08]
   pull_request:
-    branches: [main]
+    branches: [fix/public-free-access-preview-2026-11-08]
 jobs:
   test:
     runs-on: ubuntu-latest
