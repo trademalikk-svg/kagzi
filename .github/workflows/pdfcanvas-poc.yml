@@ -3327,7 +3327,7 @@ jobs:
           }
 
           async function measure(bytes) {
-            const loadingTask = pdfjs.getDocument({ data: bytes, useSystemFonts: true });
+            const loadingTask = pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: true });
             const pdf = await loadingTask.promise;
             try {
               const page = await pdf.getPage(1);
