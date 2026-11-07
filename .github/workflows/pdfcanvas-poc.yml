@@ -3209,6 +3209,7 @@ jobs:
           const [pageForm] = await pageHostDoc.embedPages([sourcePage]);
           const pageHost = pageHostDoc.addPage([612, 792]);
           pageHost.drawPage(pageForm, { x: 0, y: 0, width: 612, height: 792 });
+          await pageForm.embed();
           removeLocalResourcesAndHoistFonts(pageHostDoc, pageForm, pageHost);
           const pageFallbackBytes = new Uint8Array(await pageHostDoc.save({ useObjectStreams: true }));
           const pageFallback = await discover('page-resource fallback', pageFallbackBytes);
@@ -3218,6 +3219,7 @@ jobs:
           const [childForm] = await parentHostDoc.embedPages([sourcePage]);
           const parentHostPage = parentHostDoc.addPage([612, 792]);
           parentHostPage.drawPage(childForm, { x: 0, y: 0, width: 612, height: 792 });
+          await childForm.embed();
           removeLocalResourcesAndHoistFonts(parentHostDoc, childForm, parentHostPage);
           const parentReloaded = await PDFDocument.load(await parentHostDoc.save());
           const outerDoc = await PDFDocument.create();
