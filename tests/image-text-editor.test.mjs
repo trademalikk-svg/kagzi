@@ -17,3 +17,15 @@ test('image editor exposes OCR line normalization and keeps text plus bounding b
     text: 'Hello world', x: 10, y: 20, width: 100, height: 25
   });
 });
+
+test('selected text updates the canvas live as edit controls change', async () => {
+  const source = await readFile(new URL('../image-text-editor.js', import.meta.url), 'utf8');
+  assert.match(source, /addEventListener\(['"]input['"],\s*renderLiveTextPreview/);
+  assert.match(source, /function renderLiveTextPreview\(/);
+  assert.match(source, /previewBase/);
+});
+
+test('mobile editor keeps the text controls visible before the canvas preview', async () => {
+  const css = await readFile(new URL('../image-text-editor.css', import.meta.url), 'utf8');
+  assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.side\s*\{[^}]*order:\s*-1/s);
+});
