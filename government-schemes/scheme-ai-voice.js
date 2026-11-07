@@ -229,11 +229,15 @@
     const voicePanel = { ...panel, panel: panel.panel };
     initVoice(voicePanel);
 
-    panel.ask.addEventListener("click", () => {
+    const applySelectedContext = () => {
       if (!state.selectedContext) return;
       const original = panel.input.value.trim();
       if (!original || original.startsWith("योजना का उपलब्ध विवरण:")) return;
       panel.input.value = preparePrompt(original);
+    };
+    panel.ask.addEventListener("click", applySelectedContext, true);
+    panel.input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) applySelectedContext();
     }, true);
 
     const observer = new MutationObserver(() => {
