@@ -2856,10 +2856,9 @@ jobs:
               transform: item.transform,
               width: item.width,
               height: item.height,
-              baselineTopLeft: {
-                x: item.transform[4] - viewport.viewBox[0],
-                y: viewport.height - (item.transform[5] - viewport.viewBox[1])
-              }
+              baselineTopLeft: viewport.convertToViewportPoint(
+                item.transform[4], item.transform[5]
+              )
             };
           } finally {
             await task.destroy();
