@@ -1,5 +1,4 @@
 diff --git a/core/fpdfapi/page/cpdf_pageobjectholder.h b/core/fpdfapi/page/cpdf_pageobjectholder.h
-index 0000000..0000000 100644
 --- a/core/fpdfapi/page/cpdf_pageobjectholder.h
 +++ b/core/fpdfapi/page/cpdf_pageobjectholder.h
 @@ -128,6 +128,9 @@ class CPDF_PageObjectHolder {
@@ -13,7 +12,6 @@ index 0000000..0000000 100644
    std::optional<ByteString> GraphicsMapSearch(const GraphicsData& gd);
    void GraphicsMapInsert(const GraphicsData& gd, const ByteString& str);
 diff --git a/core/fpdfapi/page/cpdf_pageobjectholder.cpp b/core/fpdfapi/page/cpdf_pageobjectholder.cpp
-index 0000000..0000000 100644
 --- a/core/fpdfapi/page/cpdf_pageobjectholder.cpp
 +++ b/core/fpdfapi/page/cpdf_pageobjectholder.cpp
 @@ -434,6 +434,23 @@ std::unique_ptr<CPDF_PageObject> CPDF_PageObjectHolder::RemovePageObject(
@@ -41,7 +39,6 @@ index 0000000..0000000 100644
    if (index >= page_object_list_.size()) {
      return false;
 diff --git a/fpdfsdk/fpdf_editpage.cpp b/fpdfsdk/fpdf_editpage.cpp
-index 0000000..0000000 100644
 --- a/fpdfsdk/fpdf_editpage.cpp
 +++ b/fpdfsdk/fpdf_editpage.cpp
 @@ -1195,6 +1195,31 @@ FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index) {
@@ -77,7 +74,6 @@ index 0000000..0000000 100644
  FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,
                           FPDF_PAGEOBJECT page_object) {
 diff --git a/public/fpdf_edit.h b/public/fpdf_edit.h
-index 0000000..0000000 100644
 --- a/public/fpdf_edit.h
 +++ b/public/fpdf_edit.h
 @@ -1710,5 +1710,20 @@ FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
