@@ -205,6 +205,20 @@ CI run #132 verified local-Form-over-page precedence; CI run #134 verified paren
 
 **Replacement-overlay follow-up:** CI run #137 passed a synthetic nested child deletion followed by a distinct Helvetica page overlay while the inherited parent Form font alias collided with a page-level Courier alias. The original nested text remained absent after reopen, the replacement remained present, and the unrelated page control survived. PDF.js measured the replacement at 270.126 pt, matching the standalone Helvetica baseline exactly. This covers only an unclipped identity-transform page overlay; it does not prove in-Form text-stream replacement.
 
+### Nested Form `FPDFText_SetText` persistence boundary (2026-11-07)
+
+A three-way disposable fixture now compares text replacement in a nested Form with a page-level text control:
+
+- Without `FPDFPage_GenerateContent()`, neither text replacement is persisted.
+- With page content generation, the page-level control replacement persists, but the nested Form retains its original text.
+- Marking the containing Form object dirty with the test-only active-state toggle and generating page content removes the original nested text, but the replacement text is still not serialized. The page-level control replacement remains correct.
+
+CI run #141 passed the diagnostic and confirms that ordinary page-level `FPDFText_SetText` persistence works while the nested Form case does not. The test does **not** enable nested text editing.
+
+The pinned source audit explains the likely boundary: `FPDFText_SetText()` calls `CPDF_TextObject::SetText()`, which marks the text page object dirty. `CPDF_PageContentGenerator::ProcessForm()` regenerates the Form stream only when the Form holder reports `HasDirtyStreams()`. The holder's `RemovePageObject()` path inserts the owning stream into `dirty_streams_`, but the text setter does not mark the Form holder's stream dirty. Marking the outer Form page object dirty is therefore not equivalent to marking the nested Form's content stream dirty.
+
+**Required next investigation:** determine whether a supported API can mark a nested Form's content stream dirty or expose a Form-specific content-generation operation. The current wrapper exposes Form traversal and child removal, but no verified Form insertion/content-generation API. Until a supported path is demonstrated, nested Form text replacement remains disabled.
+
 **Scope:** these are parser/resource-resolution discovery tests only. They do not prove safe text replacement, nested Form stream regeneration with inherited resources, resource-name collision handling, or visual preservation after editing. Those remain separate gates.
 
 ### Intersecting clipping-path fixture correction (2026-11-07)
