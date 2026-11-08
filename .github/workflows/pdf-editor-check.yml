@@ -8,6 +8,11 @@ on:
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
       - "tests/pdf-editor-unicode-export.test.mjs"
+      - "tests/pdf-editor-core-fixes.test.mjs"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "assets/kagzi-pdfium-native.js"
+      - "assets/kagzi-pdfium-native.wasm"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -48,6 +53,16 @@ jobs:
         run: node --test tests/pdf-editor-unicode-export.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
+      - name: Test PDF editor core fixes
+        run: node --test tests/pdf-editor-core-fixes.test.mjs
+      - name: Test native PDFium text replacement gate
+        run: node --test tests/pdf-native-text-gate.test.mjs
+      - name: Test native PDFium WASM adapter
+        run: node --test tests/pdfium-native-text-engine.test.mjs
+      - name: Check native PDFium adapter syntax
+        run: |
+          node --check pdf-native-text-gate.js
+          node --check pdfium-native-text-engine.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
       - name: Check camera scanner JavaScript syntax
