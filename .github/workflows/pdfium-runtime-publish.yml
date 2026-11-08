@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   publish-runtime:
-    if: github.ref == 'refs/heads/feature/kagzi-pdfium-native-text'
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'feature/kagzi-pdfium-native-text')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout feature branch
@@ -54,12 +54,12 @@ jobs:
           grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
           cd "$GITHUB_WORKSPACE"
           mkdir -p assets
-          install -m 0644 $ARTIFACT_DIR/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-LICENSE.txt assets/kagzi-pdfium-LICENSE.txt
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-NOTICE.txt assets/kagzi-pdfium-NOTICE.txt
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-THIRD-PARTY-NOTICES.txt assets/kagzi-pdfium-THIRD-PARTY-NOTICES.txt
+          install -m 0644 "$ARTIFACT_DIR/kagzi-pdfium-native.js" assets/kagzi-pdfium-native.js
+          install -m 0644 "$ARTIFACT_DIR/kagzi-pdfium-native.wasm" assets/kagzi-pdfium-native.wasm
+          install -m 0644 "$ARTIFACT_DIR/BUILD-METADATA.txt" assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          install -m 0644 "$ARTIFACT_DIR/kagzi-pdfium-LICENSE.txt" assets/kagzi-pdfium-LICENSE.txt
+          install -m 0644 "$ARTIFACT_DIR/kagzi-pdfium-NOTICE.txt" assets/kagzi-pdfium-NOTICE.txt
+          install -m 0644 "$ARTIFACT_DIR/kagzi-pdfium-THIRD-PARTY-NOTICES.txt" assets/kagzi-pdfium-THIRD-PARTY-NOTICES.txt
           git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt assets/kagzi-pdfium-LICENSE.txt assets/kagzi-pdfium-NOTICE.txt assets/kagzi-pdfium-THIRD-PARTY-NOTICES.txt
           if git diff --cached --quiet; then
             echo "Verified PDFium runtime assets are already current."
