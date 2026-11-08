@@ -12,7 +12,7 @@ test('PDF text replacement preview scales font size with zoom and masks original
 
 test('PDF text replacement preview keeps selected text styling consistent with export settings', async () => {
   const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
-  const applyHandler = js.slice(js.indexOf('if(el.applyTextEdit)el.applyTextEdit.addEventListener'), js.indexOf('if(el.downloadEditedPdfBottom)'));
+  const applyHandler = js.slice(js.indexOf('if(el.applyTextEdit)el.applyTextEdit.addEventListener'), js.indexOf('window.KAGZIPdfEditorOpenFile=loadPdf'));
   for (const setting of ['inspectorFontSize', 'inspectorFontColor', 'inspectorBold', 'inspectorOpacity', 'inspectorAlignment']) {
     assert.ok(applyHandler.includes(setting), `preview should use ${setting}`);
   }
