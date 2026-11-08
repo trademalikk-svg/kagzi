@@ -30,6 +30,8 @@ jobs:
           node-version: 24
       - name: Test native editing remains fail-closed
         run: node --test tests/pdf-native-text-gate.test.mjs
+      - name: Test browser adapter memory handling and fail-closed behavior
+        run: node --test tests/pdfium-native-text-engine.test.mjs
       - name: Checkout pinned EmbedPDF PDFium runtime
         uses: actions/checkout@v4
         with:
