@@ -28,7 +28,7 @@
  }
  function loginUrl(){
   const next=location.pathname+location.search+location.hash;
-  return authPath+'?mode=login&redirect='+encodeURIComponent(next);
+  return authPath+'?mode=signup&redirect='+encodeURIComponent(next);
  }
  async function hasSession(){
   if(!client)return false;
