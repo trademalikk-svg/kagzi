@@ -9,9 +9,14 @@ on:
   workflow_dispatch:
     inputs:
       runtime_run_id:
-        description: "Successful KAGZI PDFium native text runtime run ID"
-        required: true
+        description: "Optional successful KAGZI PDFium native text runtime run ID; blank selects the latest successful run"
+        required: false
         type: string
+  push:
+    branches:
+      - feature/kagzi-pdfium-native-text
+    paths:
+      - .github/workflows/pdfium-runtime-publish.yml
 
 permissions:
   actions: read
@@ -23,7 +28,7 @@ concurrency:
 
 jobs:
   publish-runtime:
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'feature/kagzi-pdfium-native-text')
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'feature/kagzi-pdfium-native-text')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout feature branch
@@ -32,11 +37,24 @@ jobs:
           ref: feature/kagzi-pdfium-native-text
           fetch-depth: 0
 
+      - name: Resolve successful PDFium runtime build
+        id: runtime
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id='${{ github.event.workflow_run.id || inputs.runtime_run_id }}'
+          if [ -z "$run_id" ]; then
+            run_id=$(gh run list --workflow .github/workflows/pdfium-native-text-runtime.yml --branch feature/kagzi-pdfium-native-text --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          fi
+          test -n "$run_id"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
       - name: Download verified PDFium artifact
         uses: actions/download-artifact@v4
         with:
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.id || inputs.runtime_run_id }}
+          run-id: ${{ steps.runtime.outputs.run_id }}
           name: kagzi-pdfium-native-runtime
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/kagzi-pdfium-artifact
