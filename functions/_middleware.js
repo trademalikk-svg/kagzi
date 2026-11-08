@@ -1,12 +1,28 @@
 export async function onRequest(context) {
   const response = await context.next();
   const url = new URL(context.request.url);
-  const match = url.pathname.match(/^\/government-schemes\/([a-z0-9-]+)\/?$/);
-  if (!match || match[1] === "uttar-pradesh" || !response.headers.get("content-type")?.includes("text/html")) return response;
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("text/html")) return response;
 
-  const stateSlug = match[1];
-  const stateName = stateSlug.split("-").map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(" ");
-  const widget = `
+  const rewriter = new HTMLRewriter();
+
+  // Homepage already has the beacon directly in index.html.
+  // Inject it on all other HTML routes without changing non-HTML responses.
+  if (url.pathname !== "/") {
+    const beacon = '<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon=\'{"token":"82ad26136ba64a46818d5789c9dd98ec"}\'></script>';
+    rewriter.on("head", {
+      element(element) {
+        element.append(beacon, { html: true });
+      },
+    });
+  }
+
+  // Preserve the existing state-specific government-schemes AI widget.
+  const match = url.pathname.match(/^\/government-schemes\/([a-z0-9-]+)\/?$/);
+  if (match && match[1] !== "uttar-pradesh") {
+    const stateSlug = match[1];
+    const stateName = stateSlug.split("-").map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(" ");
+    const widget = `
 <section id="kagzi-state-ai" aria-labelledby="kagzi-state-ai-title" style="margin:22px 0;padding:18px;background:#fff;border:1px solid #dce4ef;border-radius:14px;box-shadow:0 5px 18px rgba(15,35,65,.06)">
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span aria-hidden="true" style="font-size:25px">✦</span><h2 id="kagzi-state-ai-title" style="margin:0;color:#102b52;font-size:21px">सरकारी योजनाओं के बारे में KAGZI AI से पूछें</h2></div>
   <p style="color:#52627a;line-height:1.6;margin:9px 0">राज्य: <b>${stateName}</b> · हिन्दी में लाभ, पात्रता, दस्तावेज़ और आवेदन प्रक्रिया पूछें।</p>
@@ -18,7 +34,13 @@ export async function onRequest(context) {
   <aside role="note" style="margin:12px 0;padding:12px 14px;background:#fff8e7;border:1px solid #efd79b;border-radius:10px;color:#493b1d;font-size:13px;line-height:1.7"><b>महत्वपूर्ण सूचना:</b> KAGZI का सत्यापित AI योजना डेटासेट अभी उत्तर प्रदेश की सीमित योजनाओं तक उपलब्ध है। अन्य राज्यों के लिए AI उपलब्ध सत्यापित डेटा न होने की जानकारी देगा और अपुष्ट योजनाओं या नियमों का दावा नहीं करेगा।<br><b>सुरक्षा:</b> Aadhaar नंबर, OTP, ATM PIN, बैंक PIN या पासवर्ड चैट में साझा न करें।</aside>
 </section>
 <script>
-(()=>{const q=document.getElementById("kagzi-state-ai-question"),b=document.getElementById("kagzi-state-ai-ask"),s=document.getElementById("kagzi-state-ai-status"),a=document.getElementById("kagzi-state-ai-answer");if(!q||!b)return;async function send(){const question=q.value.trim();if(!question)return;s.textContent="जवाब तैयार हो रहा है…";a.textContent="";b.disabled=true;try{const r=await fetch("https://kagzi-scheme-ai.trademalikk.workers.dev/",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,state:"${stateSlug}"})});const d=await r.json();if(!r.ok)throw new Error(d.error||"AI सेवा उपलब्ध नहीं है।");a.textContent=d.answer+(d.disclaimer?"\n\n"+d.disclaimer:"");}catch(e){a.textContent=e.message+" कृपया थोड़ी देर बाद फिर प्रयास करें।";}finally{b.disabled=false;s.textContent="";}}b.addEventListener("click",send);q.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});})();
-</script>`;
-  return new HTMLRewriter().on("main", { element(element) { element.append(widget, { html: true }); } }).transform(response);
+(()=>{const q=document.getElementById("kagzi-state-ai-question"),b=document.getElementById("kagzi-state-ai-ask"),s=document.getElementById("kagzi-state-ai-status"),a=document.getElementById("kagzi-state-ai-answer");if(!q||!b)return;async function send(){const question=q.value.trim();if(!question)return;s.textContent="जवाब तैयार हो रहा है…";a.textContent="";b.disabled=true;try{const r=await fetch("https://kagzi-scheme-ai.trademalikk.workers.dev/",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,state:"${stateSlug}"})});const d=await r.json();if(!r.ok)throw new Error(d.error||"AI सेवा उपलब्ध नहीं है।");a.textContent=d.answer+(d.disclaimer?"\\n\\n"+d.disclaimer:"");}catch(e){a.textContent=e.message+" कृपया थोड़ी देर बाद फिर प्रयास करें।";}finally{b.disabled=false;s.textContent="";}}b.addEventListener("click",send);q.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});})();</script>`;
+    rewriter.on("main", {
+      element(element) {
+        element.append(widget, { html: true });
+      },
+    });
+  }
+
+  return rewriter.transform(response);
 }
