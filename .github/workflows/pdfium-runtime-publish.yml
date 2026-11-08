@@ -31,8 +31,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           repository: ${{ github.repository }}
-          run-id: 42485673940
-          artifact-ids: 13619144860
+          run-id: 42487565712
+          artifact-ids: 13620941323
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/kagzi-pdfium-artifact
 
@@ -40,9 +40,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js
           test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm
-          cd /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime
+          cd /tmp/kagzi-pdfium-artifact
           sha256sum --check SHA256SUMS.txt
           grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
           grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
