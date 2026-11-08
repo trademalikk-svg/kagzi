@@ -95,3 +95,12 @@ test('PDF text Inspector previews changes and routes native replacement through 
   assert.match(js, /nativeStatus\.enabled/);
   assert.match(js, /Save\/Reopen verification passed/);
 });
+
+
+test('PDF.js receives a copy so its worker cannot detach the editor working bytes', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /pdfjsLib\.getDocument\(\{data:bytes\.slice\(\)\}\)/,
+    'opening a PDF must preserve a separate editable byte buffer');
+  assert.match(js, /pdfjsLib\.getDocument\(\{data:workingBytes\.slice\(\)\}\)/,
+    'refreshing the PDF preview must also use a copy');
+});
