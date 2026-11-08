@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Document Converter | KAGZI</title>
+<meta name="description" content="KAGZI document converter: PDF to Word, PDF to JPG and Word to PDF with clear upload consent.">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/document-converter">
+<style>
+:root{color-scheme:light;--navy:#061947;--blue:#0753c7;--gold:#ffcf39}*{box-sizing:border-box}body{margin:0;background:#f3f6fc;color:#172746;font:16px/1.65 system-ui,sans-serif}header,footer{background:var(--navy);color:white;padding:16px 22px}header a,footer a{color:#ffdf82;text-decoration:none;margin-right:16px}.wrap{max-width:760px;margin:28px auto;padding:0 16px}.panel{background:white;border:1px solid #dce5f4;border-radius:18px;padding:24px;margin:16px 0}h1,h2{color:var(--navy)}label{display:block;font-weight:700;margin:14px 0 6px}select,input[type=file]{width:100%;padding:12px;border:1px solid #b9c8df;border-radius:10px;background:#fff}button{border:0;border-radius:24px;background:var(--gold);color:var(--navy);font-weight:800;padding:13px 22px;margin-top:16px;font-size:16px}button:disabled{opacity:.55}.notice{background:#fff7df;padding:14px;border-radius:12px}.status{margin-top:14px;white-space:pre-wrap}.outputs a{display:block;margin:10px 0}.muted{color:#586982;font-size:14px}
+</style>
+</head>
+<body>
+<header><a href="/">KAGZI</a><a href="/pdf-tools">PDF Tools</a><a href="/modules">All Tools</a></header>
+<main class="wrap">
+<section class="panel">
+<p><strong>DOCUMENT CONVERTER · दस्तावेज़ कन्वर्टर</strong></p>
+<h1>PDF और Word Converter</h1>
+<p>PDF को Word या JPG में और Word (DOCX) को PDF में बदलें।</p>
+<div class="notice"><strong>Privacy notice:</strong> Convert करने पर चुनी हुई फ़ाइल KAGZI के सुरक्षित server endpoint से ConvertAPI को भेजी जाएगी। ConvertAPI के अनुसार StoreFile विकल्प से बनी output files अधिकतम 3 घंटे तक रखी जाती हैं, फिर स्वतः हट जाती हैं। केवल ऐसी फ़ाइल चुनें जिसे इस सेवा पर भेजने की अनुमति हो।</div>
+<form id="converterForm">
+<label for="target">Conversion चुनें</label>
+<select id="target" name="target" required>
+<option value="pdf-docx">PDF → Word (DOCX)</option>
+<option value="pdf-jpg">PDF → JPG (हर page की image)</option>
+<option value="docx-pdf">Word (DOCX) → PDF</option>
+</select>
+<label for="file">अपनी फ़ाइल चुनें (अधिकतम 10 MB)</label>
+<input id="file" name="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+<label><input id="consent" type="checkbox" required> मैं सहमत हूँ कि चुनी हुई फ़ाइल conversion के लिए ConvertAPI को भेजी जाएगी।</label>
+<button id="submitButton" type="submit">Convert करें</button>
+</form>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+<div id="outputs" class="outputs"></div>
+<p class="muted">यह सुविधा third-party conversion service पर निर्भर है। Trial quota और सेवा उपलब्धता लागू हो सकती है। Merge, Split और Compress के मौजूदा local tools अलग से काम करते हैं।</p>
+</section>
+</main>
+<footer><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/contact">Contact</a></footer>
+<script>
+(() => {
+ const form=document.getElementById("converterForm"),button=document.getElementById("submitButton"),status=document.getElementById("status"),outputs=document.getElementById("outputs");
+ form.addEventListener("submit",async event=>{
+  event.preventDefault();outputs.replaceChildren();status.textContent="";
+  const file=document.getElementById("file").files[0],target=document.getElementById("target").value;
+  if(!file){status.textContent="पहले फ़ाइल चुनें।";return;}
+  if(file.size>10*1024*1024){status.textContent="फ़ाइल 10 MB से छोटी होनी चाहिए।";return;}
+  if(!document.getElementById("consent").checked){status.textContent="आगे बढ़ने से पहले सहमति दें।";return;}
+  const data=new FormData();data.append("file",file);data.append("target",target);data.append("consent","yes");
+  button.disabled=true;status.textContent="Conversion चल रही है…";
+  try{
+   const response=await fetch("/api/document-converter",{method:"POST",body:data});
+   const result=await response.json();
+   if(!response.ok)throw new Error(result.error||"Conversion असफल रही।");
+   status.textContent=result.message||"Conversion पूरी हुई।";
+   for(const item of result.files||[]){const link=document.createElement("a");link.href=item.url;link.textContent="Download "+item.name;link.target="_blank";link.rel="noopener noreferrer";outputs.append(link);}
+  }catch(error){status.textContent=error.message||"कुछ समस्या हुई। कृपया फिर कोशिश करें।";}
+  finally{button.disabled=false;}
+ });
+})();
+</script>
+</body></html>

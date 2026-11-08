@@ -1,0 +1,33 @@
+name: Document converter checks
+on:
+  pull_request:
+    paths:
+      - "functions/api/document-converter.js"
+      - "document-converter.html"
+      - "tests/document-converter.test.mjs"
+      - "pdf-tools.html"
+      - ".github/workflows/document-converter-check.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/api/document-converter.js"
+      - "document-converter.html"
+      - "tests/document-converter.test.mjs"
+      - "pdf-tools.html"
+      - ".github/workflows/document-converter-check.yml"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check functions/api/document-converter.js
+      - run: node --test tests/document-converter.test.mjs
+      - name: Verify converter page and endpoint are present
+        run: |
+          test -f document-converter.html
+          grep -q '/api/document-converter' document-converter.html
+          grep -q 'CONVERTAPI_TOKEN' functions/api/document-converter.js
