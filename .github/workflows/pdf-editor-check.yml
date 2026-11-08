@@ -19,6 +19,7 @@ on:
     branches:
       - main
       - pdf-editor-design
+      - feature/pdfium-native-text-integration
     paths:
       - "pdf-editor.js"
       - "pdf-ocr.js"
