@@ -83,12 +83,26 @@ $("saveBtn").addEventListener("click",async()=>{
 
 async function loadPaidResources(){
  const status=$("paidUploadStatus"),list=$("paidResourceList");
- status.textContent="Paid editions लोड हो रही हैं…";list.textContent="";
- const {data,error}=await supabase.from("kagzi_paid_resources").select("id,title,description,price_inr,is_active,created_at").order("created_at",{ascending:false});
+ status.textContent="Paid editions लोड हो रही हैं…";list.replaceChildren();
+ const {data,error}=await supabase.from("kagzi_paid_resources").select("id,title,description,storage_path,price_inr,is_active,created_at").order("created_at",{ascending:false});
  if(error){status.textContent="Paid editions लोड नहीं हुईं: "+error.message;return;}
  if(!data||!data.length){list.textContent="अभी कोई Paid PDF अपलोड नहीं है।";status.textContent="Private bucket तैयार है।";return;}
- list.textContent=data.map(x=>(x.is_active?"ACTIVE":"INACTIVE")+" · "+x.title+" · ₹"+x.price_inr+" · "+new Date(x.created_at).toLocaleDateString("en-IN")).join("\n");
- status.textContent=data.length+" Paid edition record(s).";
+ for(const item of data){
+  const row=document.createElement("div");row.style.cssText="padding:10px 0;border-bottom:1px solid #e4e9f2";
+  const label=document.createElement("div");label.textContent=(item.is_active?"ACTIVE":"INACTIVE")+" · "+item.title+" · ₹"+item.price_inr+" · "+new Date(item.created_at).toLocaleDateString("en-IN");
+  row.append(label);
+  if(item.is_active){
+   const {data:signed,error:signedError}=await supabase.storage.from("kagzi-paid-pdfs").createSignedUrl(item.storage_path,900);
+   if(!signedError&&signed?.signedUrl){
+    const link=document.createElement("a");link.href=signed.signedUrl;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Admin Preview PDF ↗";link.style.cssText="display:inline-block;margin-top:7px;color:#2452bb;font-weight:800";
+    row.append(link);
+   }else{
+    const note=document.createElement("div");note.textContent="Preview link नहीं बना: "+(signedError?.message||"Unknown error");row.append(note);
+   }
+  }
+  list.append(row);
+ }
+ status.textContent=data.length+" Paid edition record(s). Admin preview links 15 मिनट के लिए मान्य हैं।";
 }
 $("paidRefreshBtn").addEventListener("click",loadPaidResources);
 $("paidUploadBtn").addEventListener("click",async()=>{
