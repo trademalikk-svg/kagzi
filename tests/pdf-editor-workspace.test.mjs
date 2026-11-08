@@ -22,6 +22,8 @@ test('PDF editor exposes camera scanner and five-language local OCR controls', a
     assert.match(html, new RegExp('id="' + id + '"'), 'missing scanner/OCR control: ' + id);
   }
   for (const language of ['eng', 'hin', 'urd', 'ben', 'mar']) assert.match(html, new RegExp('value="' + language + '"'));
+  assert.match(html, /value="hin" selected/);
+  assert.match(ocr, /ocrLanguage.*value\|\|'hin'/s);
   assert.match(html, /tesseract/i);
 });
 
