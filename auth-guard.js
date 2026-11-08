@@ -8,6 +8,24 @@
   }
  }catch(error){console.error('KAGZI auth guard setup failed',error);}
  const authPath='/auth.html';
+ const protectedExact=new Set([
+  '/education','/education-pdfs','/education-pdfs-en',
+  '/study-material','/study-notes','/study-practice',
+  '/reader','/ebook-creator','/paid-library',
+  '/current-affairs','/current-affairs-book','/current-affairs-book-source',
+  '/competitive-polity-book-01','/competitive-polity-complete',
+  '/economy-book','/environment-book','/geography-book',
+  '/hindi-book','/history-book','/math-reasoning-book',
+  '/mcq-pyq-book','/science-book','/up-gk-book',
+  '/pdf-editor','/image-text-editor','/document-studio',
+  '/document-editing','/document-editing-en','/document-converter',
+  '/office','/jpg-to-pdf','/pdf-tools','/pdf-compress',
+  '/photo-tools','/passport-size-photo-maker','/resume-cv-maker'
+ ]);
+ function isProtectedPath(){
+  const path=(location.pathname.replace(/\/+$/,'')||'/').replace(/\.html$/,'');
+  return protectedExact.has(path)||path.startsWith('/current-affairs/')||path.startsWith('/study-material/');
+ }
  function loginUrl(){
   const next=location.pathname+location.search+location.hash;
   return authPath+'?mode=login&redirect='+encodeURIComponent(next);
@@ -18,7 +36,8 @@
   catch(_){return false;}
  }
  async function enforcePageGate(){
-  if(!document.body||document.body.dataset.kagziProtected!=='true')return;
+  if(!document.body)return;
+  if(document.body.dataset.kagziProtected!=='true'&&!isProtectedPath())return;
   if(!await hasSession())location.replace(loginUrl());
  }
  function protectPaidItems(){
@@ -28,13 +47,11 @@
    const paidItem=target.closest('[data-paid-item]');
    if(!paidItem)return;
    if(await hasSession())return;
-   event.preventDefault();
-   event.stopPropagation();
-   event.stopImmediatePropagation();
+   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
    location.assign(loginUrl());
   },true);
  }
- window.KAGZI_AUTH_GUARD={hasSession,loginUrl};
+ window.KAGZI_AUTH_GUARD={hasSession,loginUrl,isProtectedPath};
  protectPaidItems();
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforcePageGate,{once:true});
  else enforcePageGate();
