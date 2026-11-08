@@ -1,4 +1,6 @@
 // Workspace navigation uses native anchors and CSS :target fallback.
+// This controller is only for pages that actually mount the document workspace.
+if(document.getElementById('addDocBtn')&&document.getElementById('filePicker')){
 const $=s=>document.querySelector(s);
 const KAGZI_LIBRARY_CONFIG={
  pdfLib:{src:'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',ready:()=>!!window.PDFLib,label:'PDF library'},
@@ -275,4 +277,6 @@ if(editPdfInput&&editPdfBtn){
   }catch(err){notify(err.message||'Could not edit this PDF.');}
   finally{editPdfBtn.disabled=!editPdfInput.files.length;editPdfBtn.textContent='Add text & download PDF';}
  });
+}
+
 }
