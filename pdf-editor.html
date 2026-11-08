@@ -3,13 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071735">
-<title>KAGZI PDF Editor — Document Studio</title>
-<meta name="description" content="Open and edit PDF documents locally with KAGZI Document Studio. Add text, images, highlights and manage pages.">
+<title>Free Online PDF Editor in Hindi | Edit, Organise &amp; Export PDFs | KAGZI</title>
+<meta name="description" content="KAGZI PDF Editor: add text and images, highlight, rotate, reorder, merge and split PDF pages online. Browser-based document tools with local file processing.">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://kagzi-8cy.pages.dev/pdf-editor.html">
+<meta property="og:type" content="website"><meta property="og:site_name" content="KAGZI">
+<meta property="og:title" content="Free Online PDF Editor in Hindi | KAGZI Document Studio">
+<meta property="og:description" content="Add text and images, highlight, rotate, reorder, merge and split PDF pages in your browser.">
+<meta property="og:url" content="https://kagzi-8cy.pages.dev/pdf-editor.html">
+<meta property="og:image" content="https://kagzi-8cy.pages.dev/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="KAGZI PDF Editor — Document Studio">
+<meta name="twitter:description" content="Browser-based PDF page management and annotation tools for Hindi and English users.">
+<meta name="twitter:image" content="https://kagzi-8cy.pages.dev/og-image.svg">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://kagzi-8cy.pages.dev/pdf-editor.html#app","name":"KAGZI PDF Editor","url":"https://kagzi-8cy.pages.dev/pdf-editor.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any modern browser","inLanguage":["hi-IN","en-IN"],"description":"Browser-based PDF annotations and page-management tools. Selected files are processed locally in the browser."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"KAGZI","item":"https://kagzi-8cy.pages.dev/"},{"@type":"ListItem","position":2,"name":"PDF Tools","item":"https://kagzi-8cy.pages.dev/pdf-tools.html"},{"@type":"ListItem","position":3,"name":"PDF Editor","item":"https://kagzi-8cy.pages.dev/pdf-editor.html"}]}]}</script>
 <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pdf-editor.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="/config.js"></script>
 <script defer src="/auth-guard.js"></script>
+<style>
+.seo-guide{max-width:1080px;margin:28px auto 10px;padding:22px;background:#fff;border:1px solid #dfe7f4;border-radius:16px;color:#172847;line-height:1.75}
+.seo-guide h2{font-size:clamp(21px,3vw,28px);margin:0 0 10px}.seo-guide h3{font-size:17px;margin:18px 0 5px}.seo-guide p,.seo-guide li{font-size:14px}.seo-guide a{color:#0753c7;font-weight:700}.seo-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:650px){.seo-guide{margin:18px 10px;padding:16px}.seo-guide-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body class="pdf-editor-page">
 <header class="editor-top"><a href="index.html" class="editor-brand"><span>K</span><b>KAGZI</b><small>DOCUMENT STUDIO</small></a><nav><a href="pdf-tools.html">PDF Tools</a><a href="index.html">Home</a></nav></header>
@@ -58,6 +74,20 @@
 <aside id="pdfInspector" class="pdf-inspector" aria-label="Properties inspector"><div class="inspector-head"><span>PROPERTIES</span><b>Inspector</b></div><section id="pdfSelectionProperties" class="inspector-section"><div class="inspector-empty"><span>✦</span><b>No object selected</b><p>Set defaults for new text overlays here. Existing PDF text is not directly rewritten in this browser build.</p></div><label for="inspectorText">Text</label><textarea id="inspectorText" rows="3" disabled placeholder="Text to add (use the Text tool)"></textarea><div class="inspector-grid"><label>Font size<input id="inspectorFontSize" type="number" min="6" max="96" value="14" disabled></label><label>Opacity<input id="inspectorOpacity" type="number" min="0" max="100" value="100" disabled></label></div><label for="inspectorFontFamily">Font family</label><select id="inspectorFontFamily" disabled><option value="Helvetica">Helvetica</option><option value="TimesRoman">Times New Roman</option><option value="Courier">Courier</option></select><label for="inspectorFontColor">Text colour</label><input id="inspectorFontColor" type="color" value="#17233c" disabled><label for="inspectorAlignment">Alignment</label><select id="inspectorAlignment" disabled><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select><label class="inspector-bold"><input id="inspectorBold" type="checkbox" disabled> Bold</label><button id="applyTextEdit" type="button" disabled>Apply selected text edit</button><p class="inspector-note">Font family options use built-in Latin fonts; complex-script text may need a compatible embedded font. These settings apply to newly added text overlays. Existing PDF text is not rewritten. Original PDF text is not rewritten.</p></section></aside>
 </div>
 <div class="editor-bottom"><div><b>Editing mode</b><span id="activeToolLabel">Select</span></div><button id="downloadEditedPdfBottom" type="button" disabled>Download edited PDF</button></div>
+</section>
+<section class="seo-guide" aria-labelledby="pdf-seo-title">
+<h2 id="pdf-seo-title">KAGZI PDF Editor — PDF में बदलाव और पेज व्यवस्थित करें</h2>
+<p>KAGZI Document Studio एक browser-based PDF workspace है। अपने device से PDF खोलें और उपलब्ध editing controls से document में अतिरिक्त text, image और highlight annotations जोड़ें। Page rotation, page ordering, duplication, deletion, merge और split जैसे काम भी उपलब्ध controls के अनुसार किए जा सकते हैं।</p>
+<div class="seo-guide-grid">
+<div><h3>PDF Editor में क्या कर सकते हैं?</h3><ul><li>PDF पेज देखना और page navigation करना</li><li>नया text या image overlay जोड़ना</li><li>Highlight और annotation लगाना</li><li>पेज rotate, reorder, duplicate या delete करना</li><li>PDF files merge करना और चुने हुए pages split करना</li><li>OCR से image या page का text पहचानना</li></ul></div>
+<div><h3>Privacy और editing की सीमाएँ</h3><ul><li>इस workspace में चुनी गई PDF browser में process होती है; server upload इस local mode में चालू नहीं है।</li><li>Text overlay मूल PDF के embedded text को अपने-आप replace नहीं करता।</li><li>Highlight एक visual annotation है, secure redaction नहीं।</li><li>महत्वपूर्ण दस्तावेज़ का original copy सुरक्षित रखें और export के बाद PDF दोबारा जाँचें।</li></ul></div>
+</div>
+<h3>PDF कैसे edit करें?</h3><ol><li><b>Open PDF</b> चुनकर अपने device से document खोलें।</li><li>Page thumbnails से वह page चुनें जिस पर काम करना है।</li><li>Text, Image, Highlight या page-management tool चुनें और बदलाव करें।</li><li><b>Export PDF</b> दबाएँ, फिर डाउनलोड की गई file खोलकर परिणाम जाँचें।</li></ol>
+<h3>अक्सर पूछे जाने वाले सवाल</h3>
+<p><b>क्या PDF upload होती है?</b> इस editor के local processing mode में चुनी गई file आपके browser में process होती है।</p>
+<p><b>क्या पुराने PDF text को सीधे replace किया जा सकता है?</b> इस page पर उपलब्ध text tool नया overlay जोड़ता है; यह embedded original text को सीधे rewrite नहीं करता।</p>
+<p><b>क्या यह mobile पर काम करता है?</b> हाँ, modern mobile browser में page responsive है; बड़े documents पर device memory और browser support का असर हो सकता है।</p>
+<p>और tools के लिए <a href="/pdf-tools.html">KAGZI PDF Tools</a>, नागरिक सेवाओं के लिए <a href="/jan-seva">Jan Seva Assistant</a> और अध्ययन सामग्री के लिए <a href="/current-affairs/">Current Affairs Library</a> देखें।</p>
 </section>
 <section class="server-panel"><div><b>Local document processing</b><p>OCR runs in your browser after language data is downloaded. Existing PDF text is not directly rewritten; use text overlays for additions.</p></div><span class="capability-pill">Local-only mode</span></section>
 <p class="editor-footnote">Note: Text and image tools add overlays; they do not rewrite the PDF's original text. Highlight is a visual annotation, not secure redaction. Keep your original document.</p>
