@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Resume & CV Maker Online in Hindi & English | KAGZI</title>
+<meta name="description" content="Create a professional resume and CV online for free. Add education, skills and experience, preview your CV and print or save it as PDF. Hindi and English support.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/resume-cv-maker">
+<meta property="og:title" content="Free Resume & CV Maker | KAGZI"><meta property="og:description" content="Create and print a professional CV in your browser."><meta property="og:url" content="https://kagzi-8cy.pages.dev/resume-cv-maker"><meta property="og:type" content="website">
+<link rel="stylesheet" href="style.css">
+<style>
+body{background:#f3f6fc;color:#14213d}.tool-wrap{max-width:1120px;margin:auto;padding:24px 16px 60px}.tool-head{background:linear-gradient(120deg,#061947,#0b3d89);color:#fff;padding:28px;border-radius:18px;margin:16px 0 22px}.tool-head h1{font-size:clamp(28px,5vw,42px);color:#ffcf39;margin:8px 0}.tool-head p{max-width:720px;color:#e5edff;line-height:1.6}.tool-nav{display:flex;justify-content:space-between;align-items:center;gap:12px}.tool-nav a{color:#17449a;font-weight:700;text-decoration:none}.tool-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.panel{background:white;border:1px solid #dce5f3;border-radius:16px;padding:20px;box-shadow:0 8px 28px #17345a0b}.panel h2{font-size:20px;margin:0 0 15px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700;color:#44536c}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #cbd6e8;border-radius:9px;font:inherit;color:#17233c;background:#fff}.field textarea{min-height:88px;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.btn{border:0;border-radius:9px;padding:11px 16px;background:#0b55c8;color:white;font-weight:800;cursor:pointer}.btn.secondary{background:#edf3ff;color:#17449a}.cv{font-family:Arial,sans-serif;color:#18243a;line-height:1.45;min-height:540px}.cv h2{font-size:27px;color:#102b58;margin:0 0 3px}.cv .contact{font-size:12px;color:#58677f;border-bottom:2px solid #d9e4f4;padding-bottom:12px}.cv h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#174b98;border-bottom:1px solid #dce5f3;padding-bottom:5px;margin:20px 0 8px}.cv p{white-space:pre-wrap;margin:5px 0;font-size:13px}.cv .muted{color:#65738a;font-size:12px}.note{font-size:12px;color:#65738a;line-height:1.6;margin-top:14px}@media(max-width:800px){.tool-grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}}@media print{body{background:#fff}.tool-nav,.tool-head,.form-panel,.actions,.note{display:none!important}.tool-wrap{padding:0;max-width:none}.tool-grid{display:block}.preview-panel{border:0;box-shadow:none;padding:0}.cv{min-height:0}}
+</style>
+</head>
+<body>
+<div class="tool-wrap">
+<nav class="tool-nav"><a href="index.html">← KAGZI Home</a><a href="modules.html">All tools →</a></nav>
+<header class="tool-head"><div>FREE CAREER TOOL · HINDI + ENGLISH</div><h1>Resume & CV Maker</h1><p>अपनी जानकारी भरें, professional CV preview देखें और Print / Save as PDF चुनें। आपका डेटा इसी browser में रहता है; KAGZI पर upload नहीं होता।</p></header>
+<div class="tool-grid">
+<section class="panel form-panel"><h2>अपनी जानकारी भरें</h2>
+<div class="fields">
+<div class="field full"><label for="fullName">पूरा नाम / Full name</label><input id="fullName" maxlength="90" placeholder="Your full name"></div>
+<div class="field"><label for="email">Email</label><input id="email" type="email" maxlength="120" placeholder="name@example.com"></div>
+<div class="field"><label for="phone">Phone (optional)</label><input id="phone" type="tel" maxlength="30" placeholder="Phone number"></div>
+<div class="field full"><label for="location">City / Location</label><input id="location" maxlength="100" placeholder="City, State"></div>
+<div class="field full"><label for="summary">Career Summary / उद्देश्य</label><textarea id="summary" maxlength="1200" placeholder="2–4 lines about your career goal and strengths"></textarea></div>
+<div class="field full"><label for="education">Education</label><textarea id="education" maxlength="1800" placeholder="Degree / Class — Institute — Year — Marks"></textarea></div>
+<div class="field full"><label for="experience">Experience / Projects</label><textarea id="experience" maxlength="2400" placeholder="Role or project — organisation — dates — key work"></textarea></div>
+<div class="field full"><label for="skills">Skills (comma separated)</label><textarea id="skills" maxlength="1000" placeholder="Communication, MS Office, Typing, Customer Service"></textarea></div>
+<div class="field full"><label for="languages">Languages</label><input id="languages" maxlength="250" placeholder="Hindi, English"></div>
+</div>
+<div class="actions"><button class="btn" id="updateCv" type="button">Update CV Preview</button><button class="btn secondary" id="clearCv" type="button">Clear form</button></div>
+<p class="note">Tip: नौकरी के अनुसार skills और experience लिखें। गलत या बढ़ा-चढ़ाकर जानकारी न दें। CV डाउनलोड करने के लिए Print / Save as PDF दबाएँ और अपने browser में “Save as PDF” चुनें।</p>
+</section>
+<section class="panel preview-panel"><h2>Live CV Preview</h2><article class="cv" id="cvPreview" aria-live="polite"><h2>Your Name</h2><div class="contact">Email · Phone · City</div><h3>Career Summary</h3><p>Add your professional summary.</p><h3>Education</h3><p>Add your education details.</p><h3>Experience & Projects</h3><p>Add relevant experience or projects.</p><h3>Skills</h3><p>Add your skills.</p></article><div class="actions"><button class="btn" id="printCv" type="button">Print / Save as PDF</button></div></section>
+</div>
+</div>
+<script>
+(()=>{const ids=['fullName','email','phone','location','summary','education','experience','skills','languages'];const $=id=>document.getElementById(id);const safe=v=>String(v||'').trim();function section(title,value,fallback){const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=safe(value)||fallback;return [h,p];}function render(){const box=$('cvPreview');box.replaceChildren();const name=document.createElement('h2');name.textContent=safe($('fullName').value)||'Your Name';box.append(name);const contact=document.createElement('div');contact.className='contact';contact.textContent=[safe($('email').value),safe($('phone').value),safe($('location').value)].filter(Boolean).join(' · ')||'Email · Phone · City';box.append(contact);for(const [t,v,f] of [['Career Summary',$('summary').value,'Add your professional summary.'],['Education',$('education').value,'Add your education details.'],['Experience & Projects',$('experience').value,'Add relevant experience or projects.'],['Skills',$('skills').value,'Add your skills.'],['Languages',$('languages').value,'Add languages you can use.']])box.append(...section(t,v,f));}ids.forEach(id=>$(id).addEventListener('input',render));$('updateCv').addEventListener('click',render);$('clearCv').addEventListener('click',()=>{ids.forEach(id=>$(id).value='');render();});$('printCv').addEventListener('click',()=>{render();window.print();});render();})();
+</script>
+</body></html>

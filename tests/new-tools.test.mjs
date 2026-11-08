@@ -1,0 +1,91 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const root=new URL('../',import.meta.url);
+const read=p=>readFileSync(new URL(p,root),'utf8');
+const pages=[
+ ['resume-cv-maker.html','Free Resume & CV Maker',['cvPreview','printCv']],
+ ['hindi-english-typing-tools.html','Hindi English Typing Tool Online',['editor','toHindi']],
+ ['online-calculators.html','Free Online Calculators',['ageBtn','emiBtn']]
+];
+test('new tools have SEO metadata and public routes',()=>{
+ for(const [path,title,ids] of pages){
+  const html=read(path);
+  assert.ok(html.includes('<title>'+title),path+' title');
+  assert.ok(html.includes('name="description"'),path+' description');
+  assert.ok(html.includes('name="robots" content="index,follow'),path+' indexing');
+  assert.ok(html.includes('rel="canonical"'),path+' canonical');
+  assert.ok(!html.includes('data-kagzi-protected="true"'),path+' stays public');
+  for(const id of ids)assert.ok(html.includes('id="'+id+'"'),path+' missing '+id);
+ }
+});
+test('inline JavaScript in the new tools parses',()=>{
+ for(const [path] of pages){
+  const html=read(path);
+  const chunks=html.split('<script>');
+  for(let i=1;i<chunks.length;i++){
+   const source=chunks[i].split('</script>')[0];
+   if(source.trim())new vm.Script(source,{filename:path+' inline script '+i});
+  }
+ }
+});
+test('catalogue activates resume and lists typing and calculator tools',()=>{
+ const modules=read('modules.js');
+ for(const name of ['Resume & CV Maker','Hindi & English Typing Tools','Online Calculators'])assert.ok(modules.includes(name));
+ assert.ok(modules.includes("36:'resume-cv-maker.html'"));
+ assert.ok(modules.includes("38:'invoice-bill-maker.html'"));
+ assert.ok(modules.includes("66:'hindi-english-typing-tools.html'"));
+ assert.ok(modules.includes("67:'online-calculators.html'"));
+ assert.ok(modules.includes("68:'daily-shop-hisab.html'"));
+ assert.ok(modules.includes("shown.length+' / 68'"));
+});
+test('homepage Office Work folder exposes Resume Maker and all new tools are in the sitemap',()=>{
+ const home=read('index.html'),office=read('office.html'),sitemap=read('sitemap.xml');
+ assert.ok(home.includes('href="office.html"'),'homepage Office Work link');
+ assert.ok(home.includes('Office Work'),'homepage Office Work label');
+ assert.ok(office.includes('href="resume-cv-maker.html"'),'Office Work Resume Maker link');
+ for(const slug of ['resume-cv-maker','hindi-english-typing-tools','online-calculators','invoice-bill-maker','daily-shop-hisab']){
+  assert.ok(sitemap.includes('https://kagzi-8cy.pages.dev/'+slug),'sitemap '+slug);
+ }
+});
+
+test('typing test exposes live speed, time, accuracy, mistakes and Hindi-English modes',()=>{
+ const html=read('hindi-english-typing-tools.html');
+ for(const id of ['typingSpeedTest','testLanguage','testDuration','statWpm','statCpm','statAccuracy','statErrors','statTime','statElapsed','testPassage','typingInput','testProgress','startTypingTest','finishTypingTest','resetTypingTest','typingResult'])assert.ok(html.includes('id="'+id+'"'),'missing typing test control '+id);
+ assert.match(html,/WPM/);assert.match(html,/CPM/);assert.match(html,/setInterval\(tick/);assert.match(html,/function compare\(/);assert.match(html,/function stop\(/);assert.match(html,/Intl\.Segmenter/);
+ assert.match(html,/value="hi"/);assert.match(html,/value="en"/);
+});
+
+test('online calculators recalculate live when any input changes',()=>{
+ const html=read('online-calculators.html');
+ for(const fn of ['calcAge','calcPercent','calcGst','calcEmi','calcDate'])assert.ok(html.includes('function '+fn+'('),'missing calculator '+fn);
+ assert.ok(html.includes("addEventListener('input',fn)"));
+ assert.ok(html.includes("addEventListener('change',fn)"));
+ for(const id of ['dob','ageAt','obtained','total','baseAmount','gstRate','principal','interest','months','dateStart','dateEnd'])assert.ok(html.includes("['"+id+"'" )||html.includes("'"+id+"',"),'live listener missing '+id);
+});
+
+test('Invoice & GST Bill Maker is a public browser-based tool with printable PDF layout',()=>{
+ const html=read('invoice-bill-maker.html');
+ assert.ok(html.includes('<title>Free Invoice & GST Bill Maker'));
+ assert.ok(html.includes('name="description"'));
+ assert.ok(html.includes('name="robots" content="index,follow'));
+ assert.ok(html.includes('rel="canonical"'));
+ for(const id of ['billType','billNo','billDate','supplyType','sellerName','sellerGstin','customerName','customerGstin','items','addItem','discount','previewItems','previewTotals','printBill','resetBill'])assert.ok(html.includes('id="'+id+'"'),'missing invoice control '+id);
+ assert.match(html,/CGST/);assert.match(html,/SGST/);assert.match(html,/IGST/);assert.match(html,/window\.print\(\)/);
+ assert.ok(html.includes('function update(){'));assert.ok(html.includes("addEventListener('input',update)"));
+ const scripts=html.split('<script>');
+ for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'invoice-bill-maker.html inline script '+i});}
+});
+
+test('Daily Shop Hisab supports local ledger, credit tracking, CSV and AI summary',()=>{
+ const html=read('daily-shop-hisab.html');
+ assert.ok(html.includes('name="description"'));assert.ok(html.includes('name="robots" content="index,follow'));assert.ok(html.includes('rel="canonical"'));
+ for(const id of ['entryForm','entryDate','entryType','entryAmount','entryParty','entryNote','reportDate','salesTotal','purchaseTotal','expenseTotal','customerDue','supplierDue','cashIn','cashOut','entries','exportCsv','clearAll','aiReport','aiOutput'])assert.ok(html.includes('id="'+id+'"'),'missing ledger control '+id);
+ for(const type of ['sale','creditSale','purchase','creditPurchase','expense','customerReceipt','supplierPayment'])assert.ok(html.includes('value="'+type+'"'),'missing ledger type '+type);
+ assert.ok(html.includes('localStorage'));assert.ok(html.includes('/api/shop-hisab-ai'));assert.ok(html.includes('textContent=data.answer'));
+ const scripts=html.split('<script>');
+ for(let i=1;i<scripts.length;i++){const source=scripts[i].split('</script>')[0];if(source.trim())new vm.Script(source,{filename:'daily-shop-hisab.html inline script '+i});}
+ const endpoint=read('functions/api/shop-hisab-ai.js');
+ assert.ok(endpoint.includes('env.AI.run'));assert.ok(endpoint.includes('@cf/meta/llama-3.1-8b-instruct'));assert.ok(endpoint.includes('transactionCount'));
+});
