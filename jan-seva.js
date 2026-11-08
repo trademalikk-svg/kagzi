@@ -175,7 +175,7 @@ const extraServices=[
     "region": "up",
     "summary": "भूमि रिकॉर्ड में नामांतरण प्रक्रिया की जानकारी।",
     "guide": "तहसील/राजस्व विभाग के वर्तमान आदेश और आवेदन स्थिति देखें।",
-    "url": "https://vaad.up.nic.in/",
+    "url": "https://vaad.up.gov.in/",
     "portal": "UP Revenue Court"
   },
   {
@@ -184,7 +184,7 @@ const extraServices=[
     "region": "up",
     "summary": "उत्तर प्रदेश राजस्व न्यायालय वाद की जानकारी।",
     "guide": "वाद संख्या और पक्षकार विवरण आधिकारिक पोर्टल पर जाँचें।",
-    "url": "https://vaad.up.nic.in/",
+    "url": "https://vaad.up.gov.in/",
     "portal": "UP Revenue Court"
   },
   {
