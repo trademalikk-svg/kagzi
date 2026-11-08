@@ -40,18 +40,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js
-          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.wasm
-          cd /tmp/kagzi-pdfium-artifact
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm
+          cd /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime
           sha256sum --check SHA256SUMS.txt
           grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
           grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
           grep -F 'commit=cd416ce8964a08827b44e853b90a6e37f00d176f' BUILD-METADATA.txt
           cd "$GITHUB_WORKSPACE"
           mkdir -p assets
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
-          install -m 0644 /tmp/kagzi-pdfium-artifact/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
           git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt
           if git diff --cached --quiet; then
             echo "Verified PDFium runtime assets are already current."
