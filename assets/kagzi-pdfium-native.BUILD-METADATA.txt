@@ -1,0 +1,4 @@
+runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c
+emscripten=3.1.72
+branch=feature/kagzi-pdfium-native-text
+commit=9c64426484fd46fde101a518a6ada89528b39bba
