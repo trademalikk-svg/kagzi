@@ -9,21 +9,21 @@
  }catch(error){console.error('KAGZI auth guard setup failed',error);}
  const authPath='/auth.html';
  const protectedExact=new Set([
-  '/education','/education.html','/education-pdfs.html','/education-pdfs-en.html',
-  '/study-material.html','/study-notes.html','/study-practice.html',
-  '/reader.html','/ebook-creator.html','/paid-library.html',
-  '/current-affairs.html','/current-affairs-book.html','/current-affairs-book-source.html',
-  '/competitive-polity-book-01.html','/competitive-polity-complete.html',
-  '/economy-book.html','/environment-book.html','/geography-book.html',
-  '/hindi-book.html','/history-book.html','/math-reasoning-book.html',
-  '/mcq-pyq-book.html','/science-book.html','/up-gk-book.html',
-  '/pdf-editor','/pdf-editor.html','/image-text-editor.html','/document-studio.html',
-  '/document-editing.html','/document-editing-en.html','/document-converter.html',
-  '/office.html','/jpg-to-pdf.html','/pdf-tools.html','/pdf-compress.html',
-  '/photo-tools.html','/passport-size-photo-maker.html','/resume-cv-maker.html'
+  '/education','/education-pdfs','/education-pdfs-en',
+  '/study-material','/study-notes','/study-practice',
+  '/reader','/ebook-creator','/paid-library',
+  '/current-affairs','/current-affairs-book','/current-affairs-book-source',
+  '/competitive-polity-book-01','/competitive-polity-complete',
+  '/economy-book','/environment-book','/geography-book',
+  '/hindi-book','/history-book','/math-reasoning-book',
+  '/mcq-pyq-book','/science-book','/up-gk-book',
+  '/pdf-editor','/image-text-editor','/document-studio',
+  '/document-editing','/document-editing-en','/document-converter',
+  '/office','/jpg-to-pdf','/pdf-tools','/pdf-compress',
+  '/photo-tools','/passport-size-photo-maker','/resume-cv-maker'
  ]);
  function isProtectedPath(){
-  const path=location.pathname.replace(/\\/+$/,'')||'/';
+  const path=(location.pathname.replace(/\/+$/,'')||'/').replace(/\.html$/,'');
   return protectedExact.has(path)||path.startsWith('/current-affairs/')||path.startsWith('/study-material/');
  }
  function loginUrl(){
