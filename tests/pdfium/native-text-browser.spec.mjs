@@ -87,3 +87,113 @@ test('browser replaces nested Form PDF text and preserves page content through e
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('browser preserves Devanagari matra and conjunct shaping after native replacement and export', async ({ page }) => {
+  const directory = await mkdtemp(join(tmpdir(), 'kagzi-pdfium-hindi-'));
+  const fixture = join(directory, 'devanagari-source.pdf');
+  const expectedFixture = join(directory, 'devanagari-expected.pdf');
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  try {
+    const fontUrl = 'https://raw.githubusercontent.com/notofonts/noto-fonts/4c73b21790f0e0c0a51bb947e78f98646e6c49c2/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf';
+    const fontResponse = await fetch(fontUrl);
+    expect(fontResponse.ok).toBe(true);
+    const fontBytes = Array.from(new Uint8Array(await fontResponse.arrayBuffer()));
+
+    const generated = await page.evaluate(async bytes => {
+      if (!window.PDFLib?.PDFDocument || !window.fontkit) {
+        throw new Error('PDF-lib or fontkit did not load in the editor.');
+      }
+      async function createPdf(visibleText) {
+        const document = await PDFLib.PDFDocument.create();
+        document.registerFontkit(window.fontkit);
+        const font = await document.embedFont(new Uint8Array(bytes), { subset: false });
+        const page = document.addPage([600, 220]);
+        page.drawText(visibleText, {
+          x: 48, y: 110, size: 36, font,
+          color: PDFLib.rgb(0, 0, 0)
+        });
+        // Include the source characters in the embedded font's ToUnicode map
+        // without making a duplicate exact text item for the replacement.
+        page.drawText('क ् ष े त ् र', {
+          x: 48, y: 10, size: 1, font,
+          color: PDFLib.rgb(1, 1, 1)
+        });
+        return Array.from(await document.save());
+      }
+      return {
+        source: await createPdf('ORIGINAL'),
+        expected: await createPdf('क्षेत्र')
+      };
+    }, fontBytes);
+
+    await writeFile(fixture, Buffer.from(generated.source));
+    await writeFile(expectedFixture, Buffer.from(generated.expected));
+
+    const baseUrl = process.env.KAGZI_PDF_EDITOR_URL || 'http://127.0.0.1:4173/pdf-editor.html';
+    const response = await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect.poll(() => page.evaluate(() => window.KAGZIPdfNativeText?.status().enabled === true), { timeout: 30000 }).toBe(true);
+
+    await page.locator('#pdfFileInput').setInputFiles(fixture);
+    await expect(page.locator('#pageCount')).toHaveText('1', { timeout: 30000 });
+    await expect(page.locator('#pdfTextLayer')).toContainText('ORIGINAL', { timeout: 30000 });
+    await page.locator('#pdfTextLayer .pdf-text-span').filter({ hasText: 'ORIGINAL' }).click();
+    await expect(page.locator('#inspectorText')).toHaveValue('ORIGINAL');
+    await page.locator('#inspectorText').fill('क्षेत्र');
+    await page.locator('#nativeEditText').click();
+
+    await expect(page.locator('#editorStatus')).toContainText('Save/Reopen verification passed', { timeout: 60000 });
+    await expect(page.locator('#pdfTextLayer')).toContainText('क्षेत्र');
+
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.locator('#downloadEditedPdf').click()
+    ]);
+    const exportedPath = await download.path();
+    expect(exportedPath).toBeTruthy();
+    await page.locator('#pdfFileInput').setInputFiles(exportedPath);
+    await expect(page.locator('#pdfTextLayer')).toContainText('क्षेत्र', { timeout: 30000 });
+
+    const visual = await page.evaluate(async expectedBytes => {
+      const expectedPdf = await pdfjsLib.getDocument({ data: new Uint8Array(expectedBytes) }).promise;
+      const expectedPage = await expectedPdf.getPage(1);
+      const actualCanvas = document.querySelector('#pdfCanvas');
+      const scale = actualCanvas.width / expectedPage.getViewport({ scale: 1 }).width;
+      const viewport = expectedPage.getViewport({ scale });
+      const expectedCanvas = document.createElement('canvas');
+      expectedCanvas.width = actualCanvas.width;
+      expectedCanvas.height = actualCanvas.height;
+      await expectedPage.render({
+        canvasContext: expectedCanvas.getContext('2d'),
+        viewport
+      }).promise;
+
+      const actual = actualCanvas.getContext('2d').getImageData(0, 0, actualCanvas.width, actualCanvas.height).data;
+      const expected = expectedCanvas.getContext('2d').getImageData(0, 0, expectedCanvas.width, expectedCanvas.height).data;
+      let differentInkPixels = 0;
+      let expectedInkPixels = 0;
+      for (let i = 0; i < expected.length; i += 4) {
+        const ink = expected[i] < 250 || expected[i + 1] < 250 || expected[i + 2] < 250;
+        if (!ink) continue;
+        expectedInkPixels++;
+        const delta = Math.abs(actual[i] - expected[i]) +
+          Math.abs(actual[i + 1] - expected[i + 1]) +
+          Math.abs(actual[i + 2] - expected[i + 2]);
+        if (delta > 45) differentInkPixels++;
+      }
+      return {
+        differentInkPixels,
+        expectedInkPixels,
+        differenceRatio: differentInkPixels / Math.max(1, expectedInkPixels)
+      };
+    }, generated.expected);
+
+    expect(visual.differenceRatio).toBeLessThan(0.02);
+    expect(pageErrors).toEqual([]);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
