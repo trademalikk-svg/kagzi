@@ -31,13 +31,19 @@ import { supabase } from "../kagzi-supabase.js";
   const params=new URLSearchParams(location.search);
   const view=["daily","weekly","monthly","yearly"].includes(params.get("view"))?params.get("view"):"daily";
   const selectedPeriod=params.get("period")||"";
+  const {data:{user:currentUser}}=await supabase.auth.getUser();
+  let isLibraryAdmin=false;
+  if(currentUser){
+    const {data:adminRecord}=await supabase.from("kagzi_library_admins").select("user_id").eq("user_id",currentUser.id).maybeSingle();
+    isLibraryAdmin=!!adminRecord;
+  }
   const {data: accessRows, error: accessError}=await supabase.from("kagzi_current_affairs_access").select("section,access_tier");
   const access=Object.fromEntries((accessRows||[]).map(row=>[row.section,row.access_tier]));
   if(accessError){
     document.querySelector("main").innerHTML='<section class="hero"><h1>Access settings unavailable</h1><p class="status">अभी access settings की पुष्टि नहीं हो सकी। कृपया थोड़ी देर बाद फिर प्रयास करें।</p></section>';
     return;
   }
-  if((params.get("view")==="monthly" || params.get("view")==="yearly") && access[view]!=="free"){
+  if((params.get("view")==="monthly" || params.get("view")==="yearly") && access[view]!=="free" && !isLibraryAdmin){
     const paidType=view==="yearly"?"Yearly":"Monthly";
     document.querySelector("main").innerHTML='<section class="hero"><div class="muted">PAID CONTENT</div><h1>'+paidType+' Current Affairs · Paid Only</h1><p class="status">यह सेक्शन पूरी तरह Paid Only है। कोई Free PDF, Free Sample या मुफ्त अध्याय उपलब्ध नहीं है। भुगतान और निजी PDF delivery तैयार होने तक सामग्री यहाँ प्रकाशित नहीं होगी।</p><a href="'+(view==="monthly"?"monthly/":"yearly/")+'">'+paidType+' Folder खोलें</a>　<a href="admin.html">Admin Settings</a></section>';
     return;
