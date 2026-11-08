@@ -6,7 +6,7 @@ const read=p=>readFileSync(new URL(p,root),'utf8');
 const publicPages=new Set(['index.html','auth.html','about.html','paid-library.html','pricing.html','contact.html','privacy.html','terms.html','content-policy.html','affiliate-disclosure.html',
  'current-affairs.html','current-affairs-book.html','current-affairs/archive.html','current-affairs/day/index.html',
  'current-affairs/english/index.html','current-affairs/index.html','current-affairs/monthly/index.html',
- 'current-affairs/weekly/index.html','current-affairs/yearly/index.html','private-jobs.html','private-jobs-admin.html','economy-book.html','education.html',
+ 'current-affairs/weekly/index.html','current-affairs/yearly/index.html','private-jobs.html','private-jobs-admin.html','compress-photo-to-20kb-50kb.html','economy-book.html','education.html',
  'environment-book.html','geography-book.html','hindi-book.html','history-book.html','math-reasoning-book.html',
  'mcq-pyq-book.html','science-book.html','study-material.html','up-gk-book.html']);
 test('shared auth guard fails closed and preserves the requested destination',()=>{
