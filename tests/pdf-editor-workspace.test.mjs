@@ -18,6 +18,7 @@ test('home page routes users to PDF editor and does not embed the image editor',
 
 test('PDF editor exposes camera scanner and five-language local OCR controls', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const ocr = await readFile(new URL('../pdf-ocr.js', import.meta.url), 'utf8');
   for (const id of ['openCameraScanner', 'cameraPreview', 'captureScan', 'closeCameraScanner', 'ocrLanguage', 'ocrImageInput', 'scanImageOcr', 'ocrResults']) {
     assert.match(html, new RegExp('id="' + id + '"'), 'missing scanner/OCR control: ' + id);
   }
