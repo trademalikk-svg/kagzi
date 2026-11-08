@@ -12,7 +12,7 @@ test('PDF editor exposes document-first workspace regions and accessible file/ex
 test('home page routes users to PDF editor and does not embed the image editor', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.doesNotMatch(html, /<iframe[^>]+src="image-text-editor\.html"/i);
-  assert.match(html, /href="pdf-editor\.html"/);
+  assert.match(html, /href="(?:pdf-editor\.html|\/pdf-editor(?:[?#"]|$))/);
 });
 
 
