@@ -82,7 +82,10 @@ test('Razorpay webhook requires a valid signature and captured payment event', (
 
 test('email confirmation preserves the requested paid catalogue return path', () => {
   const auth = read('auth.js');
-  assert.match(auth, /emailRedirectTo:location\.origin\+'\/auth\.html\?mode=login&redirect='\+encodeURIComponent\(safeRedirect\)/);
+  assert.match(auth, /const requestedRedirect=params\.get\('redirect'\)\|\|'index\.html'/);
+  assert.match(auth, /safeRedirect=candidate\.pathname\+candidate\.search\+candidate\.hash/);
+  assert.match(auth, /verifyOtp\(\{email,token,type:'signup'\}\)/);
+  assert.match(auth, /location\.replace\(safeRedirect\)/);
 });
 
 test('Razorpay signatures are checked cryptographically and mismatches are rejected', async () => {
