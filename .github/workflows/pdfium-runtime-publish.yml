@@ -1,0 +1,63 @@
+name: Publish verified PDFium browser runtime
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/kagzi-pdfium-native-text
+    paths:
+      - .github/workflows/pdfium-runtime-publish.yml
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: pdfium-runtime-publish-feature
+  cancel-in-progress: false
+
+jobs:
+  publish-runtime:
+    if: github.ref == 'refs/heads/feature/kagzi-pdfium-native-text'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/kagzi-pdfium-native-text
+          fetch-depth: 0
+
+      - name: Download verified PDFium artifact
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: 42459755614
+          artifact-ids: 13608944730
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/kagzi-pdfium-artifact
+
+      - name: Verify artifact and publish assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm
+          cd /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime
+          sha256sum --check SHA256SUMS.txt
+          grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
+          grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
+          grep -F 'commit=34266a12040204987dcab9bc905db9754e3458b5' BUILD-METADATA.txt
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p assets
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          if git diff --cached --quiet; then
+            echo "Verified PDFium runtime assets are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add verified PDFium browser runtime assets"
+          git push origin HEAD:feature/kagzi-pdfium-native-text
