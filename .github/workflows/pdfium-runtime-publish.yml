@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ARTIFACT_DIR=/tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime
+          ARTIFACT_DIR=/tmp/kagzi-pdfium-artifact
           test -s "$ARTIFACT_DIR/kagzi-pdfium-native.js"
           test -s "$ARTIFACT_DIR/kagzi-pdfium-native.wasm"
           cd "$ARTIFACT_DIR"
