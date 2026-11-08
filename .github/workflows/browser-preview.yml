@@ -17,4 +17,4 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/browser-preview.spec.mjs
         env:
-          KAGZI_PREVIEW_URL: https://fix-public-free-access-previ.kagzi-8cy.pages.dev
+          KAGZI_PREVIEW_URL: https://feat-resume-maker-production.kagzi-8cy.pages.dev
