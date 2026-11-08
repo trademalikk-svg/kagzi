@@ -85,12 +85,13 @@ test("unified jobs renderer supports region search, deadline sorting and safe sh
  assert.match(js,/textContent/);
 });
 
-test("all State PSC portal links are attributed to the official UPPSC directory", async()=>{
+test("State Public Service Commission portals are attributed to the official UPPSC directory", async()=>{
  const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
  const data=JSON.parse(raw);
- assert.equal(data.portals.length,29);
- assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,29);
- for(const portal of data.portals){
+ const pscPortals=data.portals.filter(x=>x.type==="State Public Service Commission");
+ assert.equal(pscPortals.length,29);
+ assert.equal(new Set(pscPortals.map(x=>x.regionSlug)).size,29);
+ for(const portal of pscPortals){
   assert.match(portal.url,/^https:\/\//);
   assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
   assert.ok(portal.lastCheckedAt);
