@@ -21,6 +21,7 @@ test('auth guard gates education and editing routes but keeps unrelated pages pu
  assert.match(guard,/path\.startsWith\('\/current-affairs\/'\)/);
  assert.match(guard,/path\.startsWith\('\/study-material\/'\)/);
  assert.match(guard,/target\.closest\('\[data-paid-item\]'\)/);
+ assert.match(guard,/mode=signup/);
  assert.match(guard,/if\(document\.body\.dataset\.kagziProtected!=='true'&&!isProtectedPath\(\)\)return/);
  assert.doesNotMatch(guard,/jan-seva\.html|\/jan-seva\|\/pdf-tools/);
 });
