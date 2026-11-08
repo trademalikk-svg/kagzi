@@ -74,3 +74,33 @@ test('PDF editor loads local OCR and camera scripts before the editor initialize
   assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
   assert.ok(html.indexOf('src="pdf-scanner.js"') < html.indexOf('src="pdf-editor.js"'));
 });
+
+
+test('PDF editor loads the local PDFium runtime before enabling native text editing', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  for (const id of ['nativeEditText', 'applyTextEdit', 'inspectorText']) {
+    assert.match(html, new RegExp('id="' + id + '"'), 'missing native text control: ' + id);
+  }
+  for (const script of ['kagzi-pdfium-native.js', 'pdfium-native-text-engine.js', 'pdf-native-text-gate.js']) {
+    assert.ok(html.indexOf(script) >= 0 && html.indexOf(script) < html.indexOf('src="pdf-editor.js"'),
+      script + ' must load before the editor initializer');
+  }
+});
+
+test('PDF text Inspector previews changes and routes native replacement through Save/Reopen verification', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /function previewSelectedText\(\)/);
+  assert.match(js, /addEventListener\('input',previewSelectedText\)/);
+  assert.match(js, /gate\.replaceText\(/);
+  assert.match(js, /nativeStatus\.enabled/);
+  assert.match(js, /Save\/Reopen verification passed/);
+});
+
+
+test('PDF.js receives a copy so its worker cannot detach the editor working bytes', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  assert.match(js, /pdfjsLib\.getDocument\(\{data:bytes\.slice\(\)\}\)/,
+    'opening a PDF must preserve a separate editable byte buffer');
+  assert.match(js, /pdfjsLib\.getDocument\(\{data:workingBytes\.slice\(\)\}\)/,
+    'refreshing the PDF preview must also use a copy');
+});

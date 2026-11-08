@@ -10,6 +10,10 @@ on:
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "tests/pdf-native-text-gate.test.mjs"
+      - "tests/pdfium-native-text-engine.test.mjs"
       - "image-text-editor.js"
       - "image-text-editor.html"
       - "image-text-editor.css"
@@ -27,6 +31,10 @@ on:
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "tests/pdf-native-text-gate.test.mjs"
+      - "tests/pdfium-native-text-engine.test.mjs"
       - "image-text-editor.js"
       - "image-text-editor.html"
       - "image-text-editor.css"
@@ -45,6 +53,14 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
+      - name: Test PDFium native text gate
+        run: node --test tests/pdf-native-text-gate.test.mjs
+      - name: Test PDFium browser adapter
+        run: node --test tests/pdfium-native-text-engine.test.mjs
+      - name: Check native text runtime JavaScript syntax
+        run: |
+          node --check pdf-native-text-gate.js
+          node --check pdfium-native-text-engine.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
       - name: Check camera scanner JavaScript syntax
@@ -68,4 +84,6 @@ jobs:
           grep -q 'src="pdf-ocr.js"' pdf-editor.html
           grep -q 'src="pdf-scanner.js"' pdf-editor.html
           grep -q 'src="pdf-server-adapter.js"' pdf-editor.html
+          grep -q 'src="pdf-native-text-gate.js"' pdf-editor.html
+          grep -q 'src="pdfium-native-text-engine.js"' pdf-editor.html
           grep -q 'href="pdf-editor.css"' pdf-editor.html
