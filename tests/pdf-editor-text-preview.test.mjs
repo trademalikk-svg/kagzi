@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 test('PDF text replacement preview scales font size with zoom and masks original text', async () => {
   const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
-  const applyHandler = js.slice(js.indexOf('if(el.applyTextEdit)el.applyTextEdit.addEventListener'), js.indexOf('if(el.downloadEditedPdfBottom)'));
+  const applyHandler = js.slice(js.indexOf('if(el.applyTextEdit)el.applyTextEdit.addEventListener'), js.indexOf('window.KAGZIPdfEditorOpenFile=loadPdf'));
   assert.match(applyHandler, /selectedText\.viewport\.scale/);
   assert.match(applyHandler, /backgroundColor\s*=\s*['\"]#fff['\"]/);
   assert.match(applyHandler, /textAlign\s*=\s*el\.inspectorAlignment\.value/);
