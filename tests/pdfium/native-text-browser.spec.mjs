@@ -105,15 +105,13 @@ test('browser preserves Devanagari matra and conjunct shaping after native repla
     expect(fontResponse.ok).toBe(true);
     const fontBytes = Array.from(new Uint8Array(await fontResponse.arrayBuffer()));
 
-    // The editor loads these libraries from jsDelivr. In CI, that CDN can
-    // intermittently fail even when the local editor itself is served correctly.
-    // Keep fixture generation deterministic with an equivalent unpkg fallback.
-    await page.waitForTimeout(500);
+    // Load fixture-generation libraries from pinned npm dependencies rather
+    // than relying on a second public CDN during the browser test.
     if (!await page.evaluate(() => Boolean(window.PDFLib?.PDFDocument))) {
-      await page.addScriptTag({ url: 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js' });
+      await page.addScriptTag({ path: join(process.cwd(), 'node_modules/pdf-lib/dist/pdf-lib.min.js') });
     }
     if (!await page.evaluate(() => Boolean(window.fontkit))) {
-      await page.addScriptTag({ url: 'https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js' });
+      await page.addScriptTag({ path: join(process.cwd(), 'node_modules/@pdf-lib/fontkit/dist/fontkit.umd.min.js') });
     }
     await expect.poll(() => page.evaluate(() =>
       Boolean(window.PDFLib?.PDFDocument && window.fontkit)
