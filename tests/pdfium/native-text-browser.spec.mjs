@@ -91,11 +91,15 @@ test('browser replaces nested Form PDF text and preserves page content through e
 test('browser preserves Devanagari matra and conjunct shaping after native replacement and export', async ({ page }) => {
   const directory = await mkdtemp(join(tmpdir(), 'kagzi-pdfium-hindi-'));
   const fixture = join(directory, 'devanagari-source.pdf');
-  const expectedFixture = join(directory, 'devanagari-expected.pdf');
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
   try {
+    const baseUrl = process.env.KAGZI_PDF_EDITOR_URL || 'http://127.0.0.1:4173/pdf-editor.html';
+    const response = await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect.poll(() => page.evaluate(() => window.KAGZIPdfNativeText?.status().enabled === true), { timeout: 30000 }).toBe(true);
+
     const fontUrl = 'https://raw.githubusercontent.com/notofonts/noto-fonts/4c73b21790f0e0c0a51bb947e78f98646e6c49c2/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf';
     const fontResponse = await fetch(fontUrl);
     expect(fontResponse.ok).toBe(true);
@@ -140,13 +144,7 @@ test('browser preserves Devanagari matra and conjunct shaping after native repla
     }, fontBytes);
 
     await writeFile(fixture, Buffer.from(generated.source));
-    await writeFile(expectedFixture, Buffer.from(generated.expected));
-
-    const baseUrl = process.env.KAGZI_PDF_EDITOR_URL || 'http://127.0.0.1:4173/pdf-editor.html';
-    const response = await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    expect(response?.status()).toBe(200);
-    await expect.poll(() => page.evaluate(() => window.KAGZIPdfNativeText?.status().enabled === true), { timeout: 30000 }).toBe(true);
-
+    
     await page.locator('#pdfFileInput').setInputFiles(fixture);
     await expect(page.locator('#pageCount')).toHaveText('1', { timeout: 30000 });
     await expect(page.locator('#pdfTextLayer')).toContainText('ORIGINAL', { timeout: 30000 });
