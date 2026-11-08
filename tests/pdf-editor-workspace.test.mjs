@@ -83,3 +83,28 @@ test('live text preview masks the original PDF glyphs before showing replacement
   assert.match(preview[0], /classList\.add\(['"]edited['"]\)/,
     'preview must apply the white-backed edited layer so original PDF glyphs do not show through');
 });
+
+test('text Inspector commits every visible style property and exports the committed overlay', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const apply = js.match(/if\(el\.applyTextEdit\)[\s\S]*?;\n\s*\['inspectorText'/);
+  assert.ok(apply, 'Apply handler and Inspector preview wiring must exist');
+  for (const property of ['fontSize', 'bold', 'align', 'fontFamily', 'color', 'opacity']) {
+    assert.match(apply[0], new RegExp(property), 'Apply must persist ' + property);
+  }
+  const exportHandler = js.match(/el\.downloadEditedPdf\.addEventListener\('click',[\s\S]*?\n\s*if\(el\.applyTextEdit\)/);
+  assert.ok(exportHandler, 'PDF export handler must exist');
+  for (const property of ['fontSize', 'bold', 'align', 'fontFamily', 'color', 'opacity']) {
+    assert.match(exportHandler[0], new RegExp('edit\\.' + property), 'Export must use committed ' + property);
+  }
+});
+
+test('mobile PDF Inspector is ordered before the document canvas while desktop keeps it in the side column', async () => {
+  const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('class="pdf-inspector"') < html.indexOf('class="document-area"') || html.indexOf('class="pdf-inspector"') > html.indexOf('class="document-area"'),
+    'Inspector and document workspace must both be present');
+  assert.match(css, /grid-template-areas:"rail document inspector"/,
+    'desktop workspace must retain a right-side Inspector');
+  assert.match(css, /@media\(max-width:650px\)[\s\S]*?grid-template-areas:"rail" "inspector" "document"/,
+    'mobile workspace must place Inspector above the PDF document');
+});
