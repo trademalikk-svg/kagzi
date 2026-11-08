@@ -1,0 +1,16 @@
+name: Resume Maker focused tests
+on:
+  push:
+    branches: [feat/resume-maker-production-2026-11-08]
+  pull_request:
+    branches: [main]
+jobs:
+  resume-maker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run Resume Maker regression tests
+        run: node --test tests/resume-cv-maker.test.mjs
