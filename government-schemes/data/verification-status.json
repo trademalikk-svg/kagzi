@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-11-07T11:56+05:30",
+  "checked_at": "2026-11-08T10:19+05:30",
   "timezone": "Asia/Kolkata",
   "source_count": 15,
   "available_count": 5,
-  "changed_count": 0,
+  "changed_count": 2,
   "unavailable_count": 10,
   "overall_status": "review_required",
   "important_note": "यह रिपोर्ट केवल सरकारी स्रोतों की उपलब्धता और पेज-सामग्री में बदलाव जाँचती है। पात्रता, लाभ, दस्तावेज़ और आवेदन नियम तभी सत्यापित माने जाएँ जब संबंधित नवीनतम आधिकारिक दिशानिर्देश की मानवीय समीक्षा पूरी हो।",
@@ -34,8 +34,8 @@
       "content_type": "text/html; charset=utf-8",
       "availability": "available",
       "change_detected": false,
-      "first_baseline": true,
-      "source_change_review": "baseline_created",
+      "first_baseline": false,
+      "source_change_review": "no_content_change_detected",
       "last_content_change_at": null
     },
     {
@@ -77,8 +77,8 @@
       "content_type": "text/html; charset=utf-8",
       "availability": "available",
       "change_detected": false,
-      "first_baseline": true,
-      "source_change_review": "baseline_created",
+      "first_baseline": false,
+      "source_change_review": "no_content_change_detected",
       "last_content_change_at": null
     },
     {
@@ -89,13 +89,13 @@
       "eligibility_review": "manual_official_guideline_review_required",
       "http_status": 200,
       "final_url": "https://scholarships.gov.in/",
-      "content_hash": "ec26746b9f00bdca4f79f4820349ba5e043374d5995d7dba8c5e11e0103e05d7",
+      "content_hash": "53417ed27bf3908ba5ff1794e19ab4f95f64fe016f278fe6cf67401ba6a3c2bd",
       "bytes_checked": 110174,
       "content_type": "text/html;charset=UTF-8",
       "availability": "available",
-      "change_detected": false,
-      "first_baseline": true,
-      "source_change_review": "baseline_created",
+      "change_detected": true,
+      "first_baseline": false,
+      "source_change_review": "review_required",
       "last_content_change_at": null
     },
     {
@@ -150,8 +150,8 @@
       "content_type": "text/html; charset=UTF-8",
       "availability": "available",
       "change_detected": false,
-      "first_baseline": true,
-      "source_change_review": "baseline_created",
+      "first_baseline": false,
+      "source_change_review": "no_content_change_detected",
       "last_content_change_at": null
     },
     {
@@ -201,13 +201,13 @@
       "eligibility_review": "manual_official_guideline_review_required",
       "http_status": 200,
       "final_url": "https://www.india.gov.in/my-government/schemes",
-      "content_hash": "4a46641109b5a2f40c6e404d029611a4e860986be18dcf82361d19a2022853d6",
-      "bytes_checked": 228249,
+      "content_hash": "df0b6df18bdcb6dd298d7b665738d7f3cd8d5f1cfc4e3bb49b519cb0a6949091",
+      "bytes_checked": 227653,
       "content_type": "text/html; charset=utf-8",
       "availability": "available",
-      "change_detected": false,
-      "first_baseline": true,
-      "source_change_review": "baseline_created",
+      "change_detected": true,
+      "first_baseline": false,
+      "source_change_review": "review_required",
       "last_content_change_at": null
     },
     {
