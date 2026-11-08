@@ -51,7 +51,10 @@ jobs:
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
-          git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-LICENSE.txt assets/kagzi-pdfium-LICENSE.txt
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-NOTICE.txt assets/kagzi-pdfium-NOTICE.txt
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-THIRD-PARTY-NOTICES.txt assets/kagzi-pdfium-THIRD-PARTY-NOTICES.txt
+          git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt assets/kagzi-pdfium-LICENSE.txt assets/kagzi-pdfium-NOTICE.txt assets/kagzi-pdfium-THIRD-PARTY-NOTICES.txt
           if git diff --cached --quiet; then
             echo "Verified PDFium runtime assets are already current."
             exit 0
