@@ -74,3 +74,12 @@ test('PDF editor loads local OCR and camera scripts before the editor initialize
   assert.ok(html.indexOf('src="pdf-ocr.js"') < html.indexOf('src="pdf-editor.js"'));
   assert.ok(html.indexOf('src="pdf-scanner.js"') < html.indexOf('src="pdf-editor.js"'));
 });
+
+
+test('live text preview masks the original PDF glyphs before showing replacement text', async () => {
+  const js = await readFile(new URL('../pdf-editor.js', import.meta.url), 'utf8');
+  const preview = js.match(/function previewSelectedText\(\)\{[\s\S]*?\n?\s*\}/);
+  assert.ok(preview, 'live preview handler exists');
+  assert.match(preview[0], /classList\.add\(['"]edited['"]\)/,
+    'preview must apply the white-backed edited layer so original PDF glyphs do not show through');
+});
