@@ -23,12 +23,12 @@ test('PDF text selection layer stays above the canvas and receives clicks in sel
   const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
   assert.match(css, /\.pdf-text-layer\{[^}]*z-index:\s*2/);
   assert.match(css, /\.editor-overlay\{[^}]*z-index:\s*1/);
-  assert.match(js, /span\.addEventListener\('click',event=>\{event\.stopPropagation\(\);selectedText=/);
+  assert.match(js, /span\.addEventListener\('click',event=>\{event\.preventDefault\(\);event\.stopPropagation\(\);selectedText=/);
   assert.match(js, /el\.applyTextEdit\.disabled=false/);
 });
 
 test('Mobile PDF inspector is positioned before the document canvas instead of below it', async () => {
   const css = await readFile(new URL('../pdf-editor.css', import.meta.url), 'utf8');
-  assert.match(css, /@media\(max-width:650px\)\{[^}]*\.pdf-inspector\{grid-row:2/);
+  assert.match(css, /@media\(max-width:650px\)\s*\{[\s\S]*?\.pdf-inspector\{grid-row:2/);
   assert.match(css, /\.document-area\{grid-row:3/);
 });
