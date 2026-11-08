@@ -21,8 +21,21 @@
 <label for="target">Conversion चुनें</label>
 <select id="target" name="target" required>
 <option value="pdf-docx">PDF → Word (DOCX)</option>
-<option value="pdf-jpg">PDF → JPG (हर page की image)</option>
+<option value="pdf-jpg">PDF → JPG Images</option>
 <option value="docx-pdf">Word (DOCX) → PDF</option>
+<option value="pdf-txt">PDF → Text (TXT)</option>
+<option value="pdf-html">PDF → HTML</option>
+<option value="jpg-png">JPG → PNG</option>
+<option value="png-jpg">PNG → JPG</option>
+<option value="jpg-pdf">JPG → PDF</option>
+<option value="png-pdf">PNG → PDF</option>
+<option value="xlsx-csv">Excel (XLSX) → CSV</option>
+<option value="xlsx-pdf">Excel (XLSX) → PDF</option>
+<option value="pptx-pdf">PowerPoint (PPTX) → PDF</option>
+<option value="pdf-pptx">PDF → PowerPoint (PPTX)</option>
+<option value="txt-pdf">Text (TXT) → PDF</option>
+<option value="html-pdf">HTML → PDF</option>
+<option value="csv-pdf">CSV → PDF</option>
 </select>
 <label for="file">अपनी फ़ाइल चुनें (अधिकतम 10 MB)</label>
 <input id="file" name="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
@@ -31,7 +44,7 @@
 </form>
 <p id="status" class="status" role="status" aria-live="polite"></p>
 <div id="outputs" class="outputs"></div>
-<p class="muted">यह सुविधा third-party conversion service पर निर्भर है। Trial quota और सेवा उपलब्धता लागू हो सकती है। Merge, Split और Compress के मौजूदा local tools अलग से काम करते हैं।</p>
+<p class="muted">16 conversion विकल्प उपलब्ध हैं। फ़ाइल अधिकतम 10 MB होनी चाहिए। Conversion के लिए फ़ाइल ConvertAPI को भेजी जाती है; अस्थायी download link अधिकतम 3 घंटे उपलब्ध रहता है। Trial quota और सेवा उपलब्धता लागू हो सकती है।</p>
 </section>
 </main>
 <footer><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/contact">Contact</a></footer>
