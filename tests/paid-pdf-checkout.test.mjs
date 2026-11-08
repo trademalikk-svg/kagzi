@@ -80,11 +80,12 @@ test('Razorpay webhook requires a valid signature and captured payment event', (
   assert.match(webhook, /payment\.amount !== order\.amount_inr \* 100/);
 });
 
-test('email confirmation preserves the requested paid catalogue return path', () => {
+test('email OTP verification preserves the requested paid catalogue return path', () => {
   const auth = read('auth.js');
-  assert.match(auth, /emailRedirectTo:location\.origin\+'\/auth\.html\?mode=login&redirect='\+encodeURIComponent\(safeRedirect\)/);
+  assert.ok(auth.includes("candidate.origin===location.origin"), 'redirect must stay on the KAGZI origin');
+  assert.ok(auth.includes("client.auth.verifyOtp({email,token,type:'signup'})"), 'signup email OTP must be verified');
+  assert.ok(auth.includes("location.replace(safeRedirect)"), 'successful verification must return to the sanitized requested path');
 });
-
 test('Razorpay signatures are checked cryptographically and mismatches are rejected', async () => {
   const secret = 'test-only-secret';
   const message = 'order_test123|pay_test123';
