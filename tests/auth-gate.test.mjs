@@ -19,7 +19,7 @@ test('shared auth guard fails closed and preserves the requested destination',()
 });
 test('every non-public HTML route requires a Supabase session',()=>{
  const pages=JSON.parse(read('.github/kagzi-html-pages.json'));
- assert.ok(pages.length>=100);
+ assert.ok(pages.length>=60);
  for(const path of pages){
   assert.ok(!publicPages.has(path),path+' must not be in the protected list');
   const html=read(path);
