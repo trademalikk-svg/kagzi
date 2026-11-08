@@ -2,6 +2,14 @@ name: KAGZI Lighthouse performance monitor
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - pdf-editor.html
+      - jan-seva.html
+      - current-affairs/**
+      - .github/workflows/kagzi-lighthouse-monitor.yml
   schedule:
     - cron: "30 2 * * 0"
 
