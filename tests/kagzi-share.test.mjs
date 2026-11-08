@@ -11,13 +11,12 @@ test("Share helper includes native share, WhatsApp and KAGZI homepage",async()=>
  assert.match(source,/data-whatsapp-page/);
 });
 
-test("every state and UT jobs page exposes KAGZI share controls",async()=>{
+test("shared State/UT jobs page exposes KAGZI share controls for all registered regions",async()=>{
  const registry=await readFile(new URL("../government-jobs/assets/regions.js",import.meta.url),"utf8");
  const regions=JSON.parse(registry.match(/window\.KAGZI_REGIONS=(\[[\s\S]*\]);/)[1]);
- for(const [slug] of regions){
-  const html=await readFile(new URL("../government-jobs/"+slug+"/index.html",import.meta.url),"utf8");
-  assert.match(html,/kagzi-share\.js/,slug+" loads share helper");
-  assert.match(html,/data-share-page/,slug+" has page share");
-  assert.match(html,/data-whatsapp-page/,slug+" has WhatsApp share");
- }
+ assert.equal(regions.length,36);
+ const html=await readFile(new URL("../government-jobs/states/index.html",import.meta.url),"utf8");
+ assert.match(html,/kagzi-share\.js/);
+ assert.match(html,/data-share-page/);
+ assert.match(html,/data-whatsapp-page/);
 });
