@@ -3,13 +3,24 @@ on:
   push:
     branches:
       - feature/pdfium-native-text-integration
+    paths:
+      - "src/pdfium/**"
+      - "patches/pdfium/**"
+      - "tests/pdfium/**"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "pdf-editor.js"
+      - "pdf-editor.html"
+      - ".github/workflows/pdfium-native-text-runtime.yml"
   pull_request:
     paths:
       - "src/pdfium/**"
       - "patches/pdfium/**"
       - "tests/pdfium/**"
       - "pdf-native-text-gate.js"
-      - "tests/pdf-native-text-gate.test.mjs"
+      - "pdfium-native-text-engine.js"
+      - "pdf-editor.js"
+      - "pdf-editor.html"
       - ".github/workflows/pdfium-native-text-runtime.yml"
   workflow_dispatch:
 
@@ -91,6 +102,24 @@ jobs:
           cp "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch" "$GITHUB_WORKSPACE/runtime-artifact/"
           printf '%s\n' "runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c" "emscripten=3.1.72" "branch=$GITHUB_REF_NAME" "commit=$GITHUB_SHA" > "$GITHUB_WORKSPACE/runtime-artifact/BUILD-METADATA.txt"
           (cd "$GITHUB_WORKSPACE/runtime-artifact" && sha256sum kagzi-pdfium-native.js kagzi-pdfium-native.wasm > SHA256SUMS.txt)
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Verify native replacement through the production browser editor
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          install -m 0644 runtime-artifact/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 runtime-artifact/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory "$GITHUB_WORKSPACE" > "$RUNNER_TEMP/kagzi-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/pdf-editor.html >/dev/null; then break; fi
+            sleep 1
+          done
+          KAGZI_PDF_EDITOR_URL=http://127.0.0.1:4173/pdf-editor.html npx playwright test tests/pdfium/native-text-browser.spec.mjs --reporter=line
       - name: Upload browser runtime artifact for manual review
         uses: actions/upload-artifact@v4
         with:
