@@ -2,6 +2,11 @@ name: Publish verified PDFium browser runtime
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/pdfium-native-text-integration
+    paths:
+      - .github/workflows/pdfium-runtime-publish.yml
 
 permissions:
   actions: read
