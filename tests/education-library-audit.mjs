@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { books, filterBooks, isPublishable } from '../education-data.mjs';
 
 const fixtures = [
@@ -47,4 +48,14 @@ test('combined language and category filters narrow results together', () => {
 test('unknown language and unmatched query return no results', () => {
   assert.deepEqual(filterBooks(fixtures, { language: 'xx' }), []);
   assert.deepEqual(filterBooks(fixtures, { query: 'no-such-book-phrase' }), []);
+});
+
+
+test('empty library and empty filter results show distinct, accessible Hindi guidance', async () => {
+  const page = await readFile(new URL('../education.html', import.meta.url), 'utf8');
+  assert.match(page, /id="emptyState" role="status" aria-live="polite"/);
+  assert.match(page, /books\.length\s*\?/);
+  assert.match(page, /आपकी खोज या चुने गए filters से कोई eBook नहीं मिली/);
+  assert.match(page, /कोई स्वीकृत eBook प्रकाशित नहीं है/);
+  assert.match(page, /emptyState\.style\.display = 'block'/);
 });

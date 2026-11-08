@@ -81,7 +81,7 @@ section{padding:62px 0}.section-head{display:flex;align-items:end;justify-conten
 <section id="library"><div class="wrap"><div class="section-head"><div><div class="kicker">Curated reading</div><h2>eBook Library</h2></div><p>गुणवत्ता पहले, संख्या बाद में</p></div><div class="toolbar" id="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="literature">Hindi Literature</button><button class="filter" data-filter="knowledge">Knowledge</button><button class="filter" data-filter="exam">Exam Preparation</button><button class="filter" data-filter="business">Business</button><button class="filter" data-filter="current-affairs">Current Affairs</button><button class="filter" data-filter="handwritten-notes">Handwritten Notes</button><button class="filter" data-filter="previous-papers">Previous Year Papers</button></div><div class="toolbar" id="paperKindFilters" aria-label="Paper update type"><button class="filter active" data-paper-kind="all">All Paper Updates</button><button class="filter" data-paper-kind="daily-practice">Daily Practice</button><button class="filter" data-paper-kind="latest-exam">Latest Actual Exam Papers</button></div><div class="toolbar" id="examFilters" aria-label="Previous paper exam folders"><button class="filter active" data-exam="all">All Exams</button><button class="filter" data-exam="ssc">SSC</button><button class="filter" data-exam="railway">Railway</button><button class="filter" data-exam="upsc">UPSC</button><button class="filter" data-exam="neet">NEET</button><button class="filter" data-exam="jee">JEE</button><button class="filter" data-exam="up-police">UP Police</button><button class="filter" data-exam="agniveer">Agniveer</button><button class="filter" data-exam="uppsc">UPPSC</button><button class="filter" data-exam="upsi">UPSI</button><button class="filter" data-exam="upsssc">UPSSSC</button></div><div class="toolbar" id="languageFilters" aria-label="Filter by language"><button class="filter active" data-language="all">All languages</button><button class="filter" data-language="hi">हिंदी</button><button class="filter" data-language="en">English</button><button class="filter" data-language="ur">اردو</button></div>
 <div class="toolbar" id="accessFilters" aria-label="Filter by access"><button class="filter active" data-access="all">Free + Paid</button><button class="filter" data-access="free">Free eBooks</button><button class="filter" data-access="paid">Paid eBooks</button></div>
 <p class="muted" id="accessNotice">Free eBooks अभी पढ़ें। Paid catalogue/payment सुविधा चरणबद्ध रूप से सक्रिय होगी।</p><div class="shelf" id="bookShelf" aria-live="polite">
-<div class="empty" id="emptyState">अभी KAGZI Library में प्रकाशित सामग्री उपलब्ध नहीं है। Admin Upload से अधिकृत PDF जोड़ने के बाद यहाँ दिखेगी।</div>
+<div class="empty" id="emptyState" role="status" aria-live="polite">अभी KAGZI Library में कोई स्वीकृत eBook प्रकाशित नहीं है। अधिकार-स्वीकृत PDF Admin Upload से जोड़ने के बाद यहाँ दिखाई देगी।</div>
 </div></div></section>
 
 
@@ -175,7 +175,14 @@ function render() {
       </div>`;
     shelf.insertBefore(card, emptyState);
   });
-  emptyState.style.display = visibleBooks.length ? 'none' : 'block';
+  if (visibleBooks.length) {
+    emptyState.style.display = 'none';
+  } else {
+    emptyState.textContent = books.length
+      ? 'आपकी खोज या चुने गए filters से कोई eBook नहीं मिली। Filters हटाकर फिर कोशिश करें।'
+      : 'अभी KAGZI Library में कोई स्वीकृत eBook प्रकाशित नहीं है। अधिकार-स्वीकृत PDF Admin Upload से जोड़ने के बाद यहाँ दिखाई देगी।';
+    emptyState.style.display = 'block';
+  }
 }
 
 const detailsDialog = document.getElementById('bookDetails');
