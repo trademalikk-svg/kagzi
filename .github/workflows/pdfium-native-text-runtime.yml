@@ -1,0 +1,129 @@
+name: KAGZI PDFium native text runtime
+on:
+  push:
+    branches:
+      - feature/kagzi-pdfium-native-text
+    paths:
+      - "src/pdfium/**"
+      - "patches/pdfium/**"
+      - "tests/pdfium/**"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "pdf-editor.js"
+      - "pdf-editor.html"
+      - ".github/workflows/pdfium-native-text-runtime.yml"
+  pull_request:
+    paths:
+      - "src/pdfium/**"
+      - "patches/pdfium/**"
+      - "tests/pdfium/**"
+      - "pdf-native-text-gate.js"
+      - "pdfium-native-text-engine.js"
+      - "pdf-editor.js"
+      - "pdf-editor.html"
+      - ".github/workflows/pdfium-native-text-runtime.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      EMSDK_VERSION: 3.1.72
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Test native editing remains fail-closed
+        run: node --test tests/pdf-native-text-gate.test.mjs
+      - name: Test browser adapter memory handling and fail-closed behavior
+        run: node --test tests/pdfium-native-text-engine.test.mjs
+      - name: Checkout pinned EmbedPDF PDFium runtime
+        uses: actions/checkout@v4
+        with:
+          repository: embedpdf/runtime
+          ref: 42388d3b4c9895d6672f5da357b1429678a0994c
+          path: vendor/embedpdf-runtime
+      - name: Install depot_tools
+        run: |
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git "$RUNNER_TEMP/depot_tools"
+          echo "$RUNNER_TEMP/depot_tools" >> "$GITHUB_PATH"
+      - name: Install Emscripten
+        env:
+          DEPOT_TOOLS_PYTHON_BYPASS: '1'
+        run: |
+          mkdir -p vendor/embedpdf-runtime/third_party
+          git clone https://github.com/emscripten-core/emsdk.git vendor/embedpdf-runtime/third_party/emsdk
+          vendor/embedpdf-runtime/third_party/emsdk/emsdk install "$EMSDK_VERSION"
+          vendor/embedpdf-runtime/third_party/emsdk/emsdk activate "$EMSDK_VERSION"
+          echo "$GITHUB_WORKSPACE/vendor/embedpdf-runtime/third_party/emsdk/upstream/emscripten" >> "$GITHUB_PATH"
+          echo "$GITHUB_WORKSPACE/vendor/embedpdf-runtime/third_party/emsdk/upstream/bin" >> "$GITHUB_PATH"
+      - name: Sync pinned PDFium dependencies
+        working-directory: vendor/embedpdf-runtime
+        env:
+          PDF_RUNTIME_SYNC: auto
+          PDF_RUNTIME_TARGET_OS_LIST: emscripten
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          scripts/embedpdf-runtime/ensure-deps.sh
+      - name: Build baseline PDFium WASM
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          scripts/embedpdf-runtime/build-target.sh wasm32
+      - name: Apply experimental nested Form dirty-stream API
+        run: |
+          git -C vendor/embedpdf-runtime apply --check "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+          git -C vendor/embedpdf-runtime apply "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch"
+      - name: Rebuild patched PDFium WASM
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          ninja -C out/embedpdf-runtime/wasm32 pdfium
+      - name: Link and run nested Form Save/Reopen smoke test
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          emcc "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" -c -o "$RUNNER_TEMP/kagzi-pdfium-bridge.o"
+          em++ "$GITHUB_WORKSPACE/tests/pdfium/nested-form-dirty-api-wasm-smoke.c" "$RUNNER_TEMP/kagzi-pdfium-bridge.o" -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" out/embedpdf-runtime/wasm32/obj/libembedpdf.a -o "$RUNNER_TEMP/nested-form-smoke.js" -sMODULARIZE=1 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS='["_main","_FPDFFormObj_MarkObjectDirty","_kagzi_pdf_replace_text","_kagzi_pdf_free","_malloc","_free"]' -sEXPORTED_RUNTIME_METHODS='["ccall"]'
+          node -e 'const f=require(process.argv[1]); Promise.resolve(typeof f==="function"?f():f).then(m=>{const rc=m.ccall("main","number",[],[]);if(rc!==0)throw new Error("nested Form smoke failed: "+rc);console.log("nested Form Save/Reopen and bridge smoke passed");}).catch(e=>{console.error(e);process.exit(1);});' "$RUNNER_TEMP/nested-form-smoke.js"
+      - name: Build browser-loadable PDFium module
+        working-directory: vendor/embedpdf-runtime
+        run: |
+          source third_party/emsdk/emsdk_env.sh
+          mkdir -p "$GITHUB_WORKSPACE/runtime-artifact"
+          emcc "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" -c -o "$RUNNER_TEMP/kagzi-pdfium-bridge.o"
+          em++ "$RUNNER_TEMP/kagzi-pdfium-bridge.o" out/embedpdf-runtime/wasm32/obj/libembedpdf.a -o "$GITHUB_WORKSPACE/runtime-artifact/kagzi-pdfium-native.js" --no-entry -sMODULARIZE=1 -sEXPORT_NAME=KagziPdfiumModule -sENVIRONMENT='web,worker' -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS='["_kagzi_pdf_replace_text","_kagzi_pdf_free","_malloc","_free"]' -sEXPORTED_RUNTIME_METHODS='["ccall"]'
+          cp "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch" "$GITHUB_WORKSPACE/runtime-artifact/"
+          printf '%s\n' "runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c" "emscripten=3.1.72" "branch=$GITHUB_REF_NAME" "commit=$GITHUB_SHA" > "$GITHUB_WORKSPACE/runtime-artifact/BUILD-METADATA.txt"
+          (cd "$GITHUB_WORKSPACE/runtime-artifact" && sha256sum kagzi-pdfium-native.js kagzi-pdfium-native.wasm > SHA256SUMS.txt)
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Verify native replacement through the production browser editor
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          install -m 0644 runtime-artifact/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 runtime-artifact/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory "$GITHUB_WORKSPACE" > "$RUNNER_TEMP/kagzi-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/pdf-editor.html >/dev/null; then break; fi
+            sleep 1
+          done
+          KAGZI_PDF_EDITOR_URL=http://127.0.0.1:4173/pdf-editor.html npx playwright test tests/pdfium/native-text-browser.spec.mjs --reporter=line
+      - name: Upload browser runtime artifact for manual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: kagzi-pdfium-native-runtime
+          path: runtime-artifact/
+          if-no-files-found: error
+          retention-days: 14
