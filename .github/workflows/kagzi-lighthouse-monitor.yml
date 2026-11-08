@@ -31,7 +31,7 @@ jobs:
           - slug: homepage
             url: https://kagzi-8cy.pages.dev/
           - slug: pdf-editor
-            url: https://kagzi-8cy.pages.dev/pdf-editor.html
+            url: https://kagzi-8cy.pages.dev/pdf-editor
           - slug: jan-seva
             url: https://kagzi-8cy.pages.dev/jan-seva
           - slug: current-affairs
