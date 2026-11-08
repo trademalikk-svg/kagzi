@@ -1,0 +1,58 @@
+name: Publish verified PDFium browser runtime
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: pdfium-runtime-publish-feature
+  cancel-in-progress: false
+
+jobs:
+  publish-runtime:
+    if: github.ref == 'refs/heads/feature/pdfium-native-text-integration'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/pdfium-native-text-integration
+          fetch-depth: 0
+
+      - name: Download verified PDFium artifact
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: 42450784642
+          artifact-ids: 13606127192
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/kagzi-pdfium-artifact
+
+      - name: Verify artifact and publish assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js
+          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.wasm
+          cd /tmp/kagzi-pdfium-artifact
+          sha256sum --check SHA256SUMS.txt
+          grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
+          grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
+          grep -F 'commit=cd416ce8964a08827b44e853b90a6e37f00d176f' BUILD-METADATA.txt
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p assets
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
+          install -m 0644 /tmp/kagzi-pdfium-artifact/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          git add assets/kagzi-pdfium-native.js assets/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.BUILD-METADATA.txt
+          if git diff --cached --quiet; then
+            echo "Verified PDFium runtime assets are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add verified PDFium browser runtime assets"
+          git push origin HEAD:feature/pdfium-native-text-integration
