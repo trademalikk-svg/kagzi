@@ -83,18 +83,23 @@ test("unified jobs renderer supports region search, deadline sorting and safe sh
  assert.match(js,/textContent/);
 });
 
-test("all State PSC portal links are attributed to the official UPPSC directory", async()=>{
+test("State and UT PSC portals use the official directory source and UPSSSC has its own source", async()=>{
  const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
  const data=JSON.parse(raw);
- assert.equal(data.portals.length,29);
- assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,29);
- for(const portal of data.portals){
+ const pscPortals=data.portals.filter(x=>x.type==="State Public Service Commission");
+ const subordinatePortals=data.portals.filter(x=>x.type==="State Subordinate Services Selection Commission");
+ assert.equal(pscPortals.length,29);
+ assert.equal(new Set(pscPortals.map(x=>x.regionSlug)).size,29);
+ assert.equal(subordinatePortals.length,1);
+ assert.equal(subordinatePortals[0].regionSlug,"uttar-pradesh");
+ assert.equal(subordinatePortals[0].sourceUrl,"https://upsssc.gov.in/");
+ for(const portal of pscPortals){
   assert.match(portal.url,/^https:\/\//);
   assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
   assert.ok(portal.lastCheckedAt);
  }
+ assert.ok(subordinatePortals[0].lastCheckedAt);
 });
-
 test("region filter is populated from the complete 36-region registry", async()=>{
  const raw=await readFile(new URL("../government-jobs/assets/regions.js",import.meta.url),"utf8");
  const match=raw.match(/window\.KAGZI_REGIONS=(\[[\s\S]*\]);/);
