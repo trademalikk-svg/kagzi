@@ -40,10 +40,12 @@ test('catalogue activates resume and lists typing and calculator tools',()=>{
  assert.ok(modules.includes("68:'daily-shop-hisab.html'"));
  assert.ok(modules.includes("shown.length+' / 68'"));
 });
-test('homepage and sitemap link all three tools',()=>{
- const home=read('index.html'),sitemap=read('sitemap.xml');
+test('homepage Office Work folder exposes Resume Maker and all new tools are in the sitemap',()=>{
+ const home=read('index.html'),office=read('office.html'),sitemap=read('sitemap.xml');
+ assert.ok(home.includes('href="office.html"'),'homepage Office Work link');
+ assert.ok(home.includes('Office Work'),'homepage Office Work label');
+ assert.ok(office.includes('href="resume-cv-maker.html"'),'Office Work Resume Maker link');
  for(const slug of ['resume-cv-maker','hindi-english-typing-tools','online-calculators','invoice-bill-maker','daily-shop-hisab']){
-  assert.ok(home.includes(slug+'.html'),'homepage '+slug);
   assert.ok(sitemap.includes('https://kagzi-8cy.pages.dev/'+slug),'sitemap '+slug);
  }
 });
