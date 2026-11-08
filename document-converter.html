@@ -38,7 +38,7 @@
 <option value="csv-pdf">CSV → PDF</option>
 </select>
 <label for="file">अपनी फ़ाइल चुनें (अधिकतम 10 MB)</label>
-<input id="file" name="file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+<input id="file" name="file" type="file" accept=".pdf,application/pdf" required>
 <label><input id="consent" type="checkbox" required> मैं सहमत हूँ कि चुनी हुई फ़ाइल conversion के लिए ConvertAPI को भेजी जाएगी।</label>
 <button id="submitButton" type="submit">Convert करें</button>
 </form>
@@ -50,12 +50,16 @@
 <footer><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/contact">Contact</a></footer>
 <script>
 (() => {
- const form=document.getElementById("converterForm"),button=document.getElementById("submitButton"),status=document.getElementById("status"),outputs=document.getElementById("outputs");
+ const form=document.getElementById("converterForm"),button=document.getElementById("submitButton"),status=document.getElementById("status"),outputs=document.getElementById("outputs"),targetSelect=document.getElementById("target"),fileInput=document.getElementById("file");
+ const acceptedExtensions={"pdf-docx":".pdf","pdf-jpg":".pdf","docx-pdf":".docx","pdf-txt":".pdf","pdf-html":".pdf","jpg-png":".jpg,.jpeg","png-jpg":".png","xlsx-csv":".xlsx","xlsx-pdf":".xlsx","pptx-pdf":".pptx","pdf-pptx":".pdf","jpg-pdf":".jpg,.jpeg","png-pdf":".png","txt-pdf":".txt","html-pdf":".html","csv-pdf":".csv"};
+ function updateFileType(){fileInput.value="";fileInput.accept=acceptedExtensions[targetSelect.value]||"";}
+ targetSelect.addEventListener("change",updateFileType);updateFileType();
  form.addEventListener("submit",async event=>{
   event.preventDefault();outputs.replaceChildren();status.textContent="";
-  const file=document.getElementById("file").files[0],target=document.getElementById("target").value;
+  const file=fileInput.files[0],target=targetSelect.value;
   if(!file){status.textContent="पहले फ़ाइल चुनें।";return;}
   if(file.size>10*1024*1024){status.textContent="फ़ाइल 10 MB से छोटी होनी चाहिए।";return;}
+  const allowed=(acceptedExtensions[target]||"").split(",");if(!allowed.some(ext=>file.name.toLowerCase().endsWith(ext))){status.textContent="इस conversion के लिए सही फ़ाइल extension चुनें।";return;}
   if(!document.getElementById("consent").checked){status.textContent="आगे बढ़ने से पहले सहमति दें।";return;}
   const data=new FormData();data.append("file",file);data.append("target",target);data.append("consent","yes");
   button.disabled=true;status.textContent="Conversion चल रही है…";
