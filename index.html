@@ -228,6 +228,16 @@ img,video,canvas,iframe{max-width:100%}
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"82ad26136ba64a46818d5789c9dd98ec"}'></script>
 <!-- End Cloudflare Web Analytics -->
+
+<style id="kagzi-office-featured-card">
+/* Highlight Office in the first row of Quick access. */
+.tools-grid .office-featured{position:relative;order:-1;overflow:hidden;border:2px solid transparent!important;background:linear-gradient(115deg,#fff7dc,#eef5ff 48%,#f5eaff) padding-box,linear-gradient(110deg,#f3b52c,#2475e8,#9b55d4,#21a88a) border-box!important;box-shadow:0 7px 20px rgba(31,75,145,.13)!important;transform:translateY(-2px)}
+.tools-grid .office-featured:before{content:"✦ OFFICE SUITE";position:absolute;top:7px;right:10px;font-size:8px;font-weight:900;letter-spacing:.8px;color:#7a4ab5}
+.tools-grid .office-featured .office-featured-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0753c7,#8b4bd8 55%,#edaa2b);color:#fff;font-size:23px;box-shadow:0 4px 10px #244b8833}
+.tools-grid .office-featured .tool-info b{color:#123b83}
+.tools-grid .office-featured .tool-status{background:#fff0c2;color:#81540b;border:1px solid #f1d27c}
+@media(max-width:760px){.tools-grid .office-featured{transform:none}}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -337,12 +347,13 @@ img,video,canvas,iframe{max-width:100%}
 <section class="section-heading" id="tools"><div><div class="eyebrow">GET THINGS DONE</div><h2>Quick access</h2><p>Choose a workspace to get started.</p></div><a href="modules.html" class="text-link">View all tools <span>→</span></a></section>
 <div class="tools-grid" id="toolGrid">
 <a class="tool-card" href="document-library.html" data-search="document library upload read pdf search private files scribd"><span class="tool-icon violet">▤</span><span class="tool-info"><b>Document Library</b><small>Upload, read and organise PDFs</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Open library</span></a>
+<a class="tool-card office-featured" href="office.html" data-search="office word editor pdf word excel powerpoint resume cv documents"><span class="tool-icon office-featured-icon">▤</span><span class="tool-info"><b>Office &amp; Word Editor</b><small>Word, Excel, PDF tools &amp; Resume Maker</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Open Office</span></a>
 <a class="tool-card" href="modules.html" data-search="all tools workspace 65 modules document forms resume invoice storage"><span class="tool-icon violet">✦</span><span class="tool-info"><b>All 65 workspace tools</b><small>Open the full KAGZI tools suite</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Open workspace</span></a>
 <a class="tool-card" href="#pdfWorkbench" data-search="pdf tools merge split compress convert edit"><span class="tool-icon blue">▧</span><span class="tool-info"><b>PDF tools</b><small>Merge, split, compress and convert</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Available now</span></a>
 <a class="tool-card" href="#scanner" data-search="scanner scan ocr image text handwriting"><span class="tool-icon mint">▨</span><span class="tool-info"><b>Scanner & OCR</b><small>Turn images into searchable text</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Available now</span></a>
 <a class="tool-card" href="modules.html?category=ai" data-search="ai assistant read summarize translate chat support"><span class="tool-icon violet">✧</span><span class="tool-info"><b>AI document assistant</b><small>Read, understand and improve documents</small></span><span class="card-arrow">↗</span><span class="tool-status">Coming soon</span></a>
 <a class="tool-card" href="#photoStudio" data-search="photo studio passport resize background image"><span class="tool-icon peach">▧</span><span class="tool-info"><b>Photo studio</b><small>Resize, crop and prepare photos</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Available now</span></a>
-<a class="tool-card" href="office.html" data-search="office word editor pdf word excel powerpoint resume cv documents"><span class="tool-icon blue">▤</span><span class="tool-info"><b>Office &amp; Word Editor</b><small>Word, Excel, PDF tools &amp; Resume Maker</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Available now</span></a>
+<a class="tool-card office-featured" href="office.html" data-search="office word editor pdf word excel powerpoint resume cv documents"><span class="tool-icon office-featured-icon">▤</span><span class="tool-info"><b>Office &amp; Word Editor</b><small>Word, Excel, PDF tools &amp; Resume Maker</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Open Office</span></a>
 <a class="tool-card" href="gov-documents.html" data-search="government documents aadhaar pan certificate application"><span class="tool-icon gold">▦</span><span class="tool-info"><b>Government documents</b><small>Guides, checklists and application help</small></span><span class="card-arrow">↗</span><span class="tool-status available-status">Directory available</span></a>
 <a class="tool-card" href="modules.html?category=manage" data-search="forms signatures fill sign"><span class="tool-icon mint">✍</span><span class="tool-info"><b>Forms & signatures</b><small>Prepare and manage forms</small></span><span class="card-arrow">↗</span><span class="tool-status">Coming soon</span></a>
 <a class="tool-card" href="modules.html?category=storage" data-search="document locker storage private backup"><span class="tool-icon violet">▣</span><span class="tool-info"><b>Document locker</b><small>A private place for important files</small></span><span class="card-arrow">↗</span><span class="tool-status">Coming soon</span></a>
