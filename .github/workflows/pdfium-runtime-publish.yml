@@ -1,12 +1,17 @@
 name: Publish verified PDFium browser runtime
 
 on:
-  workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: ["KAGZI PDFium native text runtime"]
+    types: [completed]
     branches:
       - feature/kagzi-pdfium-native-text
-    paths:
-      - .github/workflows/pdfium-runtime-publish.yml
+  workflow_dispatch:
+    inputs:
+      runtime_run_id:
+        description: "Successful KAGZI PDFium native text runtime run ID"
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -31,8 +36,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           repository: ${{ github.repository }}
-          run-id: 42487565712
-          artifact-ids: 13620941323
+          run-id: ${{ github.event.workflow_run.id || inputs.runtime_run_id }}
+          name: kagzi-pdfium-native-runtime
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/kagzi-pdfium-artifact
 
@@ -40,15 +45,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native.js
-          test -s /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm
-          cd /tmp/kagzi-pdfium-artifact
+          ARTIFACT_DIR=/tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime
+          test -s "$ARTIFACT_DIR/kagzi-pdfium-native.js"
+          test -s "$ARTIFACT_DIR/kagzi-pdfium-native.wasm"
+          cd "$ARTIFACT_DIR"
           sha256sum --check SHA256SUMS.txt
           grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
           grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
           cd "$GITHUB_WORKSPACE"
           mkdir -p assets
-          install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
+          install -m 0644 $ARTIFACT_DIR/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.wasm assets/kagzi-pdfium-native.wasm
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/BUILD-METADATA.txt assets/kagzi-pdfium-native.BUILD-METADATA.txt
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-LICENSE.txt assets/kagzi-pdfium-LICENSE.txt
