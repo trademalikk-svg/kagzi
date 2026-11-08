@@ -49,6 +49,13 @@ export async function handleRequest({request,env},fetchImpl=fetch){
  const body=new FormData();
  body.append("File",new Blob([bytes],{type:({pdf:"application/pdf",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation",jpg:"image/jpeg",png:"image/png",txt:"text/plain",csv:"text/csv",html:"text/html"})[ext]}),safeName(file.name,"document."+ext));
  body.append("StoreFile","true");
+ // PDF to editable Word: flowing layout keeps text editable; Auto OCR handles scanned pages when supported.
+ if(from==="pdf"&&to==="docx"){
+  body.append("Layout","flowing");
+  body.append("OcrMode","auto");
+  body.append("OcrLanguage","auto");
+  body.append("OcrEngine","native");
+ }
  let upstream;
  try{upstream=await fetchImpl("https://v2.convertapi.com/convert/"+from+"/to/"+to,{method:"POST",headers:{Authorization:"Bearer "+env.CONVERTAPI_TOKEN},body,signal:AbortSignal.timeout(120000)});}
  catch{return json({error:"Conversion सेवा से संपर्क नहीं हो पाया। कृपया बाद में कोशिश करें।",code:"CONVERTAPI_UNAVAILABLE"},502);}
