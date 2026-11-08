@@ -87,3 +87,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Add verified PDFium browser runtime assets"
           git push origin HEAD:feature/kagzi-pdfium-native-text
+# Re-run publishing after a verified PDFium runtime build.
