@@ -109,7 +109,7 @@ jobs:
           {
             echo "Third-party license texts from embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c"
             while IFS= read -r -d '' license_file; do
-              printf '\n===== %s =====\\n' "${license_file#vendor/embedpdf-runtime/}"
+              printf '\n===== %s =====\n' "${license_file#vendor/embedpdf-runtime/}"
               cat "$license_file"
               printf '\n'
             done < <(find vendor/embedpdf-runtime/third_party -type f \( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' -o -iname 'FTL.TXT' -o -iname 'copying' \) -print0 | sort -z)
