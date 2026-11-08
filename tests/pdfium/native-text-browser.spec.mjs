@@ -56,6 +56,8 @@ test('browser replaces nested Form PDF text and preserves page content through e
     await page.locator('#pdfTextLayer .pdf-text-span').filter({ hasText: 'ORIGINAL' }).click();
     await expect(page.locator('#inspectorText')).toHaveValue('ORIGINAL');
     await page.locator('#inspectorText').fill('REPLACED');
+    await expect(page.locator('#pdfTextLayer')).toContainText('REPLACED');
+    await expect(page.locator('#pdfTextLayer')).not.toContainText('ORIGINAL');
     await expect(page.locator('#nativeEditText')).toBeEnabled();
     await page.locator('#nativeEditText').click();
 
