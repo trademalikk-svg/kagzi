@@ -1,0 +1,107 @@
+name: KAGZI Lighthouse performance monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 2 * * 0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kagzi-lighthouse-monitor
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Lighthouse · ${{ matrix.page }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        page:
+          - slug: homepage
+            url: https://kagzi-8cy.pages.dev/
+          - slug: pdf-editor
+            url: https://kagzi-8cy.pages.dev/pdf-editor.html
+          - slug: jan-seva
+            url: https://kagzi-8cy.pages.dev/jan-seva
+          - slug: current-affairs
+            url: https://kagzi-8cy.pages.dev/current-affairs/
+          - slug: up-current-affairs
+            url: https://kagzi-8cy.pages.dev/current-affairs/up-current-affairs.html
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare report folder
+        run: mkdir -p reports/lighthouse
+
+      - name: Run Lighthouse on mobile
+        env:
+          TARGET_URL: ${{ matrix.page.url }}
+          REPORT_SLUG: ${{ matrix.page.slug }}
+        run: |
+          npx --yes lighthouse@12 "$TARGET_URL" \
+            --output=json \
+            --output-path="reports/lighthouse/$REPORT_SLUG-mobile.json" \
+            --only-categories=performance \
+            --chrome-flags="--headless --no-sandbox" \
+            --quiet
+
+      - name: Run Lighthouse on desktop
+        env:
+          TARGET_URL: ${{ matrix.page.url }}
+          REPORT_SLUG: ${{ matrix.page.slug }}
+        run: |
+          npx --yes lighthouse@12 "$TARGET_URL" \
+            --preset=desktop \
+            --output=json \
+            --output-path="reports/lighthouse/$REPORT_SLUG-desktop.json" \
+            --only-categories=performance \
+            --chrome-flags="--headless --no-sandbox" \
+            --quiet
+
+      - name: Add metrics to job summary
+        if: always()
+        env:
+          REPORT_SLUG: ${{ matrix.page.slug }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const slug = process.env.REPORT_SLUG;
+          const ids = ['mobile', 'desktop'];
+          const metricIds = [
+            ['LCP', 'largest-contentful-paint'],
+            ['CLS', 'cumulative-layout-shift'],
+            ['TBT', 'total-blocking-time'],
+            ['FCP', 'first-contentful-paint'],
+            ['Speed Index', 'speed-index']
+          ];
+          let out = '| Device | Performance | LCP | CLS | TBT | FCP | Speed Index |\n|---|---:|---:|---:|---:|---:|---:|\n';
+          for (const device of ids) {
+            const file = path.join('reports/lighthouse', `${slug}-${device}.json`);
+            if (!fs.existsSync(file)) {
+              out += `| ${device} | Report unavailable | — | — | — | — | — |\n`;
+              continue;
+            }
+            const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const score = Math.round((report.categories?.performance?.score ?? 0) * 100);
+            const values = metricIds.map(([, id]) => report.audits?.[id]?.displayValue ?? '—');
+            out += `| ${device} | ${score}/100 | ${values[0]} | ${values[1]} | ${values[2]} | ${values[3]} | ${values[4]} |\n`;
+          }
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## KAGZI Lighthouse · ${slug}\n\n${out}\nLab measurements only; they are not Chrome UX Report field data. Compare trends across runs rather than treating one run as a ranking guarantee.\n`);
+          NODE
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kagzi-lighthouse-${{ matrix.page.slug }}-${{ github.run_id }}
+          path: reports/lighthouse/*.json
+          if-no-files-found: warn
+          retention-days: 30
