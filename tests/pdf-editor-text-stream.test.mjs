@@ -41,3 +41,19 @@ test('ignores PDF comments and safely decodes escaped literal characters', async
     '% (Invoice) Tj\nBT () Tj ET'
   );
 });
+
+test('removes a complete token inside a TJ text array', async () => {
+  const tools = await loadTextStreamTools();
+  assert.equal(
+    tools.blankTextInStream('BT [(A) -20 (B)] TJ ET', 'A'),
+    'BT [() -20 (B)] TJ ET'
+  );
+});
+
+test('does not treat marked-content metadata strings as visible text operands', async () => {
+  const tools = await loadTextStreamTools();
+  assert.equal(
+    tools.blankTextInStream('/Span << /ActualText (Invoice) >> BDC EMC', 'Invoice'),
+    null
+  );
+});
