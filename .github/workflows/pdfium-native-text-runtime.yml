@@ -104,8 +104,18 @@ jobs:
           emcc "$GITHUB_WORKSPACE/src/pdfium/kagzi-pdfium-bridge.c" -I"$GITHUB_WORKSPACE/vendor/embedpdf-runtime" -c -o "$RUNNER_TEMP/kagzi-pdfium-bridge.o"
           em++ "$RUNNER_TEMP/kagzi-pdfium-bridge.o" out/embedpdf-runtime/wasm32/obj/libembedpdf.a -o "$GITHUB_WORKSPACE/runtime-artifact/kagzi-pdfium-native.js" --no-entry -sMODULARIZE=1 -sEXPORT_NAME=KagziPdfiumModule -sENVIRONMENT='web,worker' -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS='["_kagzi_pdf_replace_text","_kagzi_pdf_free","_malloc","_free"]' -sEXPORTED_RUNTIME_METHODS='["ccall"]'
           cp "$GITHUB_WORKSPACE/patches/pdfium/nested-form-dirty-stream-api.patch" "$GITHUB_WORKSPACE/runtime-artifact/"
-          printf '%s\n' "runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c" "emscripten=3.1.72" "branch=$GITHUB_REF_NAME" "commit=$GITHUB_SHA" > "$GITHUB_WORKSPACE/runtime-artifact/BUILD-METADATA.txt"
-          (cd "$GITHUB_WORKSPACE/runtime-artifact" && sha256sum kagzi-pdfium-native.js kagzi-pdfium-native.wasm > SHA256SUMS.txt)
+          cp "$GITHUB_WORKSPACE/vendor/embedpdf-runtime/LICENSE" "$GITHUB_WORKSPACE/runtime-artifact/kagzi-pdfium-LICENSE.txt"
+          cp "$GITHUB_WORKSPACE/vendor/embedpdf-runtime/NOTICE" "$GITHUB_WORKSPACE/runtime-artifact/kagzi-pdfium-NOTICE.txt"
+          {
+            echo "Third-party license texts from embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c"
+            while IFS= read -r -d '' license_file; do
+              printf '\\n===== %s =====\\n' "${license_file#vendor/embedpdf-runtime/}"
+              cat "$license_file"
+              printf '\\n'
+            done < <(find vendor/embedpdf-runtime/third_party -type f \\( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' -o -iname 'FTL.TXT' -o -iname 'copying' \\) -print0 | sort -z)
+          } > "$GITHUB_WORKSPACE/runtime-artifact/kagzi-pdfium-THIRD-PARTY-NOTICES.txt"
+          printf '%s\\n' "runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c" "emscripten=3.1.72" "branch=$GITHUB_REF_NAME" "commit=$GITHUB_SHA" > "$GITHUB_WORKSPACE/runtime-artifact/BUILD-METADATA.txt"
+          (cd "$GITHUB_WORKSPACE/runtime-artifact" && sha256sum kagzi-pdfium-native.js kagzi-pdfium-native.wasm nested-form-dirty-stream-api.patch BUILD-METADATA.txt kagzi-pdfium-LICENSE.txt kagzi-pdfium-NOTICE.txt kagzi-pdfium-THIRD-PARTY-NOTICES.txt > SHA256SUMS.txt)
       - name: Install Playwright Chromium
         run: |
           npm install --no-save @playwright/test
