@@ -24,7 +24,7 @@
  ]);
  function isProtectedPath(){
   const path=(location.pathname.replace(/\/+$/,'')||'/').replace(/\.html$/,'');
-  return protectedExact.has(path)||path.startsWith('/current-affairs/')||path.startsWith('/study-material/');
+  return protectedExact.has(path)||path.startsWith('/current-affairs/')||path.startsWith('/study-material/')||path.startsWith('/board-updates/');
  }
  function loginUrl(){
   const next=location.pathname+location.search+location.hash;
