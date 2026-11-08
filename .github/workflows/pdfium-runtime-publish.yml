@@ -31,8 +31,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           repository: ${{ github.repository }}
-          run-id: 42459755614
-          artifact-ids: 13608944730
+          run-id: 42485673940
+          artifact-ids: 13619144860
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/kagzi-pdfium-artifact
 
@@ -46,7 +46,7 @@ jobs:
           sha256sum --check SHA256SUMS.txt
           grep -F 'runtime=embedpdf/runtime@42388d3b4c9895d6672f5da357b1429678a0994c' BUILD-METADATA.txt
           grep -F 'emscripten=3.1.72' BUILD-METADATA.txt
-          grep -F 'commit=34266a12040204987dcab9bc905db9754e3458b5' BUILD-METADATA.txt
+          grep -F 'commit=daf66cd2772aa037a90daa3ea0e888d31a427b4c' BUILD-METADATA.txt
           cd "$GITHUB_WORKSPACE"
           mkdir -p assets
           install -m 0644 /tmp/kagzi-pdfium-artifact/kagzi-pdfium-native-runtime/kagzi-pdfium-native.js assets/kagzi-pdfium-native.js
