@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   audit:
-    name: Lighthouse · ${{ matrix.page }}
+    name: Lighthouse · ${{ matrix.page.slug }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
