@@ -20,7 +20,7 @@ window.KAGZIPdfOcr={
   const page=await pdfDoc.getPage(pageIndex+1),viewport=page.getViewport({scale:1.6}),canvas=document.createElement('canvas');
   canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
   await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
-  const result=await recognize(canvas,document.getElementById('ocrLanguage')?.value||'eng',p=>{const status=document.getElementById('editorStatus');if(status)status.textContent='Local OCR running: '+p+'%';});
+  const result=await recognize(canvas,document.getElementById('ocrLanguage')?.value||'hin',p=>{const status=document.getElementById('editorStatus');if(status)status.textContent='Local OCR running: '+p+'%';});
   return result.words.length?result.words.map(word=>({text:word.text,confidence:word.confidence/100,bbox:word.bbox})):result.text?[{text:result.text,confidence:result.confidence/100}]:[];
  }
 };
