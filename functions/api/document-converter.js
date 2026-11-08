@@ -20,7 +20,7 @@ function hasValidSignature(bytes, extension) {
   return false;
 }
 
-export async function onRequestPost({ request, env }) {
+export async function handleRequest({ request, env }, fetchImpl = fetch) {
   if (request.method !== "POST") return json({ error: "केवल POST request स्वीकार है।" }, 405);
   const origin = request.headers.get("Origin");
   if (origin && origin !== new URL(request.url).origin) return json({ error: "Cross-origin request स्वीकार नहीं है।" }, 403);
@@ -54,7 +54,7 @@ export async function onRequestPost({ request, env }) {
 
   let upstream;
   try {
-    upstream = await fetch("https://v2.convertapi.com/convert/" + target.from + "/to/" + target.to, {
+    upstream = await fetchImpl("https://v2.convertapi.com/convert/" + target.from + "/to/" + target.to, {
       method: "POST",
       headers: { Authorization: "Bearer " + env.CONVERTAPI_TOKEN },
       body: upstreamForm,
@@ -89,4 +89,8 @@ export async function onRequestPost({ request, env }) {
   }));
   if (!outputs.length) return json({ error: "Conversion पूरी नहीं हुई या download link नहीं मिला।", code: "NO_OUTPUT_FILES" }, 502);
   return json({ files: outputs, expiresInHours: 3, message: "Conversion पूरी हुई। Download link अधिकतम 3 घंटे उपलब्ध रहेगा।" });
+}
+
+export async function onRequestPost(context) {
+  return handleRequest(context);
 }
