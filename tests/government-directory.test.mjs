@@ -12,7 +12,7 @@ test("jobs directory contains all 28 states and 8 UT pages", async()=>{
  assert.equal(regions.filter(x=>x[3]==="state").length,28);
  assert.equal(regions.filter(x=>x[3]==="ut").length,8);
  assert.equal(new Set(regions.map(x=>x[0])).size,36);
- for(const [slug] of regions)assert.ok(await readFile(new URL("../government-jobs/"+slug+"/index.html",import.meta.url),"utf8"));
+ for(const [slug] of regions)assert.ok(await readFile(new URL("../government-jobs/states/"+slug+"/index.html",import.meta.url),"utf8"));
 });
 
 test("RSS parser extracts title, summary and official link",()=>{
@@ -83,18 +83,23 @@ test("unified jobs renderer supports region search, deadline sorting and safe sh
  assert.match(js,/textContent/);
 });
 
-test("all State PSC portal links are attributed to the official UPPSC directory", async()=>{
+test("State and UT PSC portals use the official directory source and UPSSSC has its own source", async()=>{
  const raw=await readFile(new URL("../government-jobs/data/state-recruitments.json",import.meta.url),"utf8");
  const data=JSON.parse(raw);
- assert.equal(data.portals.length,29);
- assert.equal(new Set(data.portals.map(x=>x.regionSlug)).size,29);
- for(const portal of data.portals){
+ const pscPortals=data.portals.filter(x=>x.type==="State Public Service Commission");
+ const subordinatePortals=data.portals.filter(x=>x.type==="State Subordinate Services Selection Commission");
+ assert.equal(pscPortals.length,29);
+ assert.equal(new Set(pscPortals.map(x=>x.regionSlug)).size,29);
+ assert.equal(subordinatePortals.length,1);
+ assert.equal(subordinatePortals[0].regionSlug,"uttar-pradesh");
+ assert.equal(subordinatePortals[0].sourceUrl,"https://upsssc.gov.in/");
+ for(const portal of pscPortals){
   assert.match(portal.url,/^https:\/\//);
   assert.equal(portal.sourceUrl,"https://uppsc.up.nic.in/OuterPages/Other_PSC.aspx");
   assert.ok(portal.lastCheckedAt);
  }
+ assert.ok(subordinatePortals[0].lastCheckedAt);
 });
-
 test("region filter is populated from the complete 36-region registry", async()=>{
  const raw=await readFile(new URL("../government-jobs/assets/regions.js",import.meta.url),"utf8");
  const match=raw.match(/window\.KAGZI_REGIONS=(\[[\s\S]*\]);/);
@@ -110,7 +115,8 @@ test("Central Jobs shows official recruitment portals without mislabelling homep
  const html=await readFile(new URL("../government-jobs/central/index.html",import.meta.url),"utf8");
  for(const host of ["ssc.gov.in","upsc.gov.in","rrbcdg.gov.in","ncs.gov.in","apprenticeshipindia.gov.in","ibps.in"]) assert.ok(html.includes(host),host+" official portal link");
  assert.match(html,/Official portal/);
- assert.match(html,/data-central-vacancies/);\n assert.match(html,/assets\\/central-jobs\\.js/);
+ assert.match(html,/data-central-vacancies/);
+ assert.match(html,/assets\/central-jobs\.js/);
  assert.match(html,/data-share-page/);
  assert.match(html,/data-whatsapp-page/);
 });
