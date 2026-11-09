@@ -29,7 +29,7 @@ let hindiFontPromise=null;
 async function ensureHindiCanvasFont(){
  if(!('FontFace' in window)||!document.fonts)return false;
  if(!hindiFontPromise){
-  const pending=(async()=>{const face=new FontFace('KAGZI Noto Sans Devanagari','url(https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf)');await face.load();document.fonts.add(face);return true;})().catch(()=>false);
+  const pending=(async()=>{const face=new FontFace('KAGZI Noto Sans Devanagari','url(/assets/fonts/NotoSansDevanagari-Regular.ttf)');await face.load();document.fonts.add(face);return true;})().catch(()=>false);
   hindiFontPromise=pending;
  }
  const pending=hindiFontPromise;

@@ -61,6 +61,8 @@ jobs:
         run: node --test tests/pdf-ocr-errors.test.mjs
       - name: Test Hindi font loading retry
         run: node --test tests/pdf-hindi-font-retry.test.mjs
+      - name: Test bundled Hindi font asset
+        run: node --test tests/pdf-local-hindi-font.test.mjs
       - name: Check camera scanner JavaScript syntax
         run: node --check pdf-scanner.js
       - name: Test PDF render metrics
