@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-07",
+  "updatedAt": "2026-11-09",
   "note": "यहाँ पूरे भारत के आधिकारिक परीक्षा अपडेट दिखते हैं। राज्य-विशेष अपडेट केवल उस राज्य के सत्यापित रिकॉर्ड उपलब्ध होने पर दिखाई देंगे। लिंक संबंधित संस्था के आधिकारिक स्रोत पर जाता है।",
   "items": [
     {
@@ -50,6 +50,32 @@
       "status": "notice",
       "summary": "उम्मीदवारों के लिए परीक्षा शहर और प्रवेश पत्र से संबंधित सूचना प्रकाशित। उपलब्धता/डाउनलोड स्थिति आधिकारिक नोटिस पर जाँचें।",
       "sourceUrl": "https://ssc.gov.in/home/notice-board",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "notice",
+      "regionSlug": "all-india"
+    },
+    {
+      "id": "ssc-cht-first-round-allocation-2025",
+      "category": "results",
+      "title": "Combined Hindi Translators Examination, 2025 — First Round Tentative Allocation",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-11-05",
+      "status": "published",
+      "summary": "SSC Notice Board पर First Round of Tentative Allocation (FRTA) की सूचना प्रकाशित। विस्तृत सूची और निर्देश आधिकारिक नोटिस में देखें।",
+      "sourceUrl": "https://ssc.gov.in/",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "notice",
+      "regionSlug": "all-india"
+    },
+    {
+      "id": "ssc-si-dp-capf-pet-pst-result-2025",
+      "category": "results",
+      "title": "Sub-Inspector in Delhi Police and CAPFs Examination, 2025 — PET/PST Result",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-10-29",
+      "status": "published",
+      "summary": "PET/PST के परिणाम के आधार पर Paper-II के लिए shortlisted उम्मीदवारों की सूचना SSC ने प्रकाशित की। आधिकारिक नोटिस से विवरण जाँचें।",
+      "sourceUrl": "https://ssc.gov.in/",
       "sourceLabel": "SSC Official Notice Board",
       "linkType": "notice",
       "regionSlug": "all-india"
