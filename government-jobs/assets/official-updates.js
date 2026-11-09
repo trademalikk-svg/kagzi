@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const groups=['results','admit-cards','answer-keys'];
-const labels={'results':'Results','admit-cards':'Admit Card','answer-keys':'Answer Key'};
+const groups=['results','admit-cards','answer-keys','exam-calendar'];
+const labels={'results':'Results','admit-cards':'Admit Card','answer-keys':'Answer Key','exam-calendar':'Exam Calendar'};
 const regionFilter=document.querySelector('[data-region-filter]');
 const DATA_URL=new URL('../data/official-updates.json',document.currentScript.src);
 const dateFmt=new Intl.DateTimeFormat('hi-IN',{day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Kolkata'});
