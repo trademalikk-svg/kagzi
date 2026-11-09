@@ -5,16 +5,22 @@ on:
       - "legal-document-generator.html"
       - "public-complaints.html"
       - "gram-panchayat.html"
+      - "functions/api/civic-ai.js"
+      - "civic-ai.js"
       - "tests/kagzi-civic-tools.test.mjs"
+      - "tests/civic-ai.test.mjs"
       - ".github/workflows/civic-tools-tests.yml"
   push:
     branches:
-      - "feat/jan-seva-directory-faq-expansion"
+      - "feat/kagzi-civic-tools"
     paths:
       - "legal-document-generator.html"
       - "public-complaints.html"
       - "gram-panchayat.html"
+      - "functions/api/civic-ai.js"
+      - "civic-ai.js"
       - "tests/kagzi-civic-tools.test.mjs"
+      - "tests/civic-ai.test.mjs"
       - ".github/workflows/civic-tools-tests.yml"
 jobs:
   civic-tools:
@@ -25,4 +31,4 @@ jobs:
         with:
           node-version: 20
       - name: Test civic tools
-        run: node --test tests/kagzi-civic-tools.test.mjs
+        run: node --test tests/*.test.mjs
