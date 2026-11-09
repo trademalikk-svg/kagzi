@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAGZI Article Studio | Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Private KAGZI article drafting and approval workspace.">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/config.js"></script>
+<script defer src="/auth-guard.js"></script>
+<script defer src="/articles-admin.js"></script>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#65718a;--line:#e3e8f1;--blue:#315efb;--gold:#c89b35;--bg:#f4f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#101d39;color:white;padding:15px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px}
+header a{color:#f2d17a;text-decoration:none}.shell{width:min(1180px,calc(100% - 28px));margin:24px auto 60px}
+h1{font-size:clamp(25px,4vw,34px);margin:4px 0}.muted{color:var(--muted)}.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:800;color:var(--gold)}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(310px,.8fr);gap:18px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 8px 28px #17203308}
+label{display:block;font-size:12px;font-weight:750;margin:13px 0 5px}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d8dfeb;border-radius:9px;font:inherit;background:white;color:var(--ink)}
+textarea{min-height:110px;resize:vertical}#content{min-height:280px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:#fff;font-weight:750;cursor:pointer}
+button.secondary{background:#edf1f8;color:var(--ink)}button.warn{background:#fff2dd;color:#815500}button.danger{background:#ffeded;color:#a32222}button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.toolbar select{width:auto;min-width:145px}.article{border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0}
+.article h3{font-size:15px;margin:0 0 5px}.meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:11px;border-radius:20px;padding:3px 8px;background:#edf1f8;color:#33415c;font-weight:750}
+.status{margin-top:12px;padding:10px;border-radius:9px;background:#eef3ff;color:#24418a;white-space:pre-wrap;font-size:13px}
+.status.error{background:#fff0f0;color:#a32222}.status.ok{background:#eaf8ef;color:#17683a}
+.preview{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f8fb;padding:12px;border-radius:9px;max-height:260px;overflow:auto;font-size:13px}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.hidden{display:none!important}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.shell{margin-top:16px}.panel{padding:16px}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body data-kagzi-protected="true">
+<header><strong>KAGZI · ARTICLE STUDIO</strong><nav><a href="/index.html">Website</a>　<a href="/education.html">Education Hub</a></nav></header>
+<main class="shell">
+<div class="eyebrow">PRIVATE EDITORIAL WORKSPACE</div>
+<h1>Article Draft &amp; Approval</h1>
+<p class="muted">India और Worldwide के Hindi/English articles बनाएं, edit करें, review करें और मंजूरी के बाद publish status दें। पुराने articles अलग और सुरक्षित रहेंगे।</p>
+<div id="accessStatus" class="status">Checking secure admin access…</div>
+<section id="workspace" class="layout hidden">
+<div class="panel">
+<div class="eyebrow">ARTICLE EDITOR</div><h2 id="formHeading">नया Article Draft</h2>
+<form id="articleForm">
+<input id="articleId" type="hidden">
+<div class="grid">
+<div><label for="language">Language / भाषा</label><select id="language" required><option value="hi">Hindi</option><option value="en">English</option></select></div>
+<div><label for="region">Target Region</label><select id="region" required><option value="india">India</option><option value="worldwide">Worldwide</option></select></div>
+</div>
+<div class="grid">
+<div><label for="category">Category</label><select id="category"><option>Education</option><option>Current Affairs</option><option>Government Schemes</option><option>Technology</option><option>Science</option><option>Business</option><option>Sports</option><option>Other</option></select></div>
+<div><label for="trendScore">Trend score (0–100)</label><input id="trendScore" type="number" min="0" max="100" value="0"></div>
+</div>
+<label for="title">Article Title</label><input id="title" maxlength="240" minlength="5" required>
+<label for="slug">URL Slug (English letters, numbers, hyphens)</label><input id="slug" maxlength="180" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
+<label for="excerpt">Short Summary</label><textarea id="excerpt" maxlength="500"></textarea>
+<label for="content">Full Article (Markdown)</label><textarea id="content" maxlength="100000" required placeholder="# Article heading&#10;&#10;Write the complete article here…"></textarea>
+<div class="grid">
+<div><label for="seoTitle">SEO Title (max 70)</label><input id="seoTitle" maxlength="70"></div>
+<div><label for="metaDescription">Meta Description (max 170)</label><input id="metaDescription" maxlength="170"></div>
+</div>
+<label for="trendQuery">Trend / Search Query</label><input id="trendQuery" maxlength="300">
+<label for="trendSource">Trend source / publisher</label><input id="trendSource" maxlength="500">
+<label for="sourceUrls">Research source URLs (one per line)</label><textarea id="sourceUrls" placeholder="https://official-source.example/page"></textarea>
+<div class="actions">
+<button id="saveDraft" type="submit">Save Draft</button>
+<button id="submitReview" class="secondary" type="button">Send for Review</button>
+<button id="resetForm" class="secondary" type="button">New Article</button>
+</div>
+</form>
+<div id="formStatus" class="status hidden" role="status"></div>
+</div>
+<aside class="panel">
+<div class="eyebrow">REVIEW QUEUE</div><h2>Articles</h2>
+<div class="toolbar">
+<select id="statusFilter" aria-label="Filter status"><option value="all">All statuses</option><option value="draft">Draft</option><option value="pending_review">Pending review</option><option value="approved">Approved</option><option value="published">Published</option><option value="rejected">Rejected</option></select>
+<select id="regionFilter" aria-label="Filter region"><option value="all">All regions</option><option value="india">India</option><option value="worldwide">Worldwide</option></select>
+<button id="refresh" class="secondary" type="button">Refresh</button>
+</div>
+<div id="articleList"><div class="empty">Loading articles…</div></div>
+<div id="listStatus" class="muted" role="status"></div>
+</aside>
+</section>
+<section id="reviewPanel" class="panel hidden" style="margin-top:18px">
+<div class="eyebrow">REVIEW SELECTED ARTICLE</div><h2 id="reviewTitle">Article preview</h2>
+<div class="meta" id="reviewMeta"></div>
+<p id="reviewExcerpt" class="muted"></p>
+<div id="reviewContent" class="preview"></div>
+<div class="actions">
+<button id="approveArticle" type="button">Approve</button>
+<button id="publishArticle" type="button">Publish approved article</button>
+<button id="rejectArticle" class="danger" type="button">Reject</button>
+<button id="closeReview" class="secondary" type="button">Close preview</button>
+</div>
+<p class="muted">Publish status updates the article record. Public article pages and sitemap integration are a separate release step; this dashboard does not claim Google indexing automatically.</p>
+<div id="reviewStatus" class="status hidden" role="status"></div>
+</section>
+</main>
+</body>
+</html>
