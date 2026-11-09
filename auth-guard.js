@@ -9,7 +9,7 @@
  }catch(error){console.error('KAGZI auth guard setup failed',error);}
  const authPath='/auth.html';
  const protectedExact=new Set([
-  '/education','/education-pdfs','/education-pdfs-en',
+  '/article-admin','/education','/education-pdfs','/education-pdfs-en',
   '/study-material','/study-notes','/study-practice',
   '/reader','/ebook-creator','/paid-library',
   '/current-affairs','/current-affairs-book','/current-affairs-book-source',
