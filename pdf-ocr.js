@@ -84,7 +84,7 @@ async function recognize(source,language,onProgress){
  return {text:result.data.text||'',confidence:result.data.confidence||0,words:(result.data.words||[]).map(word=>({text:word.text,confidence:word.confidence,bbox:word.bbox}))};
 }
 window.KAGZIPdfOcr={
- async recognizeImage(file,language,onProgress){return recognize(file,language,onProgress);},
+ async recognizeImage(file,language,onProgress){\n  if(typeof createImageBitmap!=='function')return recognize(file,language,onProgress);\n  let bitmap;try{bitmap=await createImageBitmap(file);const source=document.createElement('canvas');source.width=bitmap.width;source.height=bitmap.height;source.getContext('2d').drawImage(bitmap,0,0);return await recognize(enhancePage(source),language,onProgress);}catch(error){return recognize(file,language,onProgress);}finally{bitmap?.close?.();}\n },
  async detectPageText({pageIndex,pdfDoc}){
   const page=await pdfDoc.getPage(pageIndex+1),viewport=page.getViewport({scale:3}),canvas=document.createElement('canvas');
   canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
