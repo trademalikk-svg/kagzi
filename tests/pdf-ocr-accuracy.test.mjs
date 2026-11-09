@@ -9,7 +9,7 @@ async function loadOcr(overrides={}){
  const worker={setParameters:async value=>calls.parameters.push(value),recognize:async()=>({data:{text:'हिंदी पाठ',confidence:91,words:[]}})};
  const sandbox={
   window:{Tesseract:{createWorker:async(...args)=>{calls.create.push(args);return worker;}},...overrides.window},
-  document:{createElement:()=>({width:0,height:0,getContext:()=>({})}),getElementById:()=>null,...overrides.document},
+  document:{createElement:()=>{const canvas={width:0,height:0,getContext:()=>({fillStyle:'',fillRect(){},drawImage(){},getImageData(x,y,w,h){return {data:new Uint8ClampedArray(w*h*4)};},putImageData(){}})};return canvas;},getElementById:()=>null,...overrides.document},
   Intl,Uint8Array,Float64Array,Math,Map,Promise
  };
  vm.runInNewContext(source,sandbox);
@@ -39,7 +39,7 @@ test('Hindi OCR worker uses automatic page segmentation and 300 DPI metadata',as
 test('PDF page OCR renders at high resolution before enhancement',async()=>{
  const {window}=await loadOcr();
  let requestedScale=0;
- const page={getViewport:({scale})=>{requestedScale=scale;return {width:1800,height:2400};},render:()=>({promise:Promise.resolve()})};
+ const page={getViewport:({scale})=>{requestedScale=scale;return {width:20,height:30};},render:()=>({promise:Promise.resolve()})};
  const pdfDoc={getPage:async()=>page};
  await window.KAGZIPdfOcr.detectPageText({pageIndex:0,pdfDoc});
  assert.equal(requestedScale,3);
