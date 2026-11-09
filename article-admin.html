@@ -111,7 +111,7 @@ function formPayload(status){
 }
 function resetEditor(){
  editingId=null;fields.forEach(id=>$(id).value=({language:"hi",region:"india",category:"general",trendScore:0}[id]??""));
- $("editorHeading").textContent="Create article draft";$("editorStatus").textContent="";
+ $("slug").dataset.manual="";$("editorHeading").textContent="Create article draft";$("editorStatus").textContent="";
 }
 function loadEditor(item){
  editingId=item.id;
@@ -169,11 +169,12 @@ async function save(status){
  const payload=formPayload(status);
  if(payload.title.length<5){$("editorStatus").textContent="शीर्षक कम-से-कम 5 अक्षरों का होना चाहिए।";return;}
  if(payload.content_markdown.trim().length<40){$("editorStatus").textContent="Article body में कम-से-कम 40 अक्षर लिखें।";return;}
+ if(!payload.source_urls.length){$("editorStatus").textContent="कम-से-कम एक विश्वसनीय source URL जोड़ें।";return;}
  if(payload.source_urls.some(url=>!/^https:\/\//i.test(url))){$("editorStatus").textContent="हर source URL HTTPS होना चाहिए।";return;}
  if(!payload.slug){$("editorStatus").textContent="Title से valid URL slug नहीं बन पाया। English letters या digits वाला slug दें।";return;}
  if(editingId){
   const existing=articles.find(x=>x.id===editingId);
-  if(existing&&["approved","published"].includes(existing.status)){payload.status="draft";payload.approved_by=null;payload.approved_at=null;payload.published_at=null;}
+  if(existing&&["approved","published"].includes(existing.status)){payload.approved_by=null;payload.approved_at=null;payload.published_at=null;}
   const {error}=await supabase.from("kagzi_articles").update(payload).eq("id",editingId);
   if(error){$("editorStatus").textContent="Save failed: "+error.message;return;}
  }else{
