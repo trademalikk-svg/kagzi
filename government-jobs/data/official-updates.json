@@ -118,6 +118,45 @@
       "sourceLabel": "SSC Central Region Official Announcements",
       "linkType": "admit-card",
       "regionSlug": "all-india"
+    },
+    {
+      "id": "uksssc-instructor-electrician-selection-2026",
+      "category": "results",
+      "title": "UKSSSC Instructor (Electrician) — Selection Recommendation",
+      "organization": "Uttarakhand Subordinate Service Selection Commission (UKSSSC)",
+      "publishedAt": "2026-11-04",
+      "status": "published",
+      "summary": "आयोग की Result & Answer Keys सूची में 04 नवम्बर 2026 को चयन संस्तुति संबंधी सूचना प्रकाशित। उम्मीदवार आधिकारिक दस्तावेज़ से अपना विवरण जाँचें।",
+      "sourceUrl": "https://sssc.uk.gov.in/document-category/result-answer-keys/",
+      "sourceLabel": "UKSSSC Official Result & Answer Keys",
+      "linkType": "result",
+      "regionSlug": "uttarakhand"
+    },
+    {
+      "id": "uksssc-assistant-agriculture-officer-answer-key-2026",
+      "category": "answer-keys",
+      "title": "UKSSSC Assistant Agriculture Officer & Fodder Assistant — Answer Key",
+      "organization": "Uttarakhand Subordinate Service Selection Commission (UKSSSC)",
+      "publishedAt": "2026-10-23",
+      "status": "published",
+      "summary": "सहायक कृषि अधिकारी वर्ग (1 एवं 3) और चारा सहायक पदों की उत्तर कुंजी आयोग की आधिकारिक सूची में दर्ज है।",
+      "sourceUrl": "https://sssc.uk.gov.in/document-category/result-answer-keys/",
+      "sourceLabel": "UKSSSC Official Result & Answer Keys",
+      "linkType": "answer-key",
+      "regionSlug": "uttarakhand"
+    },
+    {
+      "id": "ssc-cgept-2027-exam-dates-calendar-notice",
+      "category": "exam-calendar",
+      "title": "SSC Notice — CGEPT 2027, Annual Skill Test 2025 और SI DP/CAPFs Exam 2026 की तिथियाँ",
+      "organization": "Staff Selection Commission (SSC)",
+      "publishedAt": "2026-11-02",
+      "status": "published",
+      "summary": "SSC ने CGEPT 2027, Annual Skill Test 2025 और Sub-Inspector in Delhi Police/CAPFs Examination 2026 की तारीखों के संबंध में महत्वपूर्ण सूचना प्रकाशित की। विस्तृत परीक्षा कार्यक्रम आधिकारिक नोटिस में देखें।",
+      "sourceUrl": "https://ssc.gov.in/",
+      "sourceLabel": "SSC Official Notice Board",
+      "linkType": "exam-calendar",
+      "regionSlug": "all-india"
     }
   ]
 }
