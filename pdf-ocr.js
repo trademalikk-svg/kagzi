@@ -11,6 +11,12 @@ async function workerFor(language,onProgress){
  try{return await pending;}
  catch(error){if(cache.get(language)===pending)cache.delete(language);throw error;}
 }
+function errorMessage(error){
+ const raw=String(error&&error.message||error||'unknown error');
+ if(/fetch|network|download|traineddata|language data|http|cors/i.test(raw))return 'Could not load the selected OCR language data. Connect to the internet and retry; language data is downloaded free on first use.';
+ if(/worker|wasm|script/i.test(raw))return 'The OCR engine could not start. Refresh the page and retry.';
+ return raw;
+}
 async function recognize(source,language,onProgress){
  const worker=await workerFor(language,onProgress);
  const result=await worker.recognize(source);
@@ -27,4 +33,5 @@ window.KAGZIPdfOcr={
  }
 };
 window.KAGZIPdfOcrRecognize=recognize;
+window.KAGZIPdfOcrErrorMessage=errorMessage;
 })();
