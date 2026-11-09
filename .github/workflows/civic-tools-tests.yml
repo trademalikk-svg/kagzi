@@ -1,0 +1,28 @@
+name: KAGZI Civic Tools Tests
+on:
+  pull_request:
+    paths:
+      - "legal-document-generator.html"
+      - "public-complaints.html"
+      - "gram-panchayat.html"
+      - "tests/kagzi-civic-tools.test.mjs"
+      - ".github/workflows/civic-tools-tests.yml"
+  push:
+    branches:
+      - "feat/jan-seva-directory-faq-expansion"
+    paths:
+      - "legal-document-generator.html"
+      - "public-complaints.html"
+      - "gram-panchayat.html"
+      - "tests/kagzi-civic-tools.test.mjs"
+      - ".github/workflows/civic-tools-tests.yml"
+jobs:
+  civic-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test civic tools
+        run: node --test tests/kagzi-civic-tools.test.mjs
