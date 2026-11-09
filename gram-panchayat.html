@@ -27,4 +27,4 @@ const form=document.getElementById('panchayatForm'),result=document.getElementBy
 form.addEventListener('submit',e=>{e.preventDefault();const v=id=>document.getElementById(id).value.trim();summary=['राज्य: '+v('state'),'जिला: '+(v('district')||'नहीं दिया'),'ब्लॉक: '+(v('block')||'नहीं दिया'),'ग्राम पंचायत/गाँव: '+(v('village')||'नहीं दिया')].join('\n');document.getElementById('queryText').textContent=summary+'\nइन विवरणों का उपयोग आधिकारिक पोर्टल पर अपनी पंचायत खोजने के लिए करें।';result.classList.add('show');});
 document.getElementById('copySearch').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(summary);alert('खोज विवरण कॉपी हो गया।')}catch{alert('कॉपी उपलब्ध नहीं। विवरण चुनकर कॉपी करें।')}});
 form.addEventListener('reset',()=>result.classList.remove('show'));
-</script></body></html>
+</script><script src="/civic-ai.js" defer></script></body></html>
