@@ -11,6 +11,33 @@ async function workerFor(language,onProgress){
  try{return await pending;}
  catch(error){if(cache.get(language)===pending)cache.delete(language);throw error;}
 }
+
+function normaliseOcrText(value){
+ return String(value??'').replace(/\\r\\n?/g,'\\n').normalize('NFC').replace(/[\\t\\f\\v ]+/g,' ').replace(/ *\\n */g,'\\n').trim();
+}
+function ocrUnits(value){
+ const text=normaliseOcrText(value);
+ if(typeof Intl!=='undefined'&&typeof Intl.Segmenter==='function')return [...new Intl.Segmenter('hi',{granularity:'grapheme'}).segment(text)].map(part=>part.segment);
+ return Array.from(text);
+}
+function levenshtein(a,b){
+ const previous=Array.from({length:b.length+1},(_,index)=>index);
+ for(let i=1;i<=a.length;i++){
+  let diagonal=previous[0];previous[0]=i;
+  for(let j=1;j<=b.length;j++){
+   const above=previous[j],cost=a[i-1]===b[j-1]?0:1;
+   previous[j]=Math.min(previous[j]+1,previous[j-1]+1,diagonal+cost);diagonal=above;
+  }
+ }
+ return previous[b.length];
+}
+function scoreOcrText(actual,reference){
+ const actualText=normaliseOcrText(actual),referenceText=normaliseOcrText(reference);
+ const actualChars=ocrUnits(actualText),referenceChars=ocrUnits(referenceText);
+ const actualWords=actualText?actualText.split(/\\s+/u):[],referenceWords=referenceText?referenceText.split(/\\s+/u):[];
+ const characterErrors=levenshtein(actualChars,referenceChars),wordErrors=levenshtein(actualWords,referenceWords);
+ return {characterErrors,referenceCharacters:referenceChars.length,characterErrorRate:referenceChars.length?characterErrors/referenceChars.length:(actualChars.length?1:0),wordErrors,referenceWords:referenceWords.length,wordErrorRate:referenceWords.length?wordErrors/referenceWords.length:(actualWords.length?1:0)};
+}
 function errorMessage(error){
  const raw=String(error&&error.message||error||'unknown error');
  if(/fetch|network|download|traineddata|language data|http|cors/i.test(raw))return 'Could not load the selected OCR language data. Connect to the internet and retry; language data is downloaded free on first use.';
@@ -34,4 +61,5 @@ window.KAGZIPdfOcr={
 };
 window.KAGZIPdfOcrRecognize=recognize;
 window.KAGZIPdfOcrErrorMessage=errorMessage;
+window.KAGZIPdfOcrScore=scoreOcrText;
 })();

@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - "pdf-editor.js"
+      - "pdf-native-text.js"
+      - "tests/pdf-native-text.test.mjs"
+      - "tests/pdf-ocr-accuracy.test.mjs"
+      - "docs/tests/hindi-ocr-accuracy.md"
       - "pdf-ocr.js"
       - "pdf-scanner.js"
       - "index.html"
@@ -51,6 +55,10 @@ jobs:
         run: node --test tests/pdf-editor-unicode-export.test.mjs
       - name: Test Hindi Unicode text tool export
         run: node --test tests/pdf-editor-text-tool-unicode.test.mjs
+      - name: Test native PDF text replacement engine
+        run: node --test tests/pdf-native-text.test.mjs
+      - name: Test Hindi OCR accuracy scorer
+        run: node --test tests/pdf-ocr-accuracy.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
       - name: Check local OCR JavaScript syntax
