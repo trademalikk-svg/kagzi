@@ -80,12 +80,12 @@
 <p>KAGZI Document Studio एक browser-based PDF workspace है। अपने device से PDF खोलें और उपलब्ध editing controls से document में अतिरिक्त text, image और highlight annotations जोड़ें। Page rotation, page ordering, duplication, deletion, merge और split जैसे काम भी उपलब्ध controls के अनुसार किए जा सकते हैं।</p>
 <div class="seo-guide-grid">
 <div><h3>PDF Editor में क्या कर सकते हैं?</h3><ul><li>PDF पेज देखना और page navigation करना</li><li>नया text या image overlay जोड़ना</li><li>Highlight और annotation लगाना</li><li>पेज rotate, reorder, duplicate या delete करना</li><li>PDF files merge करना और चुने हुए pages split करना</li><li>OCR से image या page का text पहचानना</li></ul></div>
-<div><h3>Privacy और editing की सीमाएँ</h3><ul><li>इस workspace में चुनी गई PDF browser में process होती है; server upload इस local mode में चालू नहीं है।</li><li>Text replacement सफेद overlay से दिखता है; पुराना embedded text फ़ाइल में रह सकता है।</li><li>Highlight एक visual annotation है, secure redaction नहीं।</li><li>महत्वपूर्ण दस्तावेज़ का original copy सुरक्षित रखें और export के बाद PDF दोबारा जाँचें।</li></ul></div>
+<div><h3>Privacy और editing की सीमाएँ</h3><ul><li>इस workspace में चुनी गई PDF browser में process होती है; server upload इस local mode में चालू नहीं है।</li><li>Visual overlay पुराना embedded text नहीं हटाता; supported text objects के लिए native replacement विकल्प अलग उपलब्ध है।</li><li>Highlight एक visual annotation है, secure redaction नहीं।</li><li>महत्वपूर्ण दस्तावेज़ का original copy सुरक्षित रखें और export के बाद PDF दोबारा जाँचें।</li></ul></div>
 </div>
 <h3>PDF कैसे edit करें?</h3><ol><li><b>Open PDF</b> चुनकर अपने device से document खोलें।</li><li>Page thumbnails से वह page चुनें जिस पर काम करना है।</li><li>Text, Image, Highlight या page-management tool चुनें और बदलाव करें।</li><li><b>Export PDF</b> दबाएँ, फिर डाउनलोड की गई file खोलकर परिणाम जाँचें।</li></ol>
 <h3>अक्सर पूछे जाने वाले सवाल</h3>
 <p><b>क्या PDF upload होती है?</b> इस editor के local processing mode में चुनी गई file आपके browser में process होती है।</p>
-<p><b>क्या पुराने PDF text को सीधे replace किया जा सकता है?</b> Text चुनकर नया text लगाने पर page पर सफेद overlay बनता है। पुराने embedded text को PDF के अंदर से मिटाया नहीं जाता।</p>
+<p><b>क्या पुराने PDF text को सीधे replace किया जा सकता है?</b> पूरे supported text object को चुनकर Replace original PDF text से native replacement किया जा सकता है। Apply visual overlay केवल दिखने वाला बदलाव है और पुराने embedded text को नहीं हटाता।</p>
 <p><b>क्या यह mobile पर काम करता है?</b> हाँ, modern mobile browser में page responsive है; बड़े documents पर device memory और browser support का असर हो सकता है।</p>
 <p>और tools के लिए <a href="/pdf-tools.html">KAGZI PDF Tools</a>, नागरिक सेवाओं के लिए <a href="/jan-seva">Jan Seva Assistant</a> और अध्ययन सामग्री के लिए <a href="/current-affairs/">Current Affairs Library</a> देखें।</p>
 <div class="seo-guide-grid">
@@ -93,8 +93,8 @@
 <div><h3>Photo और document preparation</h3><ul><li><a href="/photo-tools">Photo Resizer & Passport Photo Maker</a> — image dimensions और compression।</li><li><a href="/compress-photo-to-20kb-50kb">Compress photo to 20KB or 50KB</a> — target file size की guide।</li><li><a href="/prepare-documents-for-online-forms-guide">Online form document checklist</a> — application से पहले document जाँचें।</li></ul></div>
 </div>
 </section>
-<section class="server-panel"><div><b>Local document processing</b><p>OCR runs in your browser after language data is downloaded. Existing PDF text is not directly rewritten; use text overlays for additions.</p></div><span class="capability-pill">Local-only mode</span></section>
-<p class="editor-footnote">Note: Text replacement is a visual overlay; original embedded text may remain in the PDF data. This is not secure redaction. Highlight is a visual annotation, not secure redaction. Keep your original document.</p>
+<section class="server-panel"><div><b>Local document processing</b><p>OCR runs in your browser after language data is downloaded. Supported existing PDF text can be replaced with the native PDFium tool; visual overlays are a separate option.</p></div><span class="capability-pill">Local-only mode</span></section>
+<p class="editor-footnote">Note: Visual text overlays do not remove original embedded text. Native replacement works only on supported PDF text objects; it is not a general secure-redaction tool. Highlight is a visual annotation. Keep your original document.</p>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
