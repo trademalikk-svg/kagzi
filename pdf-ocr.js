@@ -4,10 +4,12 @@ const cache=new Map();
 async function workerFor(language,onProgress){
  if(!window.Tesseract)throw new Error('OCR engine did not load. Connect to the internet once and refresh.');
  if(!cache.has(language)){
-  const promise=window.Tesseract.createWorker(language,1,{logger:event=>{if(event.status==='recognizing text')onProgress(Math.round((event.progress||0)*100));}});
-  cache.set(language,promise);
+  const pending=Promise.resolve().then(()=>window.Tesseract.createWorker(language,1,{logger:event=>{if(event.status==='recognizing text')onProgress(Math.round((event.progress||0)*100));}}));
+  cache.set(language,pending);
  }
- return cache.get(language);
+ const pending=cache.get(language);
+ try{return await pending;}
+ catch(error){if(cache.get(language)===pending)cache.delete(language);throw error;}
 }
 async function recognize(source,language,onProgress){
  const worker=await workerFor(language,onProgress);
