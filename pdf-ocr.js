@@ -13,7 +13,7 @@ async function workerFor(language,onProgress){
 }
 
 function normaliseOcrText(value){
- return String(value??'').replace(/\\r\\n?/g,'\\n').normalize('NFC').replace(/[\\t\\f\\v ]+/g,' ').replace(/ *\\n */g,'\\n').trim();
+ return String(value??'').replace(/\r\n?/g,'\n').normalize('NFC').replace(/[\t\f\v ]+/g,' ').replace(/ *\n */g,'\n').trim();
 }
 function ocrUnits(value){
  const text=normaliseOcrText(value);
@@ -34,7 +34,7 @@ function levenshtein(a,b){
 function scoreOcrText(actual,reference){
  const actualText=normaliseOcrText(actual),referenceText=normaliseOcrText(reference);
  const actualChars=ocrUnits(actualText),referenceChars=ocrUnits(referenceText);
- const actualWords=actualText?actualText.split(/\\s+/u):[],referenceWords=referenceText?referenceText.split(/\\s+/u):[];
+ const actualWords=actualText?actualText.split(/\s+/u):[],referenceWords=referenceText?referenceText.split(/\s+/u):[];
  const characterErrors=levenshtein(actualChars,referenceChars),wordErrors=levenshtein(actualWords,referenceWords);
  return {characterErrors,referenceCharacters:referenceChars.length,characterErrorRate:referenceChars.length?characterErrors/referenceChars.length:(actualChars.length?1:0),wordErrors,referenceWords:referenceWords.length,wordErrorRate:referenceWords.length?wordErrors/referenceWords.length:(actualWords.length?1:0)};
 }

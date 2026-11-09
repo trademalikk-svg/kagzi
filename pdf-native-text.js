@@ -3,7 +3,7 @@
 const PDFCANVAS_MODULE='https://esm.sh/pdfcanvas@0.9.0?bundle';
 const PDFIUM_WASM='https://cdn.jsdelivr.net/npm/@embedpdf/pdfium@2.15.1/dist/pdfium.wasm';
 let modulePromise=null;
-function normalise(value){return String(value??'').normalize('NFC').replace(/\\s+/gu,' ').trim();}
+function normalise(value){return String(value??'').normalize('NFC').replace(/\s+/gu,' ').trim();}
 function overlapRatio(a,b){
  const width=Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x));
  const height=Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
@@ -30,7 +30,7 @@ async function replace({bytes,pageIndex,originalText,newText,rect}){
  if(!String(newText||'').trim())throw new Error('Replacement text is empty.');
  if(normalise(originalText)===normalise(newText))throw new Error('The replacement text is unchanged.');
  const Engine=await loadModule();
- const engine=await Engine.create(PDFIUM_WASM,bytes.slice(),'/assets/fonts/pdfium/');
+ const engine=await Engine.create(PDFIUM_WASM,bytes.slice());
  try{
   const runs=engine.readPage(pageIndex,0);
   const run=findExactRun(runs,originalText,rect);
