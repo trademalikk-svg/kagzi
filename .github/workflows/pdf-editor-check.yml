@@ -7,6 +7,7 @@ on:
       - "pdf-scanner.js"
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
+      - "tests/pdf-editor-text-tool-unicode.test.mjs"
       - "tests/pdf-editor-unicode-export.test.mjs"
       - "tests/pdf-ocr-worker.test.mjs"
       - "tests/pdf-ocr-errors.test.mjs"
@@ -48,6 +49,8 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Test Hindi PDF text replacement and font support
         run: node --test tests/pdf-editor-unicode-export.test.mjs
+      - name: Test Hindi Unicode text tool export
+        run: node --test tests/pdf-editor-text-tool-unicode.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
       - name: Check local OCR JavaScript syntax
