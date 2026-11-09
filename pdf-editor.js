@@ -27,8 +27,14 @@ function wrapCanvasText(ctx,text,maxWidth){
 let hindiFontPromise=null;
 async function ensureHindiCanvasFont(){
  if(!('FontFace' in window)||!document.fonts)return false;
- if(!hindiFontPromise)hindiFontPromise=(async()=>{const face=new FontFace('KAGZI Noto Sans Devanagari','url(https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf)');await face.load();document.fonts.add(face);return true;})().catch(()=>false);
- return hindiFontPromise;
+ if(!hindiFontPromise){
+  const pending=(async()=>{const face=new FontFace('KAGZI Noto Sans Devanagari','url(https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf)');await face.load();document.fonts.add(face);return true;})().catch(()=>false);
+  hindiFontPromise=pending;
+ }
+ const pending=hindiFontPromise;
+ const loaded=await pending;
+ if(!loaded&&hindiFontPromise===pending)hindiFontPromise=null;
+ return loaded;
 }
 function renderMetrics(width,height,dpr){const outputScale=Math.max(1,Math.min(Number(dpr)||1,2));return{cssWidth:width,cssHeight:height,pixelWidth:Math.ceil(width*outputScale),pixelHeight:Math.ceil(height*outputScale),outputScale};}
 function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
