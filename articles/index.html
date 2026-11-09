@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="hi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAGZI Articles · Hindi & English</title>
+<meta name="description" content="India and worldwide news explainers, trending topics and useful articles in Hindi and English from KAGZI.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://kagzi-8cy.pages.dev/articles/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="KAGZI"><meta property="og:title" content="KAGZI Articles"><meta property="og:description" content="Sourced articles and explainers in Hindi and English.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#172033;font:16px/1.65 system-ui,"Noto Sans Devanagari",sans-serif}
+header{background:#101a35;color:#fff;padding:20px max(18px,calc((100% - 1050px)/2))}header a{color:#f1d98e;text-decoration:none}
+main{max-width:1050px;margin:28px auto;padding:0 16px}h1{margin:4px 0 8px}.muted{color:#68738a;font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.filters button{border:1px solid #dce2ee;border-radius:20px;background:#fff;padding:8px 13px;cursor:pointer}
+.filters button.active{background:#eaf0ff;border-color:#315efb;color:#2449aa}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.card{background:#fff;border:1px solid #e4e9f2;border-radius:14px;padding:17px}.card a{color:#172033;text-decoration:none}.card h2{font-size:19px;line-height:1.4;margin:7px 0}.card p{color:#5e687b;font-size:14px;margin:6px 0}
+.tag{font-size:11px;font-weight:800;color:#315efb}.empty{padding:28px;text-align:center;color:#68738a}
+</style>
+<script defer src="/config.js"></script><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body><header><strong>KAGZI · ARTICLES</strong>　<a href="/">Home</a></header>
+<main><div class="muted">HINDI + ENGLISH · INDIA + WORLDWIDE</div><h1>Latest Articles</h1><p class="muted">Only reviewed and approved articles appear here.</p>
+<div class="filters"><button class="active" data-filter="all">All</button><button data-filter="hi">हिंदी</button><button data-filter="en">English</button><button data-filter="india">India</button><button data-filter="worldwide">Worldwide</button></div>
+<div id="articles" class="grid"><div class="empty">Published articles लोड हो रहे हैं…</div></div></main>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.118.0";
+const cfg=window.KAGZI_CONFIG||{};const supabase=createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+const root=document.getElementById("articles");let all=[],filter="all";
+function render(){root.replaceChildren();const rows=all.filter(x=>filter==="all"||x.language===filter||x.region===filter);if(!rows.length){const p=document.createElement("p");p.className="empty";p.textContent="अभी कोई प्रकाशित article उपलब्ध नहीं है।";root.append(p);return;}
+for(const item of rows){const card=document.createElement("article");card.className="card";const tag=document.createElement("div");tag.className="tag";tag.textContent=[item.language.toUpperCase(),item.region==="india"?"INDIA":"WORLDWIDE",item.category].join(" · ");const h=document.createElement("h2"),a=document.createElement("a");a.href="/article.html?slug="+encodeURIComponent(item.slug);a.textContent=item.title;h.append(a);const p=document.createElement("p");p.textContent=item.excerpt||"";const date=document.createElement("div");date.className="muted";date.textContent=item.published_at?new Date(item.published_at).toLocaleDateString("en-IN"):"";card.append(tag,h,p,date);root.append(card);}}
+document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render();}));
+const {data,error}=await supabase.from("kagzi_articles").select("title,slug,excerpt,language,region,category,published_at").eq("status","published").order("published_at",{ascending:false}).limit(100);
+if(error){root.textContent="Articles load नहीं हुए: "+error.message;}else{all=data||[];render();}
+</script></body></html>
