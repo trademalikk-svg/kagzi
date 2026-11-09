@@ -31,4 +31,4 @@ preview.textContent=lines.join('\n');});
 document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(preview.textContent);alert('ड्राफ्ट कॉपी हो गया।')}catch{alert('कॉपी उपलब्ध नहीं। टेक्स्ट चुनकर कॉपी करें।')}});
 document.getElementById('print').addEventListener('click',()=>window.print());
 form.addEventListener('reset',()=>{preview.textContent='फॉर्म भरकर “ड्राफ्ट तैयार करें” चुनें। आपका ड्राफ्ट इसी डिवाइस पर तैयार होगा।'});
-</script></body></html>
+</script><script src="/civic-ai.js" defer></script></body></html>
