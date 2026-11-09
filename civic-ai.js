@@ -1,10 +1,11 @@
 (() => {
   const featureByPath = {
-    "legal-document-generator.html": "legal",
-    "public-complaints.html": "complaint",
-    "gram-panchayat.html": "panchayat"
+    "legal-document-generator": "legal",
+    "public-complaints": "complaint",
+    "gram-panchayat": "panchayat"
   };
-  const feature = featureByPath[location.pathname.split("/").pop()];
+  const pageName = location.pathname.split("/").pop().replace(/\.html?$/i, "");
+  const feature = featureByPath[pageName];
   if (!feature || document.getElementById("kagzi-civic-ai")) return;
 
   const labels = {
