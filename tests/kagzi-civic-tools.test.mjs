@@ -35,3 +35,22 @@ test('all three civic tools disclose independent status and do not create a fami
   }
   assert.doesNotMatch(pages.legal + pages.complaints + pages.panchayat, /Family Service Dashboard/i);
 });
+
+test('Legal guide explains document types, required details and safe review steps', () => {
+  assert.match(pages.legal, /id=["']document-guide["']/);
+  assert.match(pages.legal, /किरायानामा तैयार करने से पहले/);
+  assert.match(pages.legal, /दस्तावेज़ जाँच सूची/);
+});
+
+test('Complaint guide explains department selection, evidence checklist and filing steps', () => {
+  assert.match(pages.complaints, /id=["']complaint-steps["']/);
+  assert.match(pages.complaints, /शिकायत दर्ज करने के चरण/);
+  assert.match(pages.complaints, /शिकायत के साथ क्या रखें/);
+  assert.match(pages.complaints, /RTI/);
+});
+
+test('Panchayat guide explains public records and how to verify them on official portals', () => {
+  assert.match(pages.panchayat, /id=["']panchayat-record-guide["']/);
+  assert.match(pages.panchayat, /पंचायत के कौन-कौन से रिकॉर्ड देखें/);
+  assert.match(pages.panchayat, /रिकॉर्ड की जाँच कैसे करें/);
+});
