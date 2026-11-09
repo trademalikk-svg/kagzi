@@ -35,10 +35,16 @@ export async function onRequestPost({ request, env }) {
         { role: "user", content: prompt }
       ],
       temperature: 0.2,
-      max_tokens: 900
+      max_completion_tokens: 900,
+      chat_template_kwargs: { enable_thinking: false }
     });
-    const reply = [result?.response, result?.choices?.[0]?.message?.content, result?.result?.response]
-      .find(value => typeof value === "string" && value.trim())?.trim() || "";
+    const reply = [
+      result?.response,
+      result?.choices?.[0]?.message?.content,
+      result?.result?.response,
+      result?.output_text,
+      result?.text
+    ].find(value => typeof value === "string" && value.trim())?.trim() || "";
     if (!reply) {
       return Response.json({ error: "AI से उपयोगी जवाब नहीं मिला। छोटा निर्देश देकर फिर कोशिश करें।", code: "AI_EMPTY_RESPONSE" }, { status: 502 });
     }
