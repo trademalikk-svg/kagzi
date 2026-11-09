@@ -8,6 +8,7 @@ on:
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
       - "tests/pdf-editor-unicode-export.test.mjs"
+      - "tests/pdf-ocr-worker.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -50,6 +51,8 @@ jobs:
         run: node --check pdf-editor.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
+      - name: Test OCR worker retry and initialization cache
+        run: node --test tests/pdf-ocr-worker.test.mjs
       - name: Check camera scanner JavaScript syntax
         run: node --check pdf-scanner.js
       - name: Test PDF render metrics
