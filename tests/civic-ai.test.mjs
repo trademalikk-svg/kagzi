@@ -51,5 +51,6 @@ test('shared civic AI frontend is available to all civic tools without exposing 
     assert.match(html, /civic-ai\.js/);
   }
   assert.match(client, /\/api\/civic-ai/);
+  assert.ok(client.includes(String.raw`replace(/\.html?$/i, "")`), "clean-URL routes must map to the shared AI feature");
   assert.doesNotMatch(client, /Bearer\s+[A-Za-z0-9_-]{16,}/);
 });
