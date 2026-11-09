@@ -9,6 +9,7 @@ on:
       - "tests/pdf-editor-workspace.test.mjs"
       - "tests/pdf-editor-unicode-export.test.mjs"
       - "tests/pdf-ocr-worker.test.mjs"
+      - "tests/pdf-ocr-errors.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -53,6 +54,8 @@ jobs:
         run: node --check pdf-ocr.js
       - name: Test OCR worker retry and initialization cache
         run: node --test tests/pdf-ocr-worker.test.mjs
+      - name: Test actionable OCR language-data errors
+        run: node --test tests/pdf-ocr-errors.test.mjs
       - name: Test Hindi font loading retry
         run: node --test tests/pdf-hindi-font-retry.test.mjs
       - name: Check camera scanner JavaScript syntax
