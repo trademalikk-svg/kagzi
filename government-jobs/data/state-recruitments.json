@@ -252,6 +252,41 @@
       "lastCheckedAt": "2026-11-09",
       "eligibilityDetails": "यह भर्ती मुख्यतः रेलवे/सरकारी विभागों/PSU के अनुभवी या सेवानिवृत्त अधिकारियों के लिए बताई गई है; प्रत्येक पद की शर्तें मूल विज्ञापन में जाँचें।",
       "feeDetails": "आवेदन शुल्क और दस्तावेज़ों की सूची मूल आधिकारिक विज्ञापन में जाँचें।"
+    },
+    {
+      "id": "rrb-isolated-categories-cen-09-2026",
+      "title": "RRB Isolated Categories Recruitment 2026 — CEN 09/2026",
+      "regionSlug": "all-india",
+      "regionName": "All India",
+      "department": "Railway Recruitment Boards (RRBs)",
+      "summary": "CEN 09/2026 के अंतर्गत 191 पदों की भर्ती: Junior Translator (Hindi), Chief Law Assistant, Public Prosecutor, Staff & Welfare Inspector सहित सात श्रेणियाँ। आवेदन 5 नवम्बर से 4 दिसम्बर 2026 तक बताए गए हैं। आधिकारिक विस्तृत अधिसूचना में पदवार पात्रता अवश्य जाँचें।",
+      "publishedAt": "2026-11-05",
+      "applicationStart": "2026-11-05",
+      "applicationEnd": "2026-12-04",
+      "status": "review",
+      "notificationUrl": "https://rrb.indianrailways.gov.in/",
+      "applyUrl": "https://www.rrbapply.gov.in/#/auth/home",
+      "applyVerified": false,
+      "sourceUrl": "https://rrb.indianrailways.gov.in/",
+      "lastCheckedAt": "2026-11-09",
+      "eligibilityDetails": "पदवार योग्यता अलग है; उदाहरण के लिए Junior Translator, Law Assistant, Public Prosecutor और Scientific Assistant के लिए विशिष्ट डिग्री/अनुभव की शर्तें लागू हैं। CEN 09/2026 का आधिकारिक PDF देखें।",
+      "feeDetails": "श्रेणी-वार परीक्षा शुल्क और रिफंड नियम आधिकारिक CEN 09/2026 में जाँचें।"
+    },
+    {
+      "id": "powergrid-engineer-trainee-gate-2026-notice-02",
+      "title": "POWERGRID Engineer Trainee Recruitment 2026 — GATE 2026, Notice 02/2026",
+      "regionSlug": "all-india",
+      "regionName": "All India",
+      "department": "Power Grid Corporation of India Limited (POWERGRID)",
+      "summary": "POWERGRID के Engineer Trainee 2026 भर्ती पेज पर 3 नवम्बर 2026 का Notice 02/2026 (Vacancy Notification) और Apply portal उपलब्ध है। Notice में संशोधित रिक्तियाँ/विवरण जाँचें; आवेदन की अंतिम तिथि यहाँ सत्यापित नहीं हुई है।",
+      "publishedAt": "2026-11-03",
+      "status": "review",
+      "notificationUrl": "https://powergrid.in/en/job-opportunities",
+      "applyVerified": false,
+      "sourceUrl": "https://powergrid.in/en/job-opportunities",
+      "lastCheckedAt": "2026-11-09",
+      "eligibilityDetails": "GATE 2026 score और discipline-specific engineering qualification लागू हो सकती है; विस्तृत विज्ञापन एवं Notice 02/2026 देखें।",
+      "feeDetails": "आवेदन शुल्क/छूट की पुष्टि आधिकारिक विज्ञापन में करें।"
     }
   ],
   "portals": [
