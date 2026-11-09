@@ -34,6 +34,8 @@ test('shared civic AI sends scoped bilingual prompt to Workers AI and returns it
   assert.equal(response.status, 200);
   assert.equal((await response.json()).reply, 'यह आपका प्रारूप है।');
   assert.equal(captured.model, '@cf/zai-org/glm-4.7-flash');
+  assert.equal(captured.input.chat_template_kwargs.enable_thinking, false);
+  assert.equal(captured.input.max_completion_tokens, 900);
   assert.ok(captured.input.messages.some(message => message.role === 'user' && message.content.includes('पानी की समस्या')));
   assert.match(captured.input.messages[0].content, /कानूनी सलाह नहीं/);
 });
