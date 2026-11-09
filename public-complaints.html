@@ -29,4 +29,4 @@ form.addEventListener('submit',e=>{e.preventDefault();const v=id=>document.getEl
 document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(preview.textContent);alert('शिकायत ड्राफ्ट कॉपी हो गया।')}catch{alert('कॉपी उपलब्ध नहीं। टेक्स्ट चुनकर कॉपी करें।')}});
 document.getElementById('print').addEventListener('click',()=>window.print());
 form.addEventListener('reset',()=>preview.textContent='पहले ऊपर की जानकारी भरें।');
-</script></body></html>
+</script><script src="/civic-ai.js" defer></script></body></html>
