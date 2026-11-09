@@ -79,6 +79,45 @@
       "sourceLabel": "SSC Official Notice Board",
       "linkType": "notice",
       "regionSlug": "all-india"
+    },
+    {
+      "id": "upsc-cse-mains-2026-written-result",
+      "category": "results",
+      "title": "Civil Services (Main) Examination, 2026 — Written Result",
+      "organization": "Union Public Service Commission (UPSC)",
+      "publishedAt": "2026-11-05",
+      "status": "published",
+      "summary": "लिखित परीक्षा के आधार पर Personality Test के लिए योग्य उम्मीदवारों की सूची जारी। योग्य उम्मीदवारों के लिए ऑनलाइन विवरण/दस्तावेज़ जमा करने की अवधि 11 से 25 नवम्बर 2026 बताई गई है। निर्देश PIB की आधिकारिक विज्ञप्ति में देखें।",
+      "sourceUrl": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2333275&lang=1&reg=3",
+      "sourceLabel": "Press Information Bureau · Official Release",
+      "linkType": "result",
+      "regionSlug": "all-india"
+    },
+    {
+      "id": "uksssc-livestock-extension-officer-answer-key-2026",
+      "category": "answer-keys",
+      "title": "UKSSSC — विभिन्न पदों की उत्तर कुंजी (05 नवम्बर 2026)",
+      "organization": "Uttarakhand Subordinate Service Selection Commission (UKSSSC)",
+      "publishedAt": "2026-11-05",
+      "status": "published",
+      "summary": "पशुधन प्रसार अधिकारी, सर्वेक्षक, लाइनमैन, मनोवैज्ञानिक, प्रशिक्षक अनुदेशक और पर्यटक अधिकारी पदों की उत्तर कुंजी आयोग की आधिकारिक सूची में दर्ज है।",
+      "sourceUrl": "https://sssc.uk.gov.in/document-category/result-answer-keys/",
+      "sourceLabel": "UKSSSC Official Result & Answer Keys",
+      "linkType": "answer-key",
+      "regionSlug": "uttarakhand"
+    },
+    {
+      "id": "ssc-havaldar-pet-pst-admit-card-2025",
+      "category": "admit-cards",
+      "title": "SSC MTS (Non-Technical) 2025 — Havaldar PET/PST Admit Card",
+      "organization": "Staff Selection Commission · Central Region",
+      "publishedAt": "2026-10-30",
+      "status": "published",
+      "summary": "CBIC और CBN में Havaldar पद के लिए चयनित उम्मीदवारों की PET/PST परीक्षा 03 नवम्बर 2026 निर्धारित थी; आयोग के क्षेत्रीय पोर्टल पर प्रवेश पत्र डाउनलोड सूचना प्रकाशित हुई।",
+      "sourceUrl": "https://ssccr.gov.in/announcements",
+      "sourceLabel": "SSC Central Region Official Announcements",
+      "linkType": "admit-card",
+      "regionSlug": "all-india"
     }
   ]
 }
