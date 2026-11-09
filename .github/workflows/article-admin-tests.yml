@@ -1,0 +1,24 @@
+name: KAGZI article admin checks
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'articles-admin.html'
+      - 'articles-admin.js'
+      - 'tests/articles-admin.test.mjs'
+      - '.github/kagzi-html-pages.json'
+      - '.github/workflows/article-admin-tests.yml'
+  push:
+    branches: [feature/kagzi-article-admin-dashboard]
+jobs:
+  article-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check dashboard JavaScript syntax
+        run: node --check articles-admin.js
+      - name: Run article admin tests
+        run: node --test tests/articles-admin.test.mjs
