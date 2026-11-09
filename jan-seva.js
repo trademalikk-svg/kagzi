@@ -567,13 +567,13 @@ const extraServices=[
   }
   ,
   {
-    name:"गन्ना किसान कैलेंडर और पर्ची",
-    category:"farmer",
-    region:"up",
-    summary:"गन्ना सर्वे, प्री-कैलेंडर, सट्टा, सप्लाई पर्ची, तौल और भुगतान की आधिकारिक जानकारी।",
-    guide:"किसान का निजी रिकॉर्ड, कैलेंडर और पर्ची देखने के लिए आधिकारिक Cane UP Enquiry पोर्टल या e-Ganna ऐप का उपयोग करें। KAGZI केवल प्रक्रिया समझाता है।",
-    url:"https://enquiry.caneup.in/",
-    portal:"UP Cane Enquiry"
+    "name": "गन्ना किसान कैलेंडर और पर्ची",
+    "category": "farmer",
+    "region": "up",
+    "summary": "गन्ना सर्वे, प्री-कैलेंडर, सट्टा, सप्लाई पर्ची, तौल और भुगतान की आधिकारिक जानकारी।",
+    "guide": "किसान का निजी रिकॉर्ड, कैलेंडर और पर्ची देखने के लिए आधिकारिक Cane UP Enquiry पोर्टल या e-Ganna ऐप का उपयोग करें। KAGZI केवल प्रक्रिया समझाता है।",
+    "url": "https://enquiry.caneup.in/",
+    "portal": "UP Cane Enquiry"
   }
 ];
 services.push(...extraServices);
