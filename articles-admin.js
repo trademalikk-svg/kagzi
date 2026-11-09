@@ -43,6 +43,7 @@ async function ensureAdmin() {
 }
 async function save(status) {
  const payload=formData(), id=$('articleId').value;
+ payload.status=status==='pending_review'?'pending_review':'draft';
  if(!payload.content_markdown) throw new Error('Full article content is required.');
  if(status==='pending_review') payload.status='pending_review';
  if(id) {
