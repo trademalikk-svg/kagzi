@@ -24,6 +24,134 @@ function wrapCanvasText(ctx,text,maxWidth){
  return rows.length?rows:[''];
 }
 
+
+function decodePdfLiteral(body){
+ let out='';
+ for(let i=0;i<body.length;i++){
+  const ch=body[i];
+  if(ch!=='\\'){out+=ch;continue;}
+  const next=body[++i];
+  if(next===undefined)break;
+  if(next==='n')out+='\n';
+  else if(next==='r')out+='\r';
+  else if(next==='t')out+='\t';
+  else if(next==='b')out+='\b';
+  else if(next==='f')out+='\f';
+  else if(next>='0'&&next<='7'){
+   let oct=next;
+   while(oct.length<3&&body[i+1]>='0'&&body[i+1]<='7')oct+=body[++i];
+   out+=String.fromCharCode(parseInt(oct,8));
+  }else if(next==='\n'){}
+  else if(next==='\r'){if(body[i+1]==='\n')i++;}
+  else out+=next;
+ }
+ return out;
+}
+function decodePdfHex(body){
+ const hex=body.replace(/[^0-9a-fA-F]/g,'');
+ const bytes=[];
+ for(let i=0;i<hex.length;i+=2)bytes.push(parseInt(hex.slice(i,i+2).padEnd(2,'0'),16));
+ if(bytes[0]===0xfe&&bytes[1]===0xff){let out='';for(let i=2;i+1<bytes.length;i+=2)out+=String.fromCharCode((bytes[i]<<8)|bytes[i+1]);return out;}
+ if(bytes[0]===0xff&&bytes[1]===0xfe){let out='';for(let i=2;i+1<bytes.length;i+=2)out+=String.fromCharCode(bytes[i]|(bytes[i+1]<<8));return out;}
+ return bytes.map(byte=>String.fromCharCode(byte)).join('');
+}
+function skipPdfSpaceAndComments(source,index){
+ let i=index;
+ while(i<source.length){
+  if(/\s/.test(source[i])){i++;continue;}
+  if(source[i]==='%'){while(i<source.length&&source[i]!=='\n'&&source[i]!=='\r')i++;continue;}
+  break;
+ }
+ return i;
+}
+function isPdfTextOperand(source,end,arrayDepth){
+ let i=skipPdfSpaceAndComments(source,end);
+ if(arrayDepth>0){
+  if(arrayDepth!==1)return false;
+  const close=source.indexOf(']',i);
+  if(close<0)return false;
+  const opStart=skipPdfSpaceAndComments(source,close+1);
+  let opEnd=opStart;
+  while(opEnd<source.length&&!/[\s()[\]<>/%]/.test(source[opEnd]))opEnd++;
+  return source.slice(opStart,opEnd)==='TJ';
+ }
+ if(source[i]==="'"||source[i]==='"')return true;
+ let opEnd=i;
+ while(opEnd<source.length&&!/[\s()[\]<>/%]/.test(source[opEnd]))opEnd++;
+ return source.slice(i,opEnd)==='Tj';
+}
+function scanPdfTextTokens(source){
+ const tokens=[];
+ let arrayDepth=0;
+ for(let i=0;i<source.length;i++){
+  const ch=source[i];
+  if(ch==='%'){while(i<source.length&&source[i]!=='\n'&&source[i]!=='\r')i++;continue;}
+  if(ch==='('){
+   const depthAtStart=arrayDepth;
+   let depth=1,j=i+1;
+   while(j<source.length&&depth>0){
+    if(source[j]==='\\'){j+=2;continue;}
+    if(source[j]==='(')depth++;
+    else if(source[j]===')')depth--;
+    j++;
+   }
+   if(depth===0){
+    const body=source.slice(i+1,j-1);
+    if(isPdfTextOperand(source,j,depthAtStart))tokens.push({start:i,end:j,kind:'literal',text:decodePdfLiteral(body)});
+    i=j-1;
+   }
+   continue;
+  }
+  if(ch==='<'&&source[i+1]!=='<'){
+   const depthAtStart=arrayDepth;
+   const end=source.indexOf('>',i+1);
+   if(end<0)continue;
+   if(isPdfTextOperand(source,end+1,depthAtStart))tokens.push({start:i,end:end+1,kind:'hex',text:decodePdfHex(source.slice(i+1,end))});
+   i=end;
+   continue;
+  }
+  if(ch==='<'&&source[i+1]==='<'){i++;continue;}
+  if(ch==='[')arrayDepth++;
+  else if(ch===']')arrayDepth=Math.max(0,arrayDepth-1);
+ }
+ return tokens;
+}
+function blankTextInStream(source,target){
+ const wanted=String(target||'').replace(/\s+/g,'');
+ if(!wanted)return null;
+ const tokens=scanPdfTextTokens(source);
+ if(!tokens.length)return null;
+ const chars=[];
+ tokens.forEach((token,tokenIndex)=>{
+  for(const character of token.text)if(!/\s/.test(character))chars.push({character,tokenIndex});
+ });
+ const flat=chars.map(item=>item.character).join('');
+ const matches=[];
+ let cursor=0;
+ while(cursor<=flat.length-wanted.length){
+  const at=flat.indexOf(wanted,cursor);
+  if(at<0)break;
+  matches.push(at);
+  if(matches.length>1)return null;
+  cursor=at+wanted.length;
+ }
+ if(matches.length!==1)return null;
+ const at=matches[0],end=at+wanted.length,involved=new Set();
+ for(let i=at;i<end;i++)involved.add(chars[i].tokenIndex);
+ for(const tokenIndex of involved){
+  const indexes=[];
+  chars.forEach((item,index)=>{if(item.tokenIndex===tokenIndex)indexes.push(index);});
+  if(indexes.some(index=>index<at||index>=end))return null;
+ }
+ let output=source;
+ [...involved].sort((a,b)=>b-a).forEach(tokenIndex=>{
+  const token=tokens[tokenIndex],replacement=token.kind==='hex'?'<>':'()';
+  output=output.slice(0,token.start)+replacement+output.slice(token.end);
+ });
+ return output;
+}
+window.KAGZIPdfTextStream=Object.freeze({blankTextInStream});
+
 let hindiFontPromise=null;
 async function ensureHindiCanvasFont(){
  if(!('FontFace' in window)||!document.fonts)return false;
@@ -37,6 +165,39 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  const required=['pdfPageRail','railPageCount','downloadEditedPdfBottom','pdfFileInput','pdfCanvas','pageNumber','pageCount','zoomIn','zoomOut','prevPage','nextPage','downloadEditedPdf','editorStatus','emptyEditor','canvasWrap','editorOverlay'];
  if(required.some(k=>!el[k]))return;
  const status=m=>{el.editorStatus.textContent=m;};
+ let activePdfContext=null;
+
+ function stripOriginalTextFromPage(page,target){
+  try{
+   const context=PDFLib.PDFDocument.load?null:null;
+   const ctx=activePdfContext;
+   if(!ctx)return false;
+   const contents=page.node.get(PDFLib.PDFName.of('Contents'));
+   if(!contents)return false;
+   const isArray=contents instanceof PDFLib.PDFArray;
+   const refs=isArray?contents.asArray():[contents];
+   let candidate=null;
+   for(let index=0;index<refs.length;index++){
+    const ref=refs[index],stream=ctx.lookup(ref);
+    if(!(stream instanceof PDFLib.PDFRawStream))continue;
+    const decoded=PDFLib.decodePDFRawStream(stream).decode();
+    let latin='';
+    for(let i=0;i<decoded.length;i+=8192)latin+=String.fromCharCode.apply(null,decoded.subarray(i,i+8192));
+    const next=blankTextInStream(latin,target);
+    if(next===null)continue;
+    if(candidate)return false;
+    candidate={index,next};
+   }
+   if(!candidate)return false;
+   const bytes=new Uint8Array(candidate.next.length);
+   for(let i=0;i<candidate.next.length;i++)bytes[i]=candidate.next.charCodeAt(i)&255;
+   const fresh=ctx.register(ctx.stream(bytes));
+   if(isArray)contents.set(candidate.index,fresh);
+   else page.node.set(PDFLib.PDFName.of('Contents'),fresh);
+   return true;
+  }catch(error){return false;}
+ }
+
  if(!pdfjsLib||!PDFLib){status('PDF libraries did not load. Check your internet connection and refresh.');return;}
  window.__kagziPdfEditorInitialized=true;pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
  let originalFile=null,workingBytes=null,pdfDoc=null,pageIndex=0,zoom=1,tool='select',imageFile=null,pendingImagePlacement=null,history=[],redoHistory=[],renderTask=null,selectedText=null,textEdits=[],placedImages=[],selectedImageId=null,nextImageId=1;
@@ -100,7 +261,7 @@ function initPdfEditor({pdfjsLib,PDFLib,JSZip,elements}){
  if(el.duplicatePage)el.duplicatePage.addEventListener('click',async()=>{if(!workingBytes||!pdfDoc)return;try{const source=await PDFLib.PDFDocument.load(workingBytes.slice()),count=source.getPageCount(),output=await PDFLib.PDFDocument.create();const indices=Array.from({length:count},(_,i)=>i);indices.splice(pageIndex+1,0,pageIndex);const copied=await output.copyPages(source,indices);copied.forEach(page=>output.addPage(page));remember();workingBytes=await output.save();const sourcePage=pageIndex,insertedAt=sourcePage+1;placedImages=placedImages.flatMap(image=>image.pageIndex===sourcePage?[{...image,pageIndex:sourcePage},{...image,id:nextImageId++,pageIndex:insertedAt,bytes:image.bytes?image.bytes.slice():null}]:[{...image,pageIndex:image.pageIndex>=insertedAt?image.pageIndex+1:image.pageIndex}]);textEdits=textEdits.flatMap(edit=>edit.pageIndex===sourcePage?[{...edit,pageIndex:sourcePage},{...edit,pageIndex:insertedAt}]:[{...edit,pageIndex:edit.pageIndex>=insertedAt?edit.pageIndex+1:edit.pageIndex}]);pageIndex=Math.min(insertedAt,output.getPageCount()-1);await refreshWorkingPdf();await renderPageThumbnails();updateControls();status('Current page duplicated. Export PDF to save the change.');}catch(error){status('Could not duplicate this page: '+(error.message||'PDF operation failed'));}});
  el.undoEdit.addEventListener('click',async()=>{const previous=history.pop();if(!previous)return;redoHistory.push(snapshot());workingBytes=previous.bytes;pageIndex=previous.pageIndex;placedImages=(previous.placedImages||[]).map(image=>({...image,bytes:image.bytes?image.bytes.slice():null}));textEdits=(previous.textEdits||[]).map(edit=>({...edit}));selectedImageId=previous.selectedImageId??null;selectedText=null;await refreshWorkingPdf();updateControls();status('Last edit undone.');});
  if(el.redoEdit)el.redoEdit.addEventListener('click',async()=>{const next=redoHistory.pop();if(!next)return;history.push(snapshot());workingBytes=next.bytes;pageIndex=next.pageIndex;placedImages=(next.placedImages||[]).map(image=>({...image,bytes:image.bytes?image.bytes.slice():null}));textEdits=(next.textEdits||[]).map(edit=>({...edit}));selectedImageId=next.selectedImageId??null;selectedText=null;await refreshWorkingPdf();updateControls();status('Edit restored.');});
- el.downloadEditedPdf.addEventListener('click',async()=>{try{if(!workingBytes)throw new Error('Open a PDF first.');const checked=await PDFLib.PDFDocument.load(workingBytes.slice()),exportWarnings=[];if(!checked.getPageCount())throw new Error('The output PDF has no pages.');if(textEdits.length){const hasHindi=textEdits.some(edit=>/[\u0900-\u097F]/.test(edit.text));const hindiFontReady=hasHindi?await ensureHindiCanvasFont():false;if(hasHindi&&!hindiFontReady)exportWarnings.push('Noto Sans Devanagari could not load; a device fallback font was used.');for(const edit of textEdits){const target=checked.getPage(edit.pageIndex);if(!target)continue;const boxWidth=Math.max(8,edit.pdfWidth),boxHeight=Math.max(8,edit.pdfHeight),opacity=Math.max(0,Math.min(1,Number(edit.opacity??100)/100));target.drawRectangle({x:edit.x,y:edit.y,width:boxWidth,height:boxHeight,color:PDFLib.rgb(1,1,1),borderWidth:0});if(Array.from(edit.text).some(character=>character.codePointAt(0)>255)){const scale=4,canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.ceil(boxWidth*scale));canvas.height=Math.max(1,Math.ceil(boxHeight*scale));const ctx=canvas.getContext('2d');ctx.scale(scale,scale);const size=Math.max(6,Math.min(72,edit.fontSize)),isHindi=/[\u0900-\u097F]/.test(edit.text),family=isHindi?'"KAGZI Noto Sans Devanagari", Nirmala UI, Mangal, sans-serif':(edit.fontFamily==='TimesRoman'?'serif':edit.fontFamily==='Courier'?'monospace':'Arial, sans-serif');ctx.font=(edit.bold?'700 ':'400 ')+size+'px '+family;ctx.fillStyle=edit.color||'#17233c';ctx.globalAlpha=opacity;ctx.textBaseline='middle';ctx.textAlign=edit.align||'left';const textX=edit.align==='center'?boxWidth/2:edit.align==='right'?boxWidth:0;const lineHeight=Math.min(Math.max(7,size*1.25),boxHeight),lines=wrapCanvasText(ctx,edit.text,boxWidth).slice(0,Math.max(1,Math.floor(boxHeight/lineHeight)));ctx.save();ctx.beginPath();ctx.rect(0,0,boxWidth,boxHeight);ctx.clip();const firstY=(boxHeight-lines.length*lineHeight)/2+lineHeight/2;lines.forEach((line,index)=>ctx.fillText(line,textX,firstY+index*lineHeight,boxWidth));ctx.restore();const png=await checked.embedPng(canvas.toDataURL('image/png'));target.drawImage(png,{x:edit.x,y:edit.y,width:boxWidth,height:boxHeight});}else{const family=edit.fontFamily==='TimesRoman'?'TimesRoman':edit.fontFamily==='Courier'?'Courier':'Helvetica',fontKey=family+(edit.bold?'Bold':''),font=await checked.embedFont(PDFLib.StandardFonts[fontKey]||PDFLib.StandardFonts.Helvetica),size=Math.max(6,Math.min(72,edit.fontSize)),hex=(edit.color||'#17233c').replace('#','').padEnd(6,'0').slice(0,6),red=parseInt(hex.slice(0,2),16)/255,green=parseInt(hex.slice(2,4),16)/255,blue=parseInt(hex.slice(4,6),16)/255;let x=edit.x;if(edit.align==='center')x+=Math.max(0,(boxWidth-font.widthOfTextAtSize(edit.text,size))/2);if(edit.align==='right')x+=Math.max(0,boxWidth-font.widthOfTextAtSize(edit.text,size));target.drawText(edit.text,{x,y:edit.y+Math.max(0,(boxHeight-size)/2),size,font,color:PDFLib.rgb(red,green,blue),opacity,maxWidth:boxWidth,lineHeight:size*1.15});}}}const finalBytes=await checked.save();const blob=new Blob([finalBytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(originalFile.name.replace(/\.pdf$/i,'')||'document')+'-edited.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);status(exportWarnings.length?'Edited PDF downloaded. '+exportWarnings.join(' '):'Edited PDF downloaded.');}catch(e){status(e.message||'Could not export this PDF.');}});
+ el.downloadEditedPdf.addEventListener('click',async()=>{try{if(!workingBytes)throw new Error('Open a PDF first.');const checked=await PDFLib.PDFDocument.load(workingBytes.slice()),exportWarnings=[];activePdfContext=checked.context;if(!checked.getPageCount())throw new Error('The output PDF has no pages.');if(textEdits.length){const hasHindi=textEdits.some(edit=>/[\u0900-\u097F]/.test(edit.text));const hindiFontReady=hasHindi?await ensureHindiCanvasFont():false;if(hasHindi&&!hindiFontReady)exportWarnings.push('Noto Sans Devanagari could not load; a device fallback font was used.');let visualFallbacks=0;for(const edit of textEdits){const targetPage=checked.getPage(edit.pageIndex);if(!targetPage)continue;const removedOriginal=stripOriginalTextFromPage(targetPage,edit.original);if(!removedOriginal)visualFallbacks++;const boxWidth=Math.max(8,edit.pdfWidth),boxHeight=Math.max(8,edit.pdfHeight),opacity=Math.max(0,Math.min(1,Number(edit.opacity??100)/100));if(!removedOriginal)targetPage.drawRectangle({x:edit.x,y:edit.y,width:boxWidth,height:boxHeight,color:PDFLib.rgb(1,1,1),borderWidth:0});if(Array.from(edit.text).some(character=>character.codePointAt(0)>255)){const scale=4,canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.ceil(boxWidth*scale));canvas.height=Math.max(1,Math.ceil(boxHeight*scale));const ctx=canvas.getContext('2d');ctx.scale(scale,scale);const size=Math.max(6,Math.min(72,edit.fontSize)),isHindi=/[\u0900-\u097F]/.test(edit.text),family=isHindi?'"KAGZI Noto Sans Devanagari", Nirmala UI, Mangal, sans-serif':(edit.fontFamily==='TimesRoman'?'serif':edit.fontFamily==='Courier'?'monospace':'Arial, sans-serif');ctx.font=(edit.bold?'700 ':'400 ')+size+'px '+family;ctx.fillStyle=edit.color||'#17233c';ctx.globalAlpha=opacity;ctx.textBaseline='middle';ctx.textAlign=edit.align||'left';const textX=edit.align==='center'?boxWidth/2:edit.align==='right'?boxWidth:0;const lineHeight=Math.min(Math.max(7,size*1.25),boxHeight),lines=wrapCanvasText(ctx,edit.text,boxWidth).slice(0,Math.max(1,Math.floor(boxHeight/lineHeight)));ctx.save();ctx.beginPath();ctx.rect(0,0,boxWidth,boxHeight);ctx.clip();const firstY=(boxHeight-lines.length*lineHeight)/2+lineHeight/2;lines.forEach((line,index)=>ctx.fillText(line,textX,firstY+index*lineHeight,boxWidth));ctx.restore();const png=await checked.embedPng(canvas.toDataURL('image/png'));targetPage.drawImage(png,{x:edit.x,y:edit.y,width:boxWidth,height:boxHeight});}else{const family=edit.fontFamily==='TimesRoman'?'TimesRoman':edit.fontFamily==='Courier'?'Courier':'Helvetica',fontKey=family+(edit.bold?'Bold':''),font=await checked.embedFont(PDFLib.StandardFonts[fontKey]||PDFLib.StandardFonts.Helvetica),size=Math.max(6,Math.min(72,edit.fontSize)),hex=(edit.color||'#17233c').replace('#','').padEnd(6,'0').slice(0,6),red=parseInt(hex.slice(0,2),16)/255,green=parseInt(hex.slice(2,4),16)/255,blue=parseInt(hex.slice(4,6),16)/255;let x=edit.x;if(edit.align==='center')x+=Math.max(0,(boxWidth-font.widthOfTextAtSize(edit.text,size))/2);if(edit.align==='right')x+=Math.max(0,boxWidth-font.widthOfTextAtSize(edit.text,size));targetPage.drawText(edit.text,{x,y:edit.y+Math.max(0,(boxHeight-size)/2),size,font,color:PDFLib.rgb(red,green,blue),opacity,maxWidth:boxWidth,lineHeight:size*1.15});}}if(visualFallbacks)exportWarnings.push(visualFallbacks+' replacement(s) used a visual cover because the original PDF text encoding could not be safely located.');}const finalBytes=await checked.save();const blob=new Blob([finalBytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(originalFile.name.replace(/\.pdf$/i,'')||'document')+'-edited.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);status(exportWarnings.length?'Edited PDF downloaded. '+exportWarnings.join(' '):'Edited PDF downloaded.');}catch(e){status(e.message||'Could not export this PDF.');}});
  if(el.applyTextEdit)el.applyTextEdit.addEventListener('click',async()=>{if(!selectedText)return;const value=el.inspectorText.value;if(!value.trim()){status('Enter replacement text first.');return;}if(/[\u0900-\u097F]/.test(value))await ensureHindiCanvasFont();remember();const view=selectedText.viewport,topLeft=view.convertToPdfPoint(selectedText.left,selectedText.top),bottomRight=view.convertToPdfPoint(selectedText.left+selectedText.width,selectedText.top+selectedText.height);const x=Math.min(topLeft[0],bottomRight[0]),y=Math.min(topLeft[1],bottomRight[1]),pdfWidth=Math.abs(bottomRight[0]-topLeft[0]),pdfHeight=Math.abs(bottomRight[1]-topLeft[1]);textEdits=textEdits.filter(e=>!(e.pageIndex===selectedText.pageIndex&&e.original===selectedText.original));textEdits.push({pageIndex:selectedText.pageIndex,original:selectedText.original,text:value,x,y,pdfWidth,pdfHeight,fontSize:Number(el.inspectorFontSize.value)||12,bold:!!el.inspectorBold.checked,align:el.inspectorAlignment.value||'left',fontFamily:el.inspectorFontFamily.value||'Helvetica',color:el.inspectorFontColor.value||'#17233c',opacity:Math.max(0,Math.min(100,Number(el.inspectorOpacity.value)||100))});selectedText.span.textContent=value;selectedText.span.style.fontSize=(Math.max(6,Math.min(96,Number(el.inspectorFontSize.value)||12))*selectedText.viewport.scale)+'px';selectedText.span.style.fontWeight=el.inspectorBold.checked?'700':'400';selectedText.span.style.fontFamily=el.inspectorFontFamily.value==='NotoSansDevanagari'?'\"KAGZI Noto Sans Devanagari\", Nirmala UI, Mangal, sans-serif':(el.inspectorFontFamily.value==='TimesRoman'?'serif':el.inspectorFontFamily.value==='Courier'?'monospace':'Arial, sans-serif');selectedText.span.style.color=el.inspectorFontColor.value||'#17233c';selectedText.span.style.webkitTextFillColor=el.inspectorFontColor.value||'#17233c';selectedText.span.style.opacity=String(Math.max(0,Math.min(100,Number(el.inspectorOpacity.value)||100))/100);selectedText.span.style.textAlign=el.inspectorAlignment.value||'left';selectedText.span.style.backgroundColor='#fff';selectedText.span.style.whiteSpace='pre-wrap';selectedText.span.style.overflow='visible';selectedText.span.classList.add('edited');selectedText.span.classList.remove('selected');selectedText=null;el.applyTextEdit.disabled=true;status('Text edit applied to preview. Export PDF to save it.');});
  if(el.downloadEditedPdfBottom)el.downloadEditedPdfBottom.addEventListener('click',()=>el.downloadEditedPdf.click());
  window.KAGZIPdfEditorOpenFile=loadPdf;
