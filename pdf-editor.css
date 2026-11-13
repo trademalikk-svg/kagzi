@@ -47,3 +47,6 @@
  .inspector-empty,.inspector-note{grid-column:1/-1}
  .inspector-section textarea{min-height:76px}
 }
+
+
+@font-face{font-family:"KAGZI Noto Sans Devanagari";src:url("/assets/fonts/NotoSansDevanagari-Regular.ttf") format("truetype");font-style:normal;font-weight:100 900;font-display:swap}

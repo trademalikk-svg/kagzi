@@ -3,11 +3,18 @@ on:
   pull_request:
     paths:
       - "pdf-editor.js"
+      - "pdf-native-text.js"
+      - "tests/pdf-native-text.test.mjs"
+      - "tests/pdf-ocr-accuracy.test.mjs"
+      - "docs/tests/hindi-ocr-accuracy.md"
       - "pdf-ocr.js"
       - "pdf-scanner.js"
       - "index.html"
       - "tests/pdf-editor-workspace.test.mjs"
+      - "tests/pdf-editor-text-tool-unicode.test.mjs"
       - "tests/pdf-editor-unicode-export.test.mjs"
+      - "tests/pdf-ocr-worker.test.mjs"
+      - "tests/pdf-ocr-errors.test.mjs"
       - "pdf-editor.html"
       - "pdf-editor.css"
       - "pdf-server-adapter.js"
@@ -46,10 +53,24 @@ jobs:
         run: node --test tests/pdf-editor-workspace.test.mjs
       - name: Test Hindi PDF text replacement and font support
         run: node --test tests/pdf-editor-unicode-export.test.mjs
+      - name: Test Hindi Unicode text tool export
+        run: node --test tests/pdf-editor-text-tool-unicode.test.mjs
+      - name: Test native PDF text replacement engine
+        run: node --test tests/pdf-native-text.test.mjs
+      - name: Test Hindi OCR accuracy scorer
+        run: node --test tests/pdf-ocr-accuracy.test.mjs
       - name: Check editor JavaScript syntax
         run: node --check pdf-editor.js
       - name: Check local OCR JavaScript syntax
         run: node --check pdf-ocr.js
+      - name: Test OCR worker retry and initialization cache
+        run: node --test tests/pdf-ocr-worker.test.mjs
+      - name: Test actionable OCR language-data errors
+        run: node --test tests/pdf-ocr-errors.test.mjs
+      - name: Test Hindi font loading retry
+        run: node --test tests/pdf-hindi-font-retry.test.mjs
+      - name: Test bundled Hindi font asset
+        run: node --test tests/pdf-local-hindi-font.test.mjs
       - name: Check camera scanner JavaScript syntax
         run: node --check pdf-scanner.js
       - name: Test PDF render metrics

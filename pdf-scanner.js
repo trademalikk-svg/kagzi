@@ -16,7 +16,7 @@ async function recognizeSource(source,label){
   ocrStatus(result.text?'OCR complete. Review and edit the recognized text below. Confidence: '+Math.round(result.confidence)+'%.':'No readable text was detected. Try better lighting or a clearer image.');
   const inspector=byId('inspectorText');if(inspector)inspector.value=result.text||'';
   return result;
- }catch(error){ocrStatus('OCR failed: '+(error.message||'unknown error'));return null;}
+ }catch(error){const message=window.KAGZIPdfOcrErrorMessage?window.KAGZIPdfOcrErrorMessage(error):(error.message||'unknown error');ocrStatus('OCR failed: '+message);return null;}
 }
 async function openCamera(){
  const video=byId('cameraPreview');

@@ -12,8 +12,10 @@ test('Hindi text uses a browser-loaded Noto Devanagari font and shaped canvas ex
   assert.match(html, /Noto Sans Devanagari \(हिंदी\)/);
 });
 
-test('Hindi replacement clearly warns that the visual overlay is not searchable or secure deletion', async () => {
+test('native text replacement and visual overlay are clearly distinguished', async () => {
   const html = await readFile(new URL('../pdf-editor.html', import.meta.url), 'utf8');
-  assert.match(html, /searchable\/selectable नहीं होगा/);
-  assert.match(html, /secure redaction/);
+  assert.match(html, /Replace original PDF text/);
+  assert.match(html, /Apply visual overlay/);
+  assert.match(html, /पुराने embedded text को नहीं हटाता/);
+  assert.match(html, /secure-redaction tool|secure redaction/);
 });
