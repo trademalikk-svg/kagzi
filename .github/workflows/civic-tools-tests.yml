@@ -1,0 +1,34 @@
+name: KAGZI Civic Tools Tests
+on:
+  pull_request:
+    paths:
+      - "legal-document-generator.html"
+      - "public-complaints.html"
+      - "gram-panchayat.html"
+      - "functions/api/civic-ai.js"
+      - "civic-ai.js"
+      - "tests/kagzi-civic-tools.test.mjs"
+      - "tests/civic-ai.test.mjs"
+      - ".github/workflows/civic-tools-tests.yml"
+  push:
+    branches:
+      - "feat/kagzi-civic-tools"
+    paths:
+      - "legal-document-generator.html"
+      - "public-complaints.html"
+      - "gram-panchayat.html"
+      - "functions/api/civic-ai.js"
+      - "civic-ai.js"
+      - "tests/kagzi-civic-tools.test.mjs"
+      - "tests/civic-ai.test.mjs"
+      - ".github/workflows/civic-tools-tests.yml"
+jobs:
+  civic-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test civic tools
+        run: node --test tests/*.test.mjs
